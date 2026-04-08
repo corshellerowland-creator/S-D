@@ -2,24 +2,27 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faceless Trader - Strategy SD</title>
+<title>Faceless Trader</title>
 <style>
 body{background:#0b0b12;color:white;font-family:sans-serif;padding:16px}
-.panel{background:#141422;border-radius:18px;padding:16px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.05);box-shadow:0 0 20px rgba(138,43,226,0.15)}
-.score{text-align:center;font-size:22px;font-weight:bold;margin-bottom:10px}
+.header{font-size:22px;font-weight:bold;margin-bottom:10px}
+.panel{background:#141422;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 0 20px rgba(138,43,226,0.2)}
+.score{font-size:22px;text-align:center}
 .gradeA{color:#00ff9c}
 .gradeB{color:#ffd23f}
 .gradeC{color:#ff4d6d}
-.sectionTitle{font-weight:bold;margin-bottom:6px}
+.sectionTitle{font-weight:bold}
 .desc{font-size:12px;color:#aaa;margin-bottom:8px}
 .btn{padding:10px;border-radius:12px;margin:5px;border:none;background:#1c1c2e;color:white}
 .active{background:linear-gradient(135deg,#8b5cf6,#39b8ff);box-shadow:0 0 10px rgba(138,43,226,0.6)}
-.locked{opacity:0.4}
 .unlock{width:100%;padding:14px;border-radius:14px;border:none;font-weight:bold;margin-top:10px}
+.locked{opacity:0.4}
 </style>
 </head>
 
 <body>
+
+<div class="header">Faceless Trader</div>
 
 <div class="panel score">
 Score: <span id="score">0</span><br>
