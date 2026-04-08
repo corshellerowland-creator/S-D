@@ -2,47 +2,61 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faceless Trader - SD Fixed</title>
+<title>Faceless Trader - Strategy SD</title>
 <style>
-body{background:#0b0b0f;color:white;font-family:sans-serif;padding:20px}
-.card{background:#151522;border-radius:16px;padding:20px;margin-bottom:15px}
-button{padding:10px;border-radius:10px;margin:5px;border:none}
-.active{background:#7c3aed;color:white}
-.locked{opacity:0.5}
+body{background:#0b0b12;color:white;font-family:sans-serif;padding:16px}
+.panel{background:#141422;border-radius:18px;padding:16px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.05);box-shadow:0 0 20px rgba(138,43,226,0.15)}
+.score{text-align:center;font-size:22px;font-weight:bold;margin-bottom:10px}
+.gradeA{color:#00ff9c}
+.gradeB{color:#ffd23f}
+.gradeC{color:#ff4d6d}
+.sectionTitle{font-weight:bold;margin-bottom:6px}
+.desc{font-size:12px;color:#aaa;margin-bottom:8px}
+.btn{padding:10px;border-radius:12px;margin:5px;border:none;background:#1c1c2e;color:white}
+.active{background:linear-gradient(135deg,#8b5cf6,#39b8ff);box-shadow:0 0 10px rgba(138,43,226,0.6)}
+.locked{opacity:0.4}
+.unlock{width:100%;padding:14px;border-radius:14px;border:none;font-weight:bold;margin-top:10px}
 </style>
 </head>
+
 <body>
 
-<h2>Supply & Demand</h2>
-
-<div class="card">
+<div class="panel score">
 Score: <span id="score">0</span><br>
-Grade: <span id="grade">No Trade</span>
+Grade: <span id="grade" class="gradeC">No Trade</span>
 </div>
 
-<div class="card">
-<button onclick="toggle(this,1)">Fresh Zone +1</button>
-<button onclick="toggle(this,1)">Impulse +1</button>
-<button onclick="toggle(this,2)">Imbalance +2</button>
-<button onclick="toggle(this,1)">Clean Structure +1</button>
+<div class="panel">
+<div class="sectionTitle">Zone Quality</div>
+<div class="desc">Is the zone clean and strong?</div>
+<button class="btn" onclick="toggle(this,1)">Fresh Zone +1</button>
+<button class="btn" onclick="toggle(this,1)">Impulse +1</button>
+<button class="btn" onclick="toggle(this,2)">Imbalance +2</button>
+<button class="btn" onclick="toggle(this,1)">Clean Structure +1</button>
 </div>
 
-<div class="card">
-<button onclick="toggle(this,2)">HTF Aligned +2</button>
-<button onclick="toggle(this,2)">Target +2</button>
+<div class="panel">
+<div class="sectionTitle">HTF Direction</div>
+<div class="desc">Align with higher timeframe</div>
+<button class="btn" onclick="toggle(this,2)">HTF Aligned +2</button>
+<button class="btn" onclick="toggle(this,2)">Target Identified +2</button>
 </div>
 
-<div class="card">
-<button onclick="toggle(this,2)">Reaction +2</button>
-<button onclick="toggle(this,2)">Structure Shift +2</button>
+<div class="panel">
+<div class="sectionTitle">Entry Confirmation</div>
+<div class="desc">Reaction is clear</div>
+<button class="btn" onclick="toggle(this,2)">Reaction +2</button>
+<button class="btn" onclick="toggle(this,2)">Structure Shift +2</button>
 </div>
 
-<div class="card">
-<button onclick="toggle(this,-1)">Multiple Taps -1</button>
-<button onclick="toggle(this,-2)">Weak Reaction -2</button>
+<div class="panel">
+<div class="sectionTitle">Weakness</div>
+<div class="desc">Signs of weak setup</div>
+<button class="btn" onclick="toggle(this,-1)">Multiple Taps -1</button>
+<button class="btn" onclick="toggle(this,-2)">Weak Reaction -2</button>
 </div>
 
-<button id="unlock" class="locked">Unlock Trade</button>
+<button id="unlock" class="unlock locked">Unlock Trade</button>
 
 <script>
 let score=0;
@@ -61,9 +75,13 @@ function toggle(btn,val){
 function update(){
   document.getElementById('score').innerText=score;
   let grade="No Trade";
-  if(score>=9) grade="A";
-  else if(score>=6) grade="B";
-  document.getElementById('grade').innerText=grade;
+  let el=document.getElementById('grade');
+
+  if(score>=9){grade="A"; el.className="gradeA";}
+  else if(score>=6){grade="B"; el.className="gradeB";}
+  else{el.className="gradeC";}
+
+  el.innerText=grade;
 
   let unlock=document.getElementById('unlock');
   if(score>=6){
