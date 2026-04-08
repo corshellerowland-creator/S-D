@@ -2,61 +2,119 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faceless Trader</title>
+<title>Faceless Trader - SD Luxury</title>
 <style>
-body{background:#0b0b12;color:white;font-family:sans-serif;padding:16px}
-.header{font-size:22px;font-weight:bold;margin-bottom:10px}
-.panel{background:#141422;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 0 20px rgba(138,43,226,0.2)}
-.score{font-size:22px;text-align:center}
-.gradeA{color:#00ff9c}
-.gradeB{color:#ffd23f}
-.gradeC{color:#ff4d6d}
-.sectionTitle{font-weight:bold}
+body{
+ background:#0b0b12;
+ color:white;
+ font-family:sans-serif;
+ padding:16px;
+}
+
+.panel{
+ background:rgba(20,20,34,0.9);
+ border-radius:20px;
+ padding:16px;
+ margin-bottom:14px;
+ box-shadow:0 0 25px rgba(138,43,226,0.25);
+ backdrop-filter:blur(10px);
+}
+
+.score{
+ text-align:center;
+ font-size:24px;
+ font-weight:bold;
+ transition:0.3s;
+}
+
+.gradeA{color:#00ff9c;text-shadow:0 0 10px #00ff9c;}
+.gradeB{color:#ffd23f;text-shadow:0 0 10px #ffd23f;}
+.gradeC{color:#ff4d6d;text-shadow:0 0 10px #ff4d6d;}
+
+.sectionTitle{font-weight:bold;margin-bottom:4px}
 .desc{font-size:12px;color:#aaa;margin-bottom:8px}
-.btn{padding:10px;border-radius:12px;margin:5px;border:none;background:#1c1c2e;color:white}
-.active{background:linear-gradient(135deg,#8b5cf6,#39b8ff);box-shadow:0 0 10px rgba(138,43,226,0.6)}
-.unlock{width:100%;padding:14px;border-radius:14px;border:none;font-weight:bold;margin-top:10px}
-.locked{opacity:0.4}
+
+.btn{
+ padding:10px;
+ border-radius:14px;
+ margin:5px;
+ border:none;
+ background:#1c1c2e;
+ color:white;
+ transition:0.2s;
+}
+
+.btn.active{
+ background:linear-gradient(135deg,#8b5cf6,#39b8ff);
+ box-shadow:0 0 15px rgba(138,43,226,0.8);
+ transform:scale(1.05);
+}
+
+.unlock{
+ width:100%;
+ padding:14px;
+ border-radius:16px;
+ border:none;
+ font-weight:bold;
+ margin-top:10px;
+ background:linear-gradient(135deg,#8b5cf6,#39b8ff);
+ box-shadow:0 0 20px rgba(138,43,226,0.7);
+ transition:0.3s;
+}
+
+.locked{
+ opacity:0.3;
+ box-shadow:none;
+}
+
+.entryConfirm{
+ text-align:center;
+ font-size:14px;
+ margin-top:6px;
+ color:#00ff9c;
+ text-shadow:0 0 10px #00ff9c;
+ display:none;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">Faceless Trader</div>
-
 <div class="panel score">
 Score: <span id="score">0</span><br>
 Grade: <span id="grade" class="gradeC">No Trade</span>
+<div id="decision">Decision: No Trade</div>
 </div>
 
 <div class="panel">
 <div class="sectionTitle">Zone Quality</div>
 <div class="desc">Is the zone clean and strong?</div>
-<button class="btn" onclick="toggle(this,1)">Fresh Zone +1</button>
-<button class="btn" onclick="toggle(this,1)">Impulse +1</button>
-<button class="btn" onclick="toggle(this,2)">Imbalance +2</button>
-<button class="btn" onclick="toggle(this,1)">Clean Structure +1</button>
+<button class="btn" onclick="toggle(this,1)">Fresh Zone</button>
+<button class="btn" onclick="toggle(this,1)">Impulse</button>
+<button class="btn" onclick="toggle(this,2)">Imbalance</button>
+<button class="btn" onclick="toggle(this,1)">Clean Structure</button>
 </div>
 
 <div class="panel">
 <div class="sectionTitle">HTF Direction</div>
 <div class="desc">Align with higher timeframe</div>
-<button class="btn" onclick="toggle(this,2)">HTF Aligned +2</button>
-<button class="btn" onclick="toggle(this,2)">Target Identified +2</button>
+<button class="btn" onclick="toggle(this,2)">HTF Aligned</button>
+<button class="btn" onclick="toggle(this,2)">Target Identified</button>
 </div>
 
 <div class="panel">
 <div class="sectionTitle">Entry Confirmation</div>
 <div class="desc">Reaction is clear</div>
-<button class="btn" onclick="toggle(this,2)">Reaction +2</button>
-<button class="btn" onclick="toggle(this,2)">Structure Shift +2</button>
+<button id="reaction" class="btn" onclick="toggle(this,2)">Reaction</button>
+<button id="shift" class="btn" onclick="toggle(this,2)">Structure Shift</button>
+<div id="entryConfirm" class="entryConfirm">Entry Confirmed</div>
 </div>
 
 <div class="panel">
 <div class="sectionTitle">Weakness</div>
 <div class="desc">Signs of weak setup</div>
-<button class="btn" onclick="toggle(this,-1)">Multiple Taps -1</button>
-<button class="btn" onclick="toggle(this,-2)">Weak Reaction -2</button>
+<button class="btn" onclick="toggle(this,-1)">Multiple Taps</button>
+<button class="btn" onclick="toggle(this,-2)">Weak Reaction</button>
 </div>
 
 <button id="unlock" class="unlock locked">Unlock Trade</button>
@@ -65,33 +123,46 @@ Grade: <span id="grade" class="gradeC">No Trade</span>
 let score=0;
 
 function toggle(btn,val){
-  if(btn.classList.contains('active')){
-    btn.classList.remove('active');
-    score-=val;
-  }else{
-    btn.classList.add('active');
-    score+=val;
-  }
-  update();
+ if(btn.classList.contains('active')){
+  btn.classList.remove('active');
+  score-=val;
+ }else{
+  btn.classList.add('active');
+  score+=val;
+ }
+ update();
 }
 
 function update(){
-  document.getElementById('score').innerText=score;
-  let grade="No Trade";
-  let el=document.getElementById('grade');
+ document.getElementById('score').innerText=score;
 
-  if(score>=9){grade="A"; el.className="gradeA";}
-  else if(score>=6){grade="B"; el.className="gradeB";}
-  else{el.className="gradeC";}
+ let grade="No Trade";
+ let decision="No Trade";
+ let el=document.getElementById('grade');
 
-  el.innerText=grade;
+ if(score>=9){grade="A";decision="VALID"; el.className="gradeA";}
+ else if(score>=6){grade="B";decision="WAIT"; el.className="gradeB";}
+ else{el.className="gradeC";}
 
-  let unlock=document.getElementById('unlock');
-  if(score>=6){
-    unlock.classList.remove('locked');
-  }else{
-    unlock.classList.add('locked');
-  }
+ el.innerText=grade;
+ document.getElementById('decision').innerText="Decision: "+decision;
+
+ let unlock=document.getElementById('unlock');
+ if(score>=6){
+  unlock.classList.remove('locked');
+ }else{
+  unlock.classList.add('locked');
+ }
+
+ // entry confirm
+ let reaction=document.getElementById('reaction').classList.contains('active');
+ let shift=document.getElementById('shift').classList.contains('active');
+
+ if(reaction && shift){
+  document.getElementById('entryConfirm').style.display="block";
+ }else{
+  document.getElementById('entryConfirm').style.display="none";
+ }
 }
 </script>
 
