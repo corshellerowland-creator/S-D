@@ -1,1 +1,78 @@
-<html><body><h1>Faceless Trader - Updated SD Build</h1><p>Your updated build is ready.</p></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faceless Trader - SD Fixed</title>
+<style>
+body{background:#0b0b0f;color:white;font-family:sans-serif;padding:20px}
+.card{background:#151522;border-radius:16px;padding:20px;margin-bottom:15px}
+button{padding:10px;border-radius:10px;margin:5px;border:none}
+.active{background:#7c3aed;color:white}
+.locked{opacity:0.5}
+</style>
+</head>
+<body>
+
+<h2>Supply & Demand</h2>
+
+<div class="card">
+Score: <span id="score">0</span><br>
+Grade: <span id="grade">No Trade</span>
+</div>
+
+<div class="card">
+<button onclick="toggle(this,1)">Fresh Zone +1</button>
+<button onclick="toggle(this,1)">Impulse +1</button>
+<button onclick="toggle(this,2)">Imbalance +2</button>
+<button onclick="toggle(this,1)">Clean Structure +1</button>
+</div>
+
+<div class="card">
+<button onclick="toggle(this,2)">HTF Aligned +2</button>
+<button onclick="toggle(this,2)">Target +2</button>
+</div>
+
+<div class="card">
+<button onclick="toggle(this,2)">Reaction +2</button>
+<button onclick="toggle(this,2)">Structure Shift +2</button>
+</div>
+
+<div class="card">
+<button onclick="toggle(this,-1)">Multiple Taps -1</button>
+<button onclick="toggle(this,-2)">Weak Reaction -2</button>
+</div>
+
+<button id="unlock" class="locked">Unlock Trade</button>
+
+<script>
+let score=0;
+
+function toggle(btn,val){
+  if(btn.classList.contains('active')){
+    btn.classList.remove('active');
+    score-=val;
+  }else{
+    btn.classList.add('active');
+    score+=val;
+  }
+  update();
+}
+
+function update(){
+  document.getElementById('score').innerText=score;
+  let grade="No Trade";
+  if(score>=9) grade="A";
+  else if(score>=6) grade="B";
+  document.getElementById('grade').innerText=grade;
+
+  let unlock=document.getElementById('unlock');
+  if(score>=6){
+    unlock.classList.remove('locked');
+  }else{
+    unlock.classList.add('locked');
+  }
+}
+</script>
+
+</body>
+</html>
