@@ -112,7 +112,7 @@ textarea.field{min-height:88px;resize:vertical}
       <div class="mergedStrategyPane active" id="merged-icc" style="margin-top:14px;">
         <iframe
           title="ICC Strategy"
-          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          class="strategyFrame" style="width:100%;height:1400px;border:none;border-radius:22px;background:transparent;display:block;overflow:hidden;"
           srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -963,7 +963,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       <div class="mergedStrategyPane" id="merged-ema" style="display:none;margin-top:14px;">
         <iframe
           title="EMA Strategy"
-          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          class="strategyFrame" style="width:100%;height:1400px;border:none;border-radius:22px;background:transparent;display:block;overflow:hidden;"
           srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -1814,7 +1814,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       <div class="mergedStrategyPane" id="merged-sd" style="display:none;margin-top:14px;">
         <iframe
           title="Supply and Demand Strategy"
-          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          class="strategyFrame" style="width:100%;height:1400px;border:none;border-radius:22px;background:transparent;display:block;overflow:hidden;"
           srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -2166,6 +2166,146 @@ document.querySelectorAll('[data-merged-strategy]').forEach(btn => {
   });
 });
 </script>
+
+<script>
+function resizeStrategyFrames(){
+  document.querySelectorAll('.strategyFrame').forEach(frame => {
+    try {
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      if (!doc || !doc.body) return;
+      const h = Math.max(
+        doc.body.scrollHeight || 0,
+        doc.documentElement ? doc.documentElement.scrollHeight : 0
+      );
+      if (h && h > 300) frame.style.height = (h + 24) + 'px';
+    } catch(e) {}
+  });
+}
+
+document.querySelectorAll('.strategyFrame').forEach(frame => {
+  frame.addEventListener('load', () => {
+    resizeStrategyFrames();
+    setTimeout(resizeStrategyFrames, 300);
+    setTimeout(resizeStrategyFrames, 1000);
+  });
+});
+setInterval(resizeStrategyFrames, 1500);
+
+function readJSON(key){
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch(e){ return []; }
+}
+
+function syncExternalStrategyStats(){
+  const shellEntries = readJSON('facelessTraderMergedICC_v1');
+  const shellJournal = shellEntries && shellEntries.journal ? shellEntries.journal : [];
+
+  const iccEmaJournal = readJSON('faceless_strategy_journal_v1');
+  const sdJournal = readJSON('snd_icc_style_journal_v2');
+
+  const all = []
+    .concat(shellJournal.map(j => ({
+      strategy: j.setup || 'Unknown',
+      pnl: Number(j.pnl || 0),
+      date: j.date || '',
+      source: 'shell'
+    })))
+    .concat(iccEmaJournal.map(j => ({
+      strategy: j.strategy === 'EMA / TEMA' ? 'EMA/TEMA' : (j.strategy || 'ICC'),
+      pnl: Number(j.result === 'Win' ? 1 : j.result === 'Loss' ? -1 : 0),
+      date: j.date || '',
+      source: 'iccema'
+    })))
+    .concat(sdJournal.map(j => ({
+      strategy: 'Supply & Demand',
+      pnl: Number(j.result === 'Win' ? 1 : j.result === 'Loss' ? -1 : 0),
+      date: j.date || '',
+      source: 'sd'
+    })));
+
+  const statEntries = document.getElementById('statEntries');
+  const statWinRate = document.getElementById('statWinRate');
+  const strategyStats = document.getElementById('strategyStats');
+  const bestStrategy = document.getElementById('bestStrategy');
+  const bestStrategyMeta = document.getElementById('bestStrategyMeta');
+  const recentJournal = document.getElementById('recentJournal');
+
+  if (!all.length){
+    if (statEntries) statEntries.textContent = '0';
+    if (statWinRate) statWinRate.textContent = '0%';
+    if (strategyStats) strategyStats.innerHTML = '<div class="empty">No strategy entries yet.</div>';
+    if (bestStrategy) bestStrategy.textContent = '—';
+    if (bestStrategyMeta) bestStrategyMeta.textContent = 'Waiting for trades';
+    return;
+  }
+
+  const wins = all.filter(x => x.pnl > 0).length;
+  const losses = all.filter(x => x.pnl < 0).length;
+  const wr = (wins + losses) ? Math.round((wins / (wins + losses)) * 100) : 0;
+
+  if (statEntries) statEntries.textContent = String(all.length);
+  if (statWinRate) statWinRate.textContent = wr + '%';
+
+  const buckets = {};
+  all.forEach(x => {
+    const k = x.strategy || 'Unknown';
+    if (!buckets[k]) buckets[k] = {name:k, trades:0, wins:0, losses:0, pnl:0};
+    buckets[k].trades += 1;
+    if (x.pnl > 0) buckets[k].wins += 1;
+    if (x.pnl < 0) buckets[k].losses += 1;
+    buckets[k].pnl += x.pnl;
+  });
+
+  const rows = Object.values(buckets).map(b => {
+    const rate = (b.wins + b.losses) ? Math.round((b.wins / (b.wins + b.losses)) * 100) : 0;
+    b.rate = rate;
+    return b;
+  }).sort((a,b) => (b.rate - a.rate) || (b.pnl - a.pnl));
+
+  if (strategyStats){
+    strategyStats.innerHTML = rows.map(r => `
+      <div class="listItem">
+        <div class="accountTop">
+          <div>
+            <div class="accountTitle">${r.name}</div>
+            <div class="muted">${r.trades} entries</div>
+          </div>
+          <span class="chip">${r.wins} / ${r.losses}</span>
+        </div>
+        <div class="kvGrid">
+          <div class="kv"><div class="k">Win %</div><div class="v">${r.rate}%</div></div>
+          <div class="kv"><div class="k">Net Score</div><div class="v">${r.pnl}</div></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const best = rows[0];
+  if (bestStrategy) bestStrategy.textContent = best ? best.name : '—';
+  if (bestStrategyMeta) bestStrategyMeta.textContent = best ? `${best.rate}% win rate` : 'Waiting for trades';
+
+  if (recentJournal){
+    recentJournal.innerHTML = all.slice().reverse().slice(0,3).map(j => `
+      <div class="listItem">
+        <div class="journalTop">
+          <div>
+            <div class="accountTitle">${j.strategy}</div>
+            <div class="muted">${j.date || ''}</div>
+          </div>
+          <span class="${j.pnl > 0 ? 'positive' : j.pnl < 0 ? 'negative' : ''}"><strong>${j.pnl}</strong></span>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+window.addEventListener('load', () => {
+  syncExternalStrategyStats();
+  setTimeout(syncExternalStrategyStats, 1000);
+  setInterval(syncExternalStrategyStats, 2000);
+});
+</script>
+
 </body>
 
 </html>
