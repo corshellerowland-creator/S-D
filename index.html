@@ -2,319 +2,259 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Faceless Trader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supply & Demand — ICC Style</title>
 <style>
-:root{
-  --bg:#090711; --bg2:#120d22; --text:#f7efff; --muted:#c7b9da;
-  --pink:#ff3bbd; --purple:#8b5cf6; --blue:#39b8ff; --green:#44e1a7; --yellow:#ffce52; --red:#ff5e7e;
-  --line:rgba(255,255,255,.09); --shadow:0 12px 32px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.04) inset;
-  --grad1:var(--pink); --grad2:var(--purple); --panelGlow:rgba(255,59,189,.12);
-  --hero1:rgba(139,92,246,.18); --hero2:rgba(57,184,255,.12);
-}
-body[data-palette="quantum"]{--grad1:var(--blue);--grad2:var(--green);--panelGlow:rgba(57,184,255,.16);--hero1:rgba(57,184,255,.20);--hero2:rgba(68,225,167,.14)}
+:root{--bg:#090711;--bg2:#120d22;--text:#f7efff;--muted:#c7b9da;--pink:#ff3bbd;--purple:#8b5cf6;--blue:#39b8ff;--green:#44e1a7;--yellow:#ffce52;--red:#ff5e7e;--line:rgba(255,255,255,.09);--shadow:0 12px 32px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.04) inset;--glow:0 0 0 1px rgba(255,255,255,.05),0 0 28px rgba(255,59,189,.12);--radius:22px}
 *{box-sizing:border-box}
-html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
-  radial-gradient(circle at top left,var(--hero1),transparent 28%),radial-gradient(circle at top right,var(--hero2),transparent 25%),linear-gradient(180deg,var(--bg),#0d0a18 50%,var(--bg2))}
-body{padding:18px}
-.app{max-width:430px;margin:0 auto}
-.panel{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow),0 0 28px var(--panelGlow);backdrop-filter:blur(12px)}
-.hero{padding:18px 18px 16px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--grad1) 35%,transparent),transparent 62%);filter:blur(10px)}
-.heroTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.brandWrap{display:flex;gap:12px;align-items:center}
-.avatarWrap{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:0 0 20px var(--panelGlow)}
-.avatar{width:56px;height:56px;border-radius:16px;background:radial-gradient(circle at 50% 22%,color-mix(in srgb,var(--grad1) 40%,transparent),transparent 34%),linear-gradient(180deg,#1a1430,#0d0a18);position:relative}
-.avatar:before{content:"";position:absolute;inset:8px 11px 10px;border-radius:40px 40px 28px 28px/36px 36px 24px 24px;background:#08060f}
-.avatar:after{content:"";position:absolute;left:18px;right:18px;top:23px;height:8px;background:radial-gradient(circle at 20% 50%,var(--grad1) 0 2px,transparent 3px),radial-gradient(circle at 80% 50%,var(--grad1) 0 2px,transparent 3px);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--grad1) 60%,transparent))}
-h1{font-size:26px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;line-height:1.35}
-.styleBtn{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#1b1431;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
-.topStats,.grid2,.statsGrid,.kpiGrid,.homeQuick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.topStats{margin-top:14px}
-.stat,.section,.kpi,.listItem,.phaseCard{padding:14px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));border:1px solid var(--line)}
-.label{color:var(--muted);font-size:12px}.big{font-size:28px;font-weight:800;margin-top:4px}
-.smallBadge,.chip,.status{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
-.tabs,.strategyTabs{display:flex;gap:10px;margin-top:14px;overflow:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.strategyTabs::-webkit-scrollbar{display:none}
-.pill{flex:0 0 auto;border:none;color:var(--text);background:#1a1430;padding:12px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid rgba(255,255,255,.06);cursor:pointer}
-.pill.active{background:linear-gradient(135deg,var(--grad1),var(--grad2));box-shadow:0 10px 24px var(--panelGlow)}
-.view{display:none;margin-top:14px}.view.active{display:block}.section+.section{margin-top:12px}
-.sectionTitle{font-weight:800;font-size:16px;margin:0 0 10px}
-.kpi .num{font-size:22px;font-weight:900;margin-top:8px}
-.fieldLabel{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
-.field,select.field,textarea.field{width:100%;background:#130f22;border:1px solid rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:12px 14px;outline:none}
-textarea.field{min-height:88px;resize:vertical}
-.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.btn,.cta{border:none;border-radius:16px;padding:13px 14px;font-weight:800;color:white;cursor:pointer;background:#211736}
-.btn.primary,.cta{background:linear-gradient(135deg,var(--grad1),var(--grad2));box-shadow:0 12px 24px var(--panelGlow)}
-.btn.warn{background:linear-gradient(135deg,rgba(255,94,126,.85),rgba(139,92,246,.8))}
-.cta{margin-top:14px;width:100%;border-radius:18px;font-size:15px;font-weight:900}
-.accountList,.journalList,.phaseGrid{display:grid;gap:12px}
-.accountTop,.journalTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.accountTitle{font-size:15px;font-weight:900}.muted{color:var(--muted)}
-.kvGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.kv{padding:10px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
-.kv .k{font-size:11px;color:var(--muted)}.kv .v{margin-top:4px;font-weight:800}
-.positive{color:var(--green)} .negative{color:var(--red)}
-.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.12);border-radius:18px}
-.iccPhase{display:none}.iccPhase.active{display:block}
+html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(139,92,246,.18),transparent 28%),radial-gradient(circle at top right,rgba(57,184,255,.12),transparent 25%),linear-gradient(180deg,var(--bg),#0d0a18 50%,var(--bg2))}
+body{padding:18px}.app{max-width:420px;margin:0 auto}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow),var(--glow);backdrop-filter:blur(12px)}
+.hero{padding:18px 18px 16px}.heroTop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+h1{font-size:28px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;line-height:1.35}
+.badge{padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;background:linear-gradient(135deg,rgba(255,59,189,.22),rgba(139,92,246,.22));border:1px solid rgba(255,255,255,.08)}
+.stats,.grid,.actionCards,.bottomBtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.stat,.phaseCard,.actionCard,.section,.entryCard{padding:16px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));border:1px solid var(--line)}
+.label{color:var(--muted);font-size:12px}.big{font-size:32px;font-weight:800;margin-top:4px}
+.smallBadge{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06)}
 .progressWrap{margin-top:14px}.track{height:12px;background:#150f28;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--grad1),var(--grad2),var(--blue));border-radius:999px;transition:width .25s ease}
-.checkrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);margin-top:10px}
-.timer{text-align:center}.clock{font-size:42px;font-weight:900;letter-spacing:1px;margin:8px 0 6px}
-.quickBtn{padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:800;cursor:pointer;text-align:left;color:var(--text)}
-.previewImg{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none}
-@media (max-width:390px){.grid2,.statsGrid,.kpiGrid,.homeQuick,.topStats,.kvGrid{grid-template-columns:1fr}}
-
-#sdScorePanel.sd-grade-a{box-shadow:0 0 0 1px rgba(68,225,167,.22) inset, 0 0 28px rgba(68,225,167,.18);}
-#sdScorePanel.sd-grade-b{box-shadow:0 0 0 1px rgba(255,206,82,.22) inset, 0 0 28px rgba(255,206,82,.18);}
-#sdScorePanel.sd-grade-c{box-shadow:0 0 0 1px rgba(255,94,126,.22) inset, 0 0 28px rgba(255,94,126,.16);}
-#sdZoneCard.sd-live,#sdHTFCard.sd-live,#sdEntryCard.sd-live{box-shadow:0 0 0 1px rgba(255,59,189,.16) inset, 0 0 24px rgba(255,59,189,.12);}
-#sdEntryCard.sd-confirmed{box-shadow:0 0 0 1px rgba(68,225,167,.18) inset, 0 0 26px rgba(68,225,167,.16);}
-#sdWeaknessCard.sd-warn{box-shadow:0 0 0 1px rgba(255,94,126,.18) inset, 0 0 26px rgba(255,94,126,.14);}
-.sd-check:checked{accent-color:#ff3bbd;}
-
+.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));border-radius:999px;transition:width .25s ease}
+.phaseCard,.actionCard{min-height:118px;cursor:pointer;position:relative;overflow:hidden}
+.phaseCard.ready{box-shadow:0 0 0 1px rgba(68,225,167,.18) inset,0 0 24px rgba(68,225,167,.15)}
+.phaseTitle,.actionTitle{font-size:16px;font-weight:800;margin-bottom:6px}
+.phaseDesc,.actionDesc,.entryMeta{font-size:12px;line-height:1.35;color:var(--muted)}
+.phaseMeta,.actionMeta,.entryTop{margin-top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.miniCount{font-size:11px;color:var(--muted)}.openBtn{font-size:12px;font-weight:800;color:#fff;opacity:.9}
+.btnWide,.miniBtn,.cta{border:none;border-radius:18px;padding:14px 16px;font-size:14px;font-weight:800;color:white;cursor:pointer}
+.journalBtn{background:linear-gradient(135deg,rgba(68,225,167,.8),rgba(57,184,255,.7));box-shadow:0 12px 24px rgba(68,225,167,.16)}
+.resetBtn{background:#211736}.rulesBtn{background:linear-gradient(135deg,rgba(255,94,126,.8),rgba(139,92,246,.75));box-shadow:0 12px 24px rgba(255,94,126,.14)}
+.tradeBtn{background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 12px 24px rgba(255,59,189,.22)}.tradeBtn.locked{opacity:.45;filter:grayscale(.2)}
+.sectionTitle{font-weight:800;font-size:16px;margin:0 0 10px}.journalGrid,.entryList{display:grid;gap:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{background:#130f22;border:1px solid rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:12px 14px;width:100%;outline:none}
+textarea.field{min-height:88px;resize:vertical}
+.cta{margin-top:14px;width:100%;font-size:15px;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 12px 24px rgba(255,59,189,.22)}
+.entryTitle{font-size:16px;font-weight:800}.entryImg,.previewImg{width:100%;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none;max-height:220px;object-fit:cover}
+.sheet,.popup{position:fixed;inset:0;background:rgba(5,4,10,.62);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:60;padding:12px}
+.sheet.show,.popup.show{display:flex}
+.sheetCard,.popupCard{width:min(100%,420px);max-height:90vh;overflow:auto;background:linear-gradient(180deg,rgba(20,14,34,.98),rgba(15,11,26,.98));border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:var(--shadow),0 0 34px rgba(255,59,189,.16);padding:18px}
+.sheetHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.sheetTitle{font-size:24px;font-weight:900;margin:0}.sheetSub{font-size:12px;color:var(--muted);margin-top:4px}
+.x{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;color:#fff;background:#22173a;font-size:18px;font-weight:900}
+.checklist{display:grid;gap:10px;margin-top:12px}
+.item{padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);cursor:pointer;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:flex-start}
+.box{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.22);margin-top:2px;display:grid;place-items:center;font-size:14px;font-weight:900}
+.item.checked .box{background:linear-gradient(135deg,var(--green),var(--blue));border-color:transparent;color:#061312}
+.itemTitle{font-size:15px;font-weight:800}.itemDesc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:4px}
+.rule{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,206,82,.12),rgba(255,206,82,.05));border:1px solid rgba(255,206,82,.22);font-size:12px;color:#ffebaf}
+.danger{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,94,126,.12),rgba(255,94,126,.05));border:1px solid rgba(255,94,126,.22);font-size:12px;color:#ffc0cb}
+.sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.miniBtn{background:#211736}.miniBtn.primary{background:linear-gradient(135deg,var(--pink),var(--purple))}
+.warnList{margin:14px 0 0;padding-left:18px;color:#ffd0da}
 </style>
 </head>
-<body data-palette="amethyst">
+<body>
 <div class="app">
   <div class="panel hero">
     <div class="heroTop">
-      <div class="brandWrap"><div class="avatarWrap"><div class="avatar"></div></div><div><h1>Faceless Trader</h1><div class="sub">ICC look + full app engine + journal syncing</div></div></div>
-      <button class="styleBtn" id="styleCycleBtn">Style</button>
+      <div><h1>Supply & Demand</h1><div class="sub">Zone Quality • HTF Direction • Entry • Weakness</div></div>
+      <div class="badge" id="statusBadge">WAIT</div>
     </div>
-    <div class="topStats">
-      <div class="stat"><div class="label">Today PnL</div><div class="big" id="todayPnl">$0</div><div class="smallBadge" id="todayBadge">No goal active</div></div>
-      <div class="stat"><div class="label">Session Status</div><div class="big" style="font-size:23px" id="sessionStatus">Waiting</div><div class="smallBadge" id="themeBadge">Soft Amethyst</div></div>
+    <div class="stats">
+      <div class="stat"><div class="big" id="scoreValue">0%</div><div class="label">Setup Strength</div><div class="smallBadge" id="scoreHint">WAIT</div></div>
+      <div class="stat"><div class="label">Status</div><div class="big" style="font-size:28px" id="statusText">Waiting</div><div class="sub" id="statusSub" style="margin-top:8px">Build the setup before thinking about entry.</div></div>
     </div>
-    <div class="tabs" id="mainTabs">
-      <button class="pill active" data-view="home">Home</button><button class="pill" data-view="goals">Goals</button><button class="pill" data-view="plan">Plan</button><button class="pill" data-view="strategy">Strategy</button><button class="pill" data-view="eval">Eval</button><button class="pill" data-view="funded">Fund</button><button class="pill" data-view="live">Live</button><button class="pill" data-view="journal">Journal</button><button class="pill" data-view="stats">Stats</button><button class="pill" data-view="lock">Lock</button><button class="pill" data-view="pnl">PnL</button><button class="pill" data-view="sizer">Sizer</button><button class="pill" data-view="timer">Timer</button>
-    </div>
+    <div class="progressWrap"><div class="track"><div class="fill" id="progressFill"></div></div></div>
   </div>
 
-  <section class="view active" id="home">
-    <div class="section"><h2 class="sectionTitle">Command Center</h2><div class="kpiGrid"><div class="kpi"><div class="label">Active Goal</div><div class="num" id="homeGoal">$—</div><div class="muted" id="homeGoalType">No goal set</div></div><div class="kpi"><div class="label">Max Loss</div><div class="num" id="homeLoss">$—</div><div class="muted">Used by lock rules</div></div><div class="kpi"><div class="label">Best Strategy</div><div class="num" style="font-size:18px" id="bestStrategy">—</div><div class="muted" id="bestStrategyMeta">Waiting for trades</div></div><div class="kpi"><div class="label">Accounts</div><div class="num" id="accountCount">0</div><div class="muted">Eval + Funded + Live</div></div></div></div>
-    <div class="section"><h2 class="sectionTitle">Quick Access</h2><div class="homeQuick"><button class="quickBtn" onclick="switchView('journal')">Open Journal</button><button class="quickBtn" onclick="switchView('strategy')">Open Strategy</button><button class="quickBtn" onclick="switchView('eval')">Open Eval</button><button class="quickBtn" onclick="switchView('pnl')">Open PnL</button></div></div>
-    <div class="section"><h2 class="sectionTitle">Recent Journal</h2><div id="recentJournal" class="journalList"></div></div>
-  </section>
+  <div class="grid">
+    <div class="panel phaseCard" data-phase="zone"><div class="phaseTitle">Zone Quality</div><div class="phaseDesc">Fresh zone, strong impulse, imbalance, clean structure.</div><div class="phaseMeta"><div class="miniCount" id="count-zone">0 / 4</div><div class="openBtn">Open</div></div></div>
+    <div class="panel phaseCard" data-phase="htf"><div class="phaseTitle">HTF Direction</div><div class="phaseDesc">HTF alignment, trend, target, extreme location.</div><div class="phaseMeta"><div class="miniCount" id="count-htf">0 / 4</div><div class="openBtn">Open</div></div></div>
+    <div class="panel phaseCard" data-phase="entry"><div class="phaseTitle">Entry Confirmation</div><div class="phaseDesc">Reaction, structure shift, clean tap, momentum.</div><div class="phaseMeta"><div class="miniCount" id="count-entry">0 / 4</div><div class="openBtn">Open</div></div></div>
+    <div class="panel phaseCard" data-phase="weakness"><div class="phaseTitle">Weakness</div><div class="phaseDesc">Multiple taps, weak reaction, mid-range, poor RR.</div><div class="phaseMeta"><div class="miniCount" id="count-weakness">0 / 4</div><div class="openBtn">Open</div></div></div>
+  </div>
 
-  <section class="view" id="goals">
-    <div class="section"><h2 class="sectionTitle">Goals</h2><div class="fieldLabel">Account Type</div><select class="field" id="goalType"><option value="eval">Eval</option><option value="funded">Funded</option><option value="live">Live</option></select><div class="grid2" style="margin-top:10px"><button class="btn" onclick="applyGoalPreset(150,75)">Conservative</button><button class="btn" onclick="applyGoalPreset(300,150)">Standard</button></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Daily Goal</div><input class="field" id="goalDaily" type="number"></div><div><div class="fieldLabel">Max Loss</div><input class="field" id="goalLoss" type="number"></div></div><button class="cta" onclick="saveGoal()">Save Goal</button></div>
-    <div class="section"><h2 class="sectionTitle">Saved Goals</h2><div id="goalSummary" class="accountList"></div></div>
-  </section>
+  <div class="actionCards">
+    <div class="panel actionCard"><div class="actionTitle">Trade Decision</div><div class="actionDesc">The score updates as you complete phases. Weakness lowers score but does not hard block.</div><div class="actionMeta"><div class="smallBadge" id="decisionBadge">WAIT</div></div></div>
+    <div class="panel actionCard"><div class="actionTitle">Unlock Trade</div><div class="actionDesc">Journaling is best when the setup reaches READY.</div><div class="actionMeta"><div class="smallBadge" id="tradeState">Locked</div></div></div>
+  </div>
 
-  <section class="view" id="plan">
-    <div class="section"><h2 class="sectionTitle">Plan</h2><div class="fieldLabel">Session Bias</div><textarea class="field" id="planBias"></textarea><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Primary Setup</div><select class="field" id="planSetup"><option>Supply & Demand</option><option>ORB</option><option>EMA/TEMA</option><option>ICC</option></select></div><div><div class="fieldLabel">Session</div><select class="field" id="planSession"><option>Asia</option><option>London</option><option>New York</option></select></div></div><button class="cta" onclick="savePlan()">Save Plan</button></div>
-  </section>
+  <div class="bottomBtns">
+    <button class="btnWide journalBtn" id="journalTopBtn">⭐ Journal It</button>
+    <button class="btnWide resetBtn" id="resetAllBtn">🔄 Reset</button>
+    <button class="btnWide rulesBtn" id="rulesBtn">🚫 Rules</button>
+    <button class="btnWide tradeBtn locked" id="unlockTradeBtn">🔓 Unlock Trade</button>
+  </div>
 
-  <section class="view" id="strategy">
-    <div class="section">
-      <div class="strategyTabs"><button class="pill active" data-strategy-tab="sd">Supply & Demand</button><button class="pill" data-strategy-tab="ema">EMA/TEMA</button><button class="pill" data-strategy-tab="orb">ORB</button><button class="pill" data-strategy-tab="icc">ICC</button></div>
-      <div class="iccPhase" id="strategy-icc">
-        <div class="grid2" style="margin-top:14px"><div class="kpi"><div class="label">Setup Strength</div><div class="num" id="iccScore">0%</div><div class="smallBadge" id="iccHint">WAIT</div></div><div class="kpi"><div class="label">Status</div><div class="num" style="font-size:22px" id="iccStatus">Not Clean Yet</div><div class="muted" id="iccStatusSub">More confirmation needed.</div></div></div>
-        <div class="progressWrap"><div class="track"><div class="fill" id="iccProgress"></div></div></div>
-        <div class="phaseGrid" style="margin-top:12px"><div class="phaseCard"><div class="accountTitle">Bias + Setup</div><div class="muted">HTF bias, levels, target</div><div class="smallBadge" id="icc-bias-count">0 / 4</div></div><div class="phaseCard"><div class="accountTitle">Indication</div><div class="muted">Candle close past level</div><div class="smallBadge" id="icc-indication-count">0 / 4</div></div><div class="phaseCard"><div class="accountTitle">Correction</div><div class="muted">Clean retrace + retest</div><div class="smallBadge" id="icc-correction-count">0 / 4</div></div><div class="phaseCard"><div class="accountTitle">Entry</div><div class="muted">Continuation + no chasing</div><div class="smallBadge" id="icc-entry-count">0 / 4</div></div></div>
-        <label class="checkrow"><input type="checkbox" class="icc-check" data-key="b1"> HTF bias clear</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="b2"> Swing levels marked</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="b3"> Pre-indication level identified</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="b4"> Target identified</label>
-        <label class="checkrow"><input type="checkbox" class="icc-check" data-key="i1"> Candle close past level</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="i2"> Direction confirmed</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="i3"> No entry yet</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="i4"> Not wick-only</label>
-        <label class="checkrow"><input type="checkbox" class="icc-check" data-key="c1"> Clean pullback</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="c2"> Observe retrace</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="c3"> Internal shift forms</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="c4"> Retest + close</label>
-        <label class="checkrow"><input type="checkbox" class="icc-check" data-key="e1"> Continuation close</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="e2"> Limit entry respected</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="e3"> Stop loss set</label><label class="checkrow"><input type="checkbox" class="icc-check" data-key="e4"> TP1 / TP2 marked</label>
-        <div class="btnrow"><button class="btn primary" onclick="resetICC()">Reset ICC</button></div>
-      </div>
-      <div class="iccPhase active" id="strategy-sd">
-  <div class="section" style="margin-top:14px;">
-    <div class="label">Supply &amp; Demand</div>
-    <div class="muted" style="margin-top:6px;">HTF gives direction and zones. LTF gives entries. Score the setup, then unlock the trade only when it earns it.</div>
-
-    <div class="grid2" style="margin-top:14px;">
-      <div class="kpi" id="sdScorePanel">
-        <div class="label">Score</div>
-        <div class="num" id="sdScoreNum">0 / 13</div>
-        <div class="smallBadge" id="sdScoreGrade">No Trade</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Context</div>
-        <div class="muted" style="margin-bottom:10px;">Set the zone type and trend before unlocking the trade.</div>
-        <div class="grid2" style="gap:8px;">
-          <button class="btn" id="sdSupplyBtn" type="button">Supply</button>
-          <button class="btn" id="sdDemandBtn" type="button">Demand</button>
-          <button class="btn" id="sdBullishBtn" type="button">Bullish</button>
-          <button class="btn" id="sdBearishBtn" type="button">Bearish</button>
-        </div>
-      </div>
+  <div class="panel section" style="margin-top:14px;">
+    <h2 class="sectionTitle">S&D Journal Entry</h2>
+    <div class="sub" style="margin-bottom:12px;">Auto-filled from your checklist. Add your chart screenshot too.</div>
+    <div class="smallBadge" id="journalBadge">WAIT</div>
+    <div class="journalGrid" style="margin-top:12px;">
+      <div class="row2"><input class="field" id="strategyField" value="Supply & Demand" readonly /><input class="field" id="scoreField" value="0%" readonly /></div>
+      <div class="row2"><input class="field" id="statusField" value="WAIT" readonly /><input class="field" id="sessionField" placeholder="Session" /></div>
+      <div class="row2"><input class="field" id="entryField" placeholder="Entry" /><input class="field" id="slField" placeholder="Stop Loss" /></div>
+      <div class="row2"><input class="field" id="tpField" placeholder="TP1 / TP2" /><select class="field" id="resultField"><option value="">Result</option><option>Win</option><option>Loss</option><option>Breakeven</option><option>No Trade</option></select></div>
+      <textarea class="field" id="noteField" placeholder="Mistake / lesson / note"></textarea>
+      <input class="field" type="file" id="screenshotField" accept="image/*" />
+      <img id="previewImg" class="previewImg" />
     </div>
+    <button class="cta" id="saveTradeBtn">Save Trade To Journal</button>
+  </div>
 
-    <div class="kpi" style="margin-top:12px;">
-      <div class="label">Decision</div>
-      <div class="num" style="font-size:20px;" id="sdDecisionText">No Trade</div>
-      <div class="muted" id="sdQualityText">Trade Quality: Low</div>
-    </div>
-
-    <div class="phaseGrid" style="margin-top:12px;">
-      <div class="phaseCard" id="sdZoneCard">
-        <div class="accountTitle">Zone Quality</div>
-        <div class="muted">Is the zone clean and strong?</div>
-        <div class="smallBadge">Base</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="1" id="sdFresh"> Fresh / untouched zone</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="1" id="sdImpulse"> Strong impulse away</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="2" id="sdImbalance"> Clear imbalance / FVG</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="1" id="sdClean"> No messy consolidation</div>
-      </div>
-
-      <div class="phaseCard" id="sdHTFCard">
-        <div class="accountTitle">HTF Direction</div>
-        <div class="muted">Align with higher timeframe</div>
-        <div class="smallBadge">Bias</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="2" id="sdHTF"> HTF zones marked / aligned</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="2" id="sdTarget"> Target zone identified</div>
-      </div>
-
-      <div class="phaseCard" id="sdEntryCard">
-        <div class="accountTitle">Entry Confirmation</div>
-        <div class="muted">Reaction is clear</div>
-        <div class="smallBadge">LTF</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="2" id="sdReaction"> Reaction is clear</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="2" id="sdShift"> Structure shift / momentum confirms entry</div>
-        <div class="smallBadge" id="sdEntryConfirmed" style="display:none;margin-top:10px;">Entry Confirmed</div>
-      </div>
-
-      <div class="phaseCard" id="sdWeaknessCard">
-        <div class="accountTitle">Weakness</div>
-        <div class="muted">Signs of a weak setup</div>
-        <div class="smallBadge">Risk</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="-1" id="sdMultiple"> Multiple taps</div>
-        <div class="checkrow"><input type="checkbox" class="sd-check" data-points="-2" id="sdWeakReaction"> Weak / no reaction</div>
-      </div>
-    </div>
-
-    <div class="btnrow" style="margin-top:14px;">
-      <button class="btn" type="button" id="sdResetBtn">Reset</button>
-      <button class="btn primary" type="button" id="sdUnlockBtn" disabled style="opacity:.45;">Unlock Trade</button>
-    </div>
+  <div class="panel section" style="margin-top:14px;">
+    <h2 class="sectionTitle">Linked Journal</h2>
+    <div class="sub">Saved Supply & Demand trades show here.</div>
+    <div id="journalList" class="entryList"></div>
   </div>
 </div>
 
-<div class="iccPhase" id="strategy-ema"><label class="checkrow"><input type="checkbox"> Crossover confirmed</label><label class="checkrow"><input type="checkbox"> Trend aligns with HTF</label><label class="checkrow"><input type="checkbox"> Pullback entry available</label><label class="checkrow"><input type="checkbox"> TP / SL defined</label></div>
-      <div class="iccPhase" id="strategy-orb"><label class="checkrow"><input type="checkbox"> Opening range marked</label><label class="checkrow"><input type="checkbox"> Breakout confirmed</label><label class="checkrow"><input type="checkbox"> Volume / momentum strong</label><label class="checkrow"><input type="checkbox"> Stop and targets set</label></div>
+<div class="sheet" id="sheet">
+  <div class="sheetCard">
+    <div class="sheetHead">
+      <div><div class="sheetTitle" id="sheetTitle">Phase</div><div class="sheetSub" id="sheetSub">Checklist</div></div>
+      <button class="x" id="closeSheet">×</button>
     </div>
-  </section>
+    <div class="checklist" id="checklist"></div>
+    <div class="rule" id="ruleBox"></div>
+    <div class="danger" id="dangerBox"></div>
+    <div class="sheetActions"><button class="miniBtn" id="resetPhaseBtn">Reset Phase</button><button class="miniBtn primary" id="donePhaseBtn">Done</button></div>
+  </div>
+</div>
 
-  <section class="view" id="eval"><div class="section"><h2 class="sectionTitle">Eval Tracker</h2><input type="hidden" id="evalId"><div class="grid2"><div><div class="fieldLabel">Firm</div><select class="field" id="evalFirm"><option value="">Select firm</option><option>Topstep</option><option>Tradeify</option><option>Lucid</option><option>Apex</option></select></div><div><div class="fieldLabel">Account Size</div><select class="field" id="evalSize" onchange="applyAccountDefaults('eval')"><option value="">Select size</option><option value="25000">25K</option><option value="50000">50K</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Profit Goal</div><input class="field" id="evalGoal" type="number"></div><div><div class="fieldLabel">Drawdown</div><input class="field" id="evalDrawdown" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Days Passed</div><input class="field" id="evalDays" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="evalStatus"><option value="active">Active</option><option value="passed">Passed</option><option value="failed">Failed</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="evalNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('eval')">Save Eval</button><button class="btn" onclick="clearAccountForm('eval')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Evals</h2><div id="evalList" class="accountList"></div></div></section>
-
-  <section class="view" id="funded"><div class="section"><h2 class="sectionTitle">Funded Tracker</h2><input type="hidden" id="fundedId"><div class="grid2"><div><div class="fieldLabel">Firm</div><select class="field" id="fundedFirm"><option value="">Select firm</option><option>Topstep</option><option>Tradeify</option><option>Lucid</option><option>Apex</option></select></div><div><div class="fieldLabel">Account Size</div><select class="field" id="fundedSize" onchange="applyAccountDefaults('funded')"><option value="">Select size</option><option value="25000">25K</option><option value="50000">50K</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Payout Goal</div><input class="field" id="fundedPayoutGoal" type="number"></div><div><div class="fieldLabel">Drawdown</div><input class="field" id="fundedDrawdown" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Payout Taken</div><input class="field" id="fundedPayoutTaken" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="fundedStatus"><option value="active">Active</option><option value="risk">Drawdown Risk</option><option value="blown">Blown</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="fundedNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('funded')">Save Funded</button><button class="btn" onclick="clearAccountForm('funded')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Funded</h2><div id="fundedList" class="accountList"></div></div></section>
-
-  <section class="view" id="live"><div class="section"><h2 class="sectionTitle">Live Account</h2><input type="hidden" id="liveId"><div class="grid2"><div><div class="fieldLabel">Broker</div><input class="field" id="liveBroker"></div><div><div class="fieldLabel">Account Label</div><input class="field" id="liveLabel"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Starting Balance</div><input class="field" id="liveBalance" type="number"></div><div><div class="fieldLabel">Risk Limit</div><input class="field" id="liveRiskLimit" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Daily Goal</div><input class="field" id="liveGoal" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="liveStatus"><option value="active">Active</option><option value="paused">Paused</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="liveNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('live')">Save Live</button><button class="btn" onclick="clearAccountForm('live')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Live Accounts</h2><div id="liveList" class="accountList"></div></div></section>
-
-  <section class="view" id="journal"><div class="section"><h2 class="sectionTitle">Journal</h2><input type="hidden" id="journalId"><div class="grid2"><div><div class="fieldLabel">Date</div><input class="field" id="journalDate" type="date"></div><div><div class="fieldLabel">Account Type</div><select class="field" id="journalAccountType" onchange="refreshJournalAccounts()"><option value="eval">Eval</option><option value="funded">Funded</option><option value="live">Live</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Linked Account</div><select class="field" id="journalAccountId"></select></div><div><div class="fieldLabel">PnL</div><input class="field" id="journalPnl" type="number" step="0.01"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Setup / Strategy</div><select class="field" id="journalSetup"><option value="">Select strategy</option><option>Supply & Demand</option><option>ORB</option><option>EMA/TEMA</option><option>ICC</option></select></div><div><div class="fieldLabel">Result Tag</div><select class="field" id="journalTag"><option value="valid">Valid</option><option value="failed">Failed</option><option value="no trade">No Trade</option><option value="no trade day">No Trade Day</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="journalNotes"></textarea></div><div style="margin-top:10px"><div class="fieldLabel">Trade Screenshot</div><input class="field" id="journalScreenshot" type="file" accept="image/*" onchange="previewJournalImage(event)"><img id="journalPreview" class="previewImg"></div><button class="cta" onclick="saveJournal()">Save Journal Entry</button></div><div class="section"><h2 class="sectionTitle">Journal History</h2><div id="journalList" class="journalList"></div></div></section>
-
-  <section class="view" id="stats"><div class="section"><h2 class="sectionTitle">Stats</h2><div class="statsGrid"><div class="kpi"><div class="label">Total Entries</div><div class="num" id="statEntries">0</div></div><div class="kpi"><div class="label">Win Rate</div><div class="num" id="statWinRate">0%</div></div><div class="kpi"><div class="label">Goal Hit Days</div><div class="num" id="statGoalHit">0</div></div><div class="kpi"><div class="label">Max Loss Days</div><div class="num" id="statLossHit">0</div></div></div></div><div class="section"><h2 class="sectionTitle">Strategy Performance</h2><div id="strategyStats" class="accountList"></div></div></section>
-
-  <section class="view" id="lock"><div class="section"><h2 class="sectionTitle">Lock</h2><div class="muted">This section reads from your max loss and daily goal. Use it as your discipline stop.</div><div class="btnrow"><button class="btn warn">Lock Trading</button><button class="btn">Unlock</button></div></div></section>
-
-  <section class="view" id="pnl"><div class="section"><h2 class="sectionTitle">PnL</h2><div class="statsGrid"><div class="kpi"><div class="label">Daily</div><div class="num" id="pnlDaily">$0</div></div><div class="kpi"><div class="label">Weekly</div><div class="num" id="pnlWeekly">$0</div></div><div class="kpi"><div class="label">Monthly</div><div class="num" id="pnlMonthly">$0</div></div><div class="kpi"><div class="label">Goal Progress</div><div class="num" id="pnlProgress">0%</div></div></div></div></section>
-
-  <section class="view" id="sizer"><div class="section"><h2 class="sectionTitle">Sizer</h2><div class="grid2"><div><div class="fieldLabel">Risk ($)</div><input class="field" id="riskDollar" type="number"></div><div><div class="fieldLabel">Stop (points)</div><input class="field" id="stopPoints" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Instrument</div><select class="field" id="instrument"><option value="mnq">MNQ</option><option value="mes">MES</option><option value="mgc">MGC</option><option value="mym">MYM</option></select></div><div><div class="fieldLabel">Suggested Size</div><input class="field" id="suggestedSize" readonly></div></div><button class="cta" onclick="calculateSizer()">Calculate Size</button></div></section>
-
-  <section class="view" id="timer"><div class="section timer"><h2 class="sectionTitle">Timer</h2><div class="clock" id="clock">02:00:00</div><div class="muted">Start, pause, resume, and end session early.</div><div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn primary" onclick="startTimer()">Start</button><button class="btn" onclick="pauseTimer()">Pause</button><button class="btn" onclick="resumeTimer()">Resume</button><button class="btn warn" onclick="endTimerEarly()">End Early</button></div></div></section>
+<div class="popup" id="warningPopup">
+  <div class="popupCard">
+    <h3>⚠️ S&amp;D Warning</h3>
+    <p>This setup has weaknesses that lower confidence.</p>
+    <ul class="warnList" id="warningList"></ul>
+    <div class="sheetActions" style="margin-top:16px;"><button class="miniBtn" id="closeWarningBtn">Go Back</button><button class="miniBtn primary" id="reviewRulesBtn">Review Weakness</button></div>
+  </div>
 </div>
 
 <script>
-const STORAGE_KEY='facelessTraderMergedICC_v1';
-const defaultState={theme:{palette:'amethyst',modeIndex:0},goals:{eval:{daily:0,loss:0},funded:{daily:0,loss:0},live:{daily:0,loss:0}},plan:{bias:'',setup:'Supply & Demand',session:'New York'},evals:[],funded:[],live:[],journal:[],timer:{remaining:7200,running:false,ended:false,interval:null},iccChecks:{}};
-['b1','b2','b3','b4','i1','i2','i3','i4','c1','c2','c3','c4','e1','e2','e3','e4'].forEach(k=>defaultState.iccChecks[k]=false);
-let state=JSON.parse(localStorage.getItem(STORAGE_KEY)||JSON.stringify(defaultState));
-if(!state.theme) state.theme=defaultState.theme; if(!state.goals) state.goals=defaultState.goals; if(!state.iccChecks) state.iccChecks=defaultState.iccChecks;
-const money=n=>Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2});
-const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
-const todayISO=()=>new Date().toISOString().slice(0,10);
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify({...state,timer:{...state.timer,interval:null}}))}
-function applyTheme(){document.body.dataset.palette=state.theme.palette;document.getElementById('themeBadge').textContent=state.theme.palette==='amethyst'?'Soft Amethyst':'Soft Quantum'}
-document.getElementById('styleCycleBtn').onclick=()=>{state.theme.palette=state.theme.palette==='amethyst'?'quantum':'amethyst';applyTheme();saveState();}
-function switchView(viewId){document.querySelectorAll('#mainTabs .pill').forEach(tab=>tab.classList.toggle('active',tab.dataset.view===viewId));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===viewId));window.scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('#mainTabs .pill').forEach(tab=>tab.addEventListener('click',()=>switchView(tab.dataset.view)));
-document.querySelectorAll('[data-strategy-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-strategy-tab]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.iccPhase').forEach(v=>v.classList.remove('active'));document.getElementById('strategy-'+btn.dataset.strategyTab).classList.add('active')}));
-function applyGoalPreset(goal,loss){goalDaily.value=goal;goalLoss.value=loss}
-function saveGoal(){const type=goalType.value;state.goals[type]={daily:Number(goalDaily.value||0),loss:Number(goalLoss.value||0)};saveState();renderAll()}
-function renderGoals(){goalSummary.innerHTML=['eval','funded','live'].map(type=>{const g=state.goals[type]||{};return `<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${type[0].toUpperCase()+type.slice(1)} Goal</div><div class="muted">${money(g.daily)} target · ${money(g.loss)} max loss</div></div><span class="chip">${type}</span></div></div>`}).join('')}
-function savePlan(){state.plan={bias:planBias.value,setup:planSetup.value,session:planSession.value};saveState()}
-function iccCount(prefix){return Object.entries(state.iccChecks).filter(([k,v])=>k.startsWith(prefix)&&v).length}
-function renderICC(){const counts={b:iccCount('b'),i:iccCount('i'),c:iccCount('c'),e:iccCount('e')};iccScore.innerText=Math.max(0,Math.round((Object.values(state.iccChecks).filter(Boolean).length/16)*100)-(state.iccChecks.i4?0:10)-(state.iccChecks.e3?0:10))+'%';iccProgress.style.width=iccScore.innerText;iccHint.innerText=Number(iccScore.innerText.replace('%',''))>=90?'A SETUP':Number(iccScore.innerText.replace('%',''))>=75?'B SETUP':'WAIT';iccStatus.innerText=iccHint.innerText==='A SETUP'?'Execute Trade':iccHint.innerText==='B SETUP'?'Almost There':'Not Clean Yet';iccStatusSub.innerText=iccHint.innerText==='WAIT'?'More confirmation needed.':'Clean enough to review.';document.getElementById('icc-bias-count').innerText=`${counts.b} / 4`;document.getElementById('icc-indication-count').innerText=`${counts.i} / 4`;document.getElementById('icc-correction-count').innerText=`${counts.c} / 4`;document.getElementById('icc-entry-count').innerText=`${counts.e} / 4`;document.querySelectorAll('.icc-check').forEach(el=>el.checked=!!state.iccChecks[el.dataset.key])}
-document.querySelectorAll('.icc-check').forEach(el=>el.addEventListener('change',()=>{state.iccChecks[el.dataset.key]=el.checked;saveState();renderICC()}));
-function resetICC(){Object.keys(state.iccChecks).forEach(k=>state.iccChecks[k]=false);saveState();renderICC()}
-function getCollection(type){return type==='eval'?state.evals:type==='funded'?state.funded:state.live}
-function applyAccountDefaults(type){const size=Number(document.getElementById(type+'Size').value||0);if(type==='eval'){evalGoal.value=size===50000?3000:size===25000?1250:'';evalDrawdown.value=size===50000?2000:size===25000?1000:''}else if(type==='funded'){fundedPayoutGoal.value=size===50000?3000:size===25000?1250:'';fundedDrawdown.value=size===50000?2000:size===25000?1000:''}}
-function assignNumbers(){['eval','funded','live'].forEach(type=>getCollection(type).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).forEach((a,i)=>a.number=i+1))}
-function hydrateNames(){state.evals.forEach(a=>a.firmOrName=a.firm);state.funded.forEach(a=>a.firmOrName=a.firm);state.live.forEach(a=>a.firmOrName=a.label||a.broker)}
-function recalcAccounts(){['eval','funded','live'].forEach(type=>getCollection(type).forEach(a=>{const linked=state.journal.filter(j=>j.accountType===type&&j.accountId===a.id);const pnl=linked.reduce((s,j)=>s+Number(j.pnl||0),0);a.totalPnl=pnl;a.currentBalance=Number(a.startingBalance||0)+pnl;if(type==='eval'){a.remainingToGoal=Math.max(0,Number(a.goal||0)-pnl);a.buffer=a.currentBalance-(Number(a.startingBalance||0)-Number(a.maxDrawdown||0));if(!['failed','archived'].includes(a.status))a.status=pnl>=Number(a.goal||Infinity)?'passed':'active'}if(type==='funded'){a.remainingToPayoutGoal=Math.max(0,Number(a.payoutGoal||0)-Math.max(0,pnl));a.buffer=a.currentBalance-(Number(a.startingBalance||0)-Number(a.maxDrawdown||0));if(!['blown','archived'].includes(a.status))a.status=a.buffer<=Number(a.maxDrawdown||0)*0.2?'risk':'active'}if(type==='live'){a.remainingToGoal=Math.max(0,Number(a.dailyGoal||0)-Math.max(0,pnl));a.riskBuffer=Number(a.riskLimit||0)+pnl}}))}
-function clearAccountForm(type){const ids={eval:['evalId','evalFirm','evalSize','evalGoal','evalDrawdown','evalDays','evalNotes'],funded:['fundedId','fundedFirm','fundedSize','fundedPayoutGoal','fundedDrawdown','fundedPayoutTaken','fundedNotes'],live:['liveId','liveBroker','liveLabel','liveBalance','liveRiskLimit','liveGoal','liveNotes']}[type];ids.forEach(id=>document.getElementById(id).value='');if(type==='eval')evalStatus.value='active';if(type==='funded')fundedStatus.value='active';if(type==='live')liveStatus.value='active'}
-function saveAccount(type){const list=getCollection(type);const id=document.getElementById(type+'Id').value||uid();let payload;if(type==='eval'){payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),firm:evalFirm.value,startingBalance:Number(evalSize.value||0),goal:Number(evalGoal.value||0),maxDrawdown:Number(evalDrawdown.value||0),daysPassed:Number(evalDays.value||0),status:evalStatus.value,notes:evalNotes.value};if(!payload.firm||!payload.startingBalance)return}else if(type==='funded'){payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),firm:fundedFirm.value,startingBalance:Number(fundedSize.value||0),payoutGoal:Number(fundedPayoutGoal.value||0),maxDrawdown:Number(fundedDrawdown.value||0),payoutTaken:Number(fundedPayoutTaken.value||0),status:fundedStatus.value,notes:fundedNotes.value};if(!payload.firm||!payload.startingBalance)return}else{payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),broker:liveBroker.value,label:liveLabel.value,startingBalance:Number(liveBalance.value||0),riskLimit:Number(liveRiskLimit.value||0),dailyGoal:Number(liveGoal.value||0),status:liveStatus.value,notes:liveNotes.value};if(!payload.broker)return}const idx=list.findIndex(a=>a.id===id);if(idx>=0)list[idx]={...list[idx],...payload};else list.push(payload);postDataChange();clearAccountForm(type)}
-function editAccount(type,id){const a=getCollection(type).find(x=>x.id===id);if(!a)return;switchView(type);if(type==='eval'){evalId.value=a.id;evalFirm.value=a.firm;evalSize.value=a.startingBalance;evalGoal.value=a.goal;evalDrawdown.value=a.maxDrawdown;evalDays.value=a.daysPassed||0;evalStatus.value=a.status;evalNotes.value=a.notes||''}else if(type==='funded'){fundedId.value=a.id;fundedFirm.value=a.firm;fundedSize.value=a.startingBalance;fundedPayoutGoal.value=a.payoutGoal||0;fundedDrawdown.value=a.maxDrawdown;fundedPayoutTaken.value=a.payoutTaken||0;fundedStatus.value=a.status;fundedNotes.value=a.notes||''}else{liveId.value=a.id;liveBroker.value=a.broker;liveLabel.value=a.label||'';liveBalance.value=a.startingBalance;liveRiskLimit.value=a.riskLimit;liveGoal.value=a.dailyGoal||0;liveStatus.value=a.status;liveNotes.value=a.notes||''}}
-function deleteAccount(type,id){const list=getCollection(type);const idx=list.findIndex(a=>a.id===id);if(idx>=0)list.splice(idx,1);state.journal=state.journal.filter(j=>!(j.accountType===type&&j.accountId===id));postDataChange()}
-function renderAccountList(type,containerId){const items=[...getCollection(type)].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));const el=document.getElementById(containerId);if(!items.length){el.innerHTML='<div class="empty">Nothing saved yet.</div>';return}el.innerHTML=items.map(a=>{const pnlClass=Number(a.totalPnl||0)>=0?'positive':'negative';const extra=type==='eval'?`<div class="kv"><div class="k">Left to Pass</div><div class="v">${money(a.remainingToGoal||0)}</div></div>`:type==='funded'?`<div class="kv"><div class="k">Payout Progress</div><div class="v">${money((a.payoutGoal||0)-(a.remainingToPayoutGoal||0))} / ${money(a.payoutGoal||0)}</div></div>`:`<div class="kv"><div class="k">Left to Goal</div><div class="v">${money(a.remainingToGoal||0)}</div></div>`;return `<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${type[0].toUpperCase()+type.slice(1)} ${a.number} — ${a.firmOrName}</div><div class="muted">${a.createdAt.slice(0,10)}</div></div><span class="status">${a.status}</span></div><div class="kvGrid"><div class="kv"><div class="k">Current Balance</div><div class="v">${money(a.currentBalance||a.startingBalance)}</div></div><div class="kv"><div class="k">Total PnL</div><div class="v ${pnlClass}">${money(a.totalPnl||0)}</div></div><div class="kv"><div class="k">Buffer</div><div class="v">${money(a.buffer??a.riskBuffer??0)}</div></div>${extra}</div><div class="btnrow"><button class="btn" onclick="editAccount('${type}','${a.id}')">Edit</button><button class="btn warn" onclick="deleteAccount('${type}','${a.id}')">Delete</button></div></div>`}).join('')}
-function refreshJournalAccounts(){const type=journalAccountType.value;const items=getCollection(type);if(!items.length){journalAccountId.innerHTML='<option value="">No accounts yet</option>';return}journalAccountId.innerHTML=[...items].sort((a,b)=>a.number-b.number).map(a=>`<option value="${a.id}">${type[0].toUpperCase()+type.slice(1)} ${a.number} — ${a.firmOrName}</option>`).join('')}
-let pendingJournalImage='';
-function previewJournalImage(e){const file=e.target.files&&e.target.files[0];if(!file){journalPreview.style.display='none';pendingJournalImage='';return}const reader=new FileReader();reader.onload=function(){pendingJournalImage=reader.result;journalPreview.src=pendingJournalImage;journalPreview.style.display='block'};reader.readAsDataURL(file)}
-function clearJournalForm(){journalId.value='';journalDate.value=todayISO();journalAccountType.value='eval';journalPnl.value='';journalSetup.value='';journalTag.value='valid';journalNotes.value='';journalScreenshot.value='';pendingJournalImage='';journalPreview.src='';journalPreview.style.display='none';refreshJournalAccounts()}
-function saveJournal(){const id=journalId.value||uid();const old=state.journal.find(j=>j.id===id);const payload={id,date:journalDate.value,accountType:journalAccountType.value,accountId:journalAccountId.value,pnl:Number(journalPnl.value||0),setup:journalSetup.value,tag:journalTag.value,notes:journalNotes.value,screenshot:pendingJournalImage||old?.screenshot||''};const idx=state.journal.findIndex(j=>j.id===id);if(idx>=0)state.journal[idx]=payload;else state.journal.push(payload);postDataChange();clearJournalForm()}
-function editJournal(id){const j=state.journal.find(x=>x.id===id);if(!j)return;switchView('journal');journalId.value=j.id;journalDate.value=j.date;journalAccountType.value=j.accountType;refreshJournalAccounts();journalAccountId.value=j.accountId;journalPnl.value=j.pnl;journalSetup.value=j.setup||'';journalTag.value=j.tag;journalNotes.value=j.notes||'';pendingJournalImage=j.screenshot||'';if(pendingJournalImage){journalPreview.src=pendingJournalImage;journalPreview.style.display='block'}else journalPreview.style.display='none'}
-function deleteJournal(id){const idx=state.journal.findIndex(j=>j.id===id);if(idx>=0)state.journal.splice(idx,1);postDataChange()}
-function renderJournal(){const el=journalList;const recentEl=recentJournal;const items=[...state.journal].sort((a,b)=>new Date(b.date)-new Date(a.date));if(!items.length){el.innerHTML='<div class="empty">No journal entries yet.</div>';recentEl.innerHTML='<div class="empty">No journal entries yet.</div>';return}const one=j=>{const account=getCollection(j.accountType).find(a=>a.id===j.accountId);return `<div class="listItem"><div class="journalTop"><div><div class="accountTitle">${j.setup||'Trade Entry'}</div><div class="muted">${j.date} • ${j.accountType} ${account?.number||''} ${account?'— '+account.firmOrName:''}</div></div><span class="${Number(j.pnl)>=0?'positive':'negative'}"><strong>${money(j.pnl)}</strong></span></div><div class="row"><span class="chip">${j.tag}</span></div>${j.notes?`<div class="muted" style="margin-top:8px">${j.notes}</div>`:''}${j.screenshot?`<img class="previewImg" style="display:block" src="${j.screenshot}">`:''}<div class="btnrow"><button class="btn" onclick="editJournal('${j.id}')">Edit</button><button class="btn warn" onclick="deleteJournal('${j.id}')">Delete</button></div></div>`};el.innerHTML=items.map(one).join('');recentEl.innerHTML=items.slice(0,3).map(one).join('')}
-function renderHomeAndStats(){const today=todayISO();const todayPnl=state.journal.filter(j=>j.date===today).reduce((s,j)=>s+Number(j.pnl||0),0);todayPnlEl.textContent=money(todayPnl)}
-const todayPnlEl=document.getElementById('todayPnl');
-function renderHomeStats(){const today=todayISO();const todayPnl=state.journal.filter(j=>j.date===today).reduce((s,j)=>s+Number(j.pnl||0),0);todayPnlEl.textContent=money(todayPnl);const activeType=['live','funded','eval'].find(t=>Number(state.goals[t]?.daily||0))||'eval';const g=state.goals[activeType]||{daily:0,loss:0};homeGoal.textContent=g.daily?money(g.daily):'$—';homeLoss.textContent=g.loss?money(g.loss):'$—';homeGoalType.textContent=g.daily?`${activeType} goal active`:'No goal set';todayBadge.textContent=g.daily?`Goal ${money(g.daily)} · Loss ${money(g.loss)}`:'No goal active';accountCount.textContent=state.evals.length+state.funded.length+state.live.length;const trades=state.journal.filter(x=>x.tag==='valid'||x.tag==='failed');const wins=trades.filter(x=>Number(x.pnl)>0).length;const losses=trades.filter(x=>Number(x.pnl)<0).length;statEntries.textContent=state.journal.length;statWinRate.textContent=(wins+losses)?`${Math.round((wins/(wins+losses))*100)}%`:'0%';const byDate={};state.journal.forEach(j=>byDate[j.date]=(byDate[j.date]||0)+Number(j.pnl||0));let goalHit=0,lossHit=0;Object.entries(byDate).forEach(([date,pnl])=>{const any=state.journal.find(x=>x.date===date);const gg=state.goals[any?.accountType||'eval']||{};if(Number(gg.daily||0)&&pnl>=Number(gg.daily))goalHit++;if(Number(gg.loss||0)&&pnl<=-Math.abs(Number(gg.loss)))lossHit++});statGoalHit.textContent=goalHit;statLossHit.textContent=lossHit;const names=['Supply & Demand','ORB','EMA/TEMA','ICC'];const strat=names.map(name=>{const arr=state.journal.filter(x=>x.setup===name);const w=arr.filter(x=>Number(x.pnl)>0).length;const l=arr.filter(x=>Number(x.pnl)<0).length;const wr=(w+l)?Math.round((w/(w+l))*100):0;const pnl=arr.reduce((s,x)=>s+Number(x.pnl||0),0);return {name,trades:arr.length,w,l,wr,pnl}});const best=[...strat].sort((a,b)=>(b.wr-a.wr)||(b.pnl-a.pnl))[0];bestStrategy.textContent=best&&best.trades?best.name:'—';bestStrategyMeta.textContent=best&&best.trades?`${best.wr}% win rate · ${money(best.pnl)}`:'Waiting for trades';strategyStats.innerHTML=strat.map(s=>`<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${s.name}</div><div class="muted">${s.trades} trades</div></div><span class="chip">${s.w} / ${s.l}</span></div><div class="kvGrid"><div class="kv"><div class="k">Win %</div><div class="v">${s.wr}%</div></div><div class="kv"><div class="k">PnL</div><div class="v">${money(s.pnl)}</div></div></div></div>`).join('');const now=new Date();const sameWeek=d=>{const dd=new Date(d);const start=new Date(now);start.setDate(now.getDate()-6);return dd>=start&&dd<=now};const sameMonth=d=>new Date(d).getMonth()===now.getMonth()&&new Date(d).getFullYear()===now.getFullYear();const weekly=state.journal.filter(j=>sameWeek(j.date)).reduce((s,j)=>s+Number(j.pnl||0),0);const monthly=state.journal.filter(j=>sameMonth(j.date)).reduce((s,j)=>s+Number(j.pnl||0),0);pnlDaily.textContent=money(todayPnl);pnlWeekly.textContent=money(weekly);pnlMonthly.textContent=money(monthly);pnlProgress.textContent=g.daily?`${Math.min(100,Math.max(0,Math.round((Math.max(0,todayPnl)/g.daily)*100)))}%`:'0%'}
-function calculateSizer(){const risk=Number(riskDollar.value||0),stop=Number(stopPoints.value||0),instrument=instrumentEl.value,pointValue={mnq:2,mes:5,mgc:10,mym:0.5}[instrument];if(!risk||!stop||!pointValue){suggestedSize.value='';return}suggestedSize.value=Math.max(1,Math.floor(risk/(stop*pointValue)))}
-const instrumentEl=document.getElementById('instrument');
-function updateTimerDisplay(){const t=state.timer.remaining;const h=String(Math.floor(t/3600)).padStart(2,'0'),m=String(Math.floor((t%3600)/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');clock.textContent=`${h}:${m}:${s}`;sessionStatus.textContent=state.timer.running?'Running':state.timer.ended?'Ended':state.timer.remaining<7200?'Paused':'Waiting'}
-function startTimer(){if(state.timer.running||state.timer.ended)return;state.timer.running=true;state.timer.interval=setInterval(()=>{state.timer.remaining=Math.max(0,state.timer.remaining-1);if(state.timer.remaining===0){clearInterval(state.timer.interval);state.timer.running=false;state.timer.ended=true;state.timer.interval=null}updateTimerDisplay();saveState()},1000);updateTimerDisplay()}
-function pauseTimer(){if(!state.timer.running)return;clearInterval(state.timer.interval);state.timer.interval=null;state.timer.running=false;updateTimerDisplay();saveState()}
-function resumeTimer(){if(state.timer.running||state.timer.ended||state.timer.remaining<=0)return;startTimer()}
-function endTimerEarly(){clearInterval(state.timer.interval);state.timer.interval=null;state.timer.running=false;state.timer.ended=true;state.timer.remaining=0;updateTimerDisplay();saveState()}
-function postDataChange(){assignNumbers();hydrateNames();recalcAccounts();saveState();renderAll()}
+const STORAGE_KEY='snd_icc_style_journal_v2';
+let journalEntries=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+let previewData='';
+const data={
+ zone:{title:"Zone Quality",sub:"Phase 1 • Is the zone actually worth trading?",rule:"A strong zone should be fresh, obvious, and backed by displacement.",danger:"If the zone is messy or overused, the setup loses quality fast.",items:[
+  {key:"fresh_zone",title:"Fresh / Untouched Zone",desc:"The zone has not been repeatedly tested or traded through."},
+  {key:"strong_impulse",title:"Strong Impulse Away",desc:"Price left the zone with clear displacement instead of drifting slowly."},
+  {key:"imbalance",title:"Clear Imbalance / FVG",desc:"There is a visible inefficiency connected to the move away from the zone."},
+  {key:"no_consolidation",title:"No Messy Consolidation",desc:"The base is clean instead of cluttered with sideways price action."}]},
+ htf:{title:"HTF Direction",sub:"Phase 2 • Does the higher timeframe agree?",rule:"The best zones line up with the higher timeframe and point toward a logical target.",danger:"Mid-range trades and countertrend guesses weaken the setup.",items:[
+  {key:"htf_aligned",title:"HTF Zones Are Aligned",desc:"The zone fits the higher timeframe structure instead of fighting it."},
+  {key:"trend_clear",title:"Trend Direction Is Clear",desc:"The overall market direction supports the trade idea."},
+  {key:"target_identified",title:"Target Zone Identified",desc:"You already know where price is likely headed if the trade works."},
+  {key:"extreme_location",title:"Extreme Location",desc:"The setup forms at a meaningful edge, not in the middle of the range."}]},
+ entry:{title:"Entry Confirmation",sub:"Phase 3 • Is there a clean reason to execute now?",rule:"The tap into the zone should show reaction, structure, and momentum before entry.",danger:"Blindly tapping the zone without confirmation lowers trade quality.",items:[
+  {key:"reaction_clear",title:"Reaction Is Clear",desc:"Price reacted to the zone instead of slicing through it immediately."},
+  {key:"structure_shift",title:"Structure Shift Confirms",desc:"There is a local change in order flow or momentum that supports the trade."},
+  {key:"clean_tap",title:"Clean Tap Into Zone",desc:"The entry area was respected instead of being blown through."},
+  {key:"momentum_confirms",title:"Momentum Confirms Entry",desc:"The move away from the zone has intent, not weak drift."}]},
+ weakness:{title:"Weakness",sub:"Phase 4 • What lowers confidence?",rule:"Weakness does not hard block the trade, but it reduces confidence and score.",danger:"Too many weaknesses mean the setup may still be tradable, but should be treated with caution.",items:[
+  {key:"multiple_taps",title:"Multiple Taps",desc:"The zone has been hit too many times and may be weakening."},
+  {key:"weak_reaction",title:"Weak / No Reaction",desc:"Price is not rejecting strongly from the zone."},
+  {key:"mid_range",title:"Mid-Range Entry",desc:"The setup is not forming at a meaningful edge or extreme."},
+  {key:"poor_rr",title:"Poor Risk / Reward",desc:"The stop feels too large or the target feels too close."}]}
+};
+const state={activePhase:null,checked:{}};
+Object.values(data).forEach(phase=>phase.items.forEach(item=>state.checked[item.key]=false));
+const phaseOrder=["zone","htf","entry","weakness"];
+const weaknessKeys=new Set(data.weakness.items.map(i=>i.key));
 
-const sdState = { zoneType: '', trend: '' };
-function setSDButtonState(id, active){ const el=document.getElementById(id); if(!el) return; el.classList.toggle('primary', active); el.style.opacity = active ? '1' : ''; }
-function updateSDCards(){
-  const zoneCount=['sdFresh','sdImpulse','sdImbalance','sdClean'].filter(id=>document.getElementById(id)?.checked).length;
-  const htfCount=['sdHTF','sdTarget'].filter(id=>document.getElementById(id)?.checked).length;
-  const entryCount=['sdReaction','sdShift'].filter(id=>document.getElementById(id)?.checked).length;
-  const weakCount=['sdMultiple','sdWeakReaction'].filter(id=>document.getElementById(id)?.checked).length;
-  document.getElementById('sdZoneCard')?.classList.toggle('sd-live', zoneCount>0);
-  document.getElementById('sdHTFCard')?.classList.toggle('sd-live', htfCount>0);
-  document.getElementById('sdEntryCard')?.classList.toggle('sd-live', entryCount>0);
-  document.getElementById('sdWeaknessCard')?.classList.toggle('sd-warn', weakCount>0);
-  const entryConfirmed=document.getElementById('sdReaction')?.checked && document.getElementById('sdShift')?.checked;
-  document.getElementById('sdEntryConfirmed').style.display=entryConfirmed?'inline-flex':'none';
-  document.getElementById('sdEntryCard')?.classList.toggle('sd-confirmed', entryConfirmed);
+function saveJournalStorage(){localStorage.setItem(STORAGE_KEY,JSON.stringify(journalEntries))}
+function renderJournalList(){
+ const list=document.getElementById('journalList');
+ if(!journalEntries.length){list.innerHTML='<div class="entryCard"><div class="entryTitle">No journal entries yet</div><div class="entryMeta">Saved Supply & Demand trades will appear here.</div></div>';return;}
+ list.innerHTML=journalEntries.slice().reverse().map(entry=>`<div class="entryCard"><div class="entryTop"><div><div class="entryTitle">${entry.strategy} • ${entry.result||'Unlogged'}</div><div class="entryMeta">${entry.score} • ${entry.status} • ${entry.session||'No session'}</div></div><div class="smallBadge">${entry.date}</div></div><div class="entryMeta" style="margin-top:8px;">Entry: ${entry.entry||'-'} · SL: ${entry.sl||'-'} · TP: ${entry.tp||'-'}</div><div class="entryMeta" style="margin-top:8px;">${entry.note||'No note added.'}</div>${entry.image?`<img class="entryImg" style="display:block" src="${entry.image}" />`:''}</div>`).join('');
 }
-function renderSD(){
-  const checks=[...document.querySelectorAll('.sd-check')]; let score=0; checks.forEach(c=>{ if(c.checked) score += Number(c.dataset.points||0); });
-  const scoreNum=document.getElementById('sdScoreNum'), grade=document.getElementById('sdScoreGrade'), decision=document.getElementById('sdDecisionText'), quality=document.getElementById('sdQualityText'), panel=document.getElementById('sdScorePanel'), unlock=document.getElementById('sdUnlockBtn');
-  if(scoreNum) scoreNum.textContent=`${score} / 13`;
-  panel?.classList.remove('sd-grade-a','sd-grade-b','sd-grade-c');
-  let gradeText='No Trade', decisionText='No Trade', qualityText='Trade Quality: Low';
-  if(score>=9){ gradeText='A Setup'; decisionText='Valid'; qualityText='Trade Quality: High'; panel?.classList.add('sd-grade-a'); }
-  else if(score>=6){ gradeText='B Setup'; decisionText='Wait'; qualityText='Trade Quality: Medium'; panel?.classList.add('sd-grade-b'); }
-  else { panel?.classList.add('sd-grade-c'); }
-  if(grade) grade.textContent=gradeText; if(decision) decision.textContent=decisionText; if(quality) quality.textContent=qualityText;
-  const canUnlock = score>=6 && sdState.zoneType && sdState.trend; if(unlock){ unlock.disabled=!canUnlock; unlock.style.opacity=canUnlock?'1':'.45'; }
-  setSDButtonState('sdSupplyBtn', sdState.zoneType==='supply');
-  setSDButtonState('sdDemandBtn', sdState.zoneType==='demand');
-  setSDButtonState('sdBullishBtn', sdState.trend==='bullish');
-  setSDButtonState('sdBearishBtn', sdState.trend==='bearish');
-  updateSDCards();
+document.getElementById('screenshotField').addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0],img=document.getElementById('previewImg');
+ if(!file){previewData='';img.src='';img.style.display='none';return;}
+ const reader=new FileReader();
+ reader.onload=()=>{previewData=reader.result;img.src=reader.result;img.style.display='block';};
+ reader.readAsDataURL(file);
+});
+function getCounts(){const counts={};phaseOrder.forEach(pk=>{const phase=data[pk];counts[pk]={total:phase.items.length,done:phase.items.filter(item=>state.checked[item.key]).length};});return counts;}
+function computeScore(){
+ const positiveKeys=Object.keys(state.checked).filter(k=>!weaknessKeys.has(k));
+ const weaknessChosen=Array.from(weaknessKeys).filter(k=>state.checked[k]).length;
+ const positiveCount=positiveKeys.filter(k=>state.checked[k]).length;
+ const raw=positiveCount-weaknessChosen,max=positiveKeys.length,normalized=Math.max(0,Math.min(max,raw));
+ return Math.round((normalized/max)*100);
 }
-function resetSD(){ document.querySelectorAll('.sd-check').forEach(c=>c.checked=false); sdState.zoneType=''; sdState.trend=''; renderSD(); }
-function bindSD(){
-  document.querySelectorAll('.sd-check').forEach(c=>c.addEventListener('change', renderSD));
-  document.getElementById('sdSupplyBtn')?.addEventListener('click', ()=>{ sdState.zoneType='supply'; renderSD(); });
-  document.getElementById('sdDemandBtn')?.addEventListener('click', ()=>{ sdState.zoneType='demand'; renderSD(); });
-  document.getElementById('sdBullishBtn')?.addEventListener('click', ()=>{ sdState.trend='bullish'; renderSD(); });
-  document.getElementById('sdBearishBtn')?.addEventListener('click', ()=>{ sdState.trend='bearish'; renderSD(); });
-  document.getElementById('sdResetBtn')?.addEventListener('click', resetSD);
-  document.getElementById('sdUnlockBtn')?.addEventListener('click', ()=>{ const decision=document.getElementById('sdDecisionText')?.textContent||'Wait'; switchView('journal'); document.getElementById('journalSetup').value='Supply & Demand'; document.getElementById('journalTag').value = decision.toLowerCase()==='valid' ? 'valid' : decision.toLowerCase()==='wait' ? 'failed' : 'no trade'; });
-  renderSD();
+function computeStatus(score){
+ if(score>=70)return{badge:"READY",hint:"READY",title:"Trade Is Ready",sub:"The setup quality is strong enough to journal and execute.",tradeState:"Unlocked"};
+ if(score>=40)return{badge:"BUILDING",hint:"BUILDING",title:"Setup Is Building",sub:"The zone has potential, but it still needs more confirmation.",tradeState:"Watch"};
+ return{badge:"WAIT",hint:"WAIT",title:"Wait For More Quality",sub:"The setup is not developed enough yet.",tradeState:"Locked"};
 }
-
-function renderAll(){applyTheme();renderGoals();renderICC();renderAccountList('eval','evalList');renderAccountList('funded','fundedList');renderAccountList('live','liveList');refreshJournalAccounts();renderJournal();renderHomeStats();updateTimerDisplay()}
-journalDate.value=todayISO();bindSD();renderAll();
+function getWeaknessWarnings(){
+ const w=[]; if(state.checked.multiple_taps)w.push("Multiple taps weaken the zone."); if(state.checked.weak_reaction)w.push("Weak reaction lowers conviction."); if(state.checked.mid_range)w.push("Mid-range entry lowers edge."); if(state.checked.poor_rr)w.push("Poor risk/reward reduces quality."); return w;
+}
+function updateUI(){
+ const counts=getCounts(); phaseOrder.forEach(key=>document.getElementById("count-"+key).textContent=counts[key].done+" / "+counts[key].total);
+ const score=computeScore(),status=computeStatus(score);
+ document.getElementById("scoreValue").textContent=score+"%";
+ document.getElementById("scoreHint").textContent=status.hint;
+ document.getElementById("statusBadge").textContent=status.badge;
+ document.getElementById("statusText").textContent=status.title;
+ document.getElementById("statusSub").textContent=status.sub;
+ document.getElementById("decisionBadge").textContent=status.badge;
+ document.getElementById("tradeState").textContent=status.tradeState;
+ document.getElementById("journalBadge").textContent=status.hint;
+ document.getElementById("scoreField").value=score+"%";
+ document.getElementById("statusField").value=status.badge;
+ const totalDone=Object.values(counts).reduce((a,b)=>a+b.done,0), totalItems=Object.values(counts).reduce((a,b)=>a+b.total,0);
+ document.getElementById("progressFill").style.width=Math.round((totalDone/totalItems)*100)+"%";
+ const tradeBtn=document.getElementById("unlockTradeBtn");
+ tradeBtn.classList.toggle("locked",status.badge!=="READY");
+ tradeBtn.textContent=status.badge==="READY"?"🔓 Unlock Trade":"🔒 Unlock Trade";
+ document.querySelectorAll('.phaseCard').forEach(card=>card.classList.remove('ready'));
+ if(status.badge==="READY") document.querySelectorAll('.phaseCard').forEach(card=>card.classList.add('ready'));
+}
+function openPhase(phaseKey){
+ state.activePhase=phaseKey; const phase=data[phaseKey];
+ document.getElementById("sheetTitle").textContent=phase.title;
+ document.getElementById("sheetSub").textContent=phase.sub;
+ document.getElementById("ruleBox").textContent=phase.rule;
+ document.getElementById("dangerBox").textContent=phase.danger;
+ const list=document.getElementById("checklist"); list.innerHTML="";
+ phase.items.forEach(item=>{
+   const div=document.createElement("div");
+   div.className="item"+(state.checked[item.key]?" checked":"");
+   div.innerHTML=`<div class="box">${state.checked[item.key]?"✓":""}</div><div><div class="itemTitle">${item.title}</div><div class="itemDesc">${item.desc}</div></div>`;
+   div.onclick=()=>{state.checked[item.key]=!state.checked[item.key];updateUI();openPhase(phaseKey);};
+   list.appendChild(div);
+ });
+ document.getElementById("sheet").classList.add("show");
+}
+function closePhase(){document.getElementById("sheet").classList.remove("show")}
+document.querySelectorAll("[data-phase]").forEach(el=>el.onclick=()=>openPhase(el.dataset.phase));
+document.getElementById("closeSheet").onclick=closePhase;
+document.getElementById("donePhaseBtn").onclick=closePhase;
+document.getElementById("sheet").addEventListener("click",e=>{if(e.target.id==="sheet")closePhase()});
+document.getElementById("resetPhaseBtn").onclick=()=>{
+ const phase=data[state.activePhase]; if(!phase)return;
+ phase.items.forEach(item=>state.checked[item.key]=false); updateUI(); openPhase(state.activePhase);
+};
+document.getElementById("resetAllBtn").onclick=()=>{Object.keys(state.checked).forEach(k=>state.checked[k]=false);updateUI();};
+document.getElementById("rulesBtn").onclick=()=>{
+ const warnings=getWeaknessWarnings();
+ document.getElementById("warningList").innerHTML=(warnings.length?warnings:["No major weaknesses selected yet.","This means the setup still needs to be checked honestly."]).map(v=>"<li>"+v+"</li>").join("");
+ document.getElementById("warningPopup").classList.add("show");
+};
+document.getElementById("closeWarningBtn").onclick=()=>document.getElementById("warningPopup").classList.remove("show");
+document.getElementById("reviewRulesBtn").onclick=()=>{document.getElementById("warningPopup").classList.remove("show");openPhase("weakness");};
+document.getElementById("warningPopup").addEventListener("click",e=>{if(e.target.id==="warningPopup")document.getElementById("warningPopup").classList.remove("show");});
+document.getElementById("journalTopBtn").onclick=()=>{document.querySelector(".section").scrollIntoView({behavior:"smooth",block:"start"});};
+document.getElementById("unlockTradeBtn").onclick=()=>{
+ const status=computeStatus(computeScore());
+ if(status.badge==="READY") document.querySelector(".section").scrollIntoView({behavior:"smooth",block:"start"});
+ else document.getElementById("rulesBtn").click();
+};
+document.getElementById("saveTradeBtn").onclick=()=>{
+ const entry={strategy:"Supply & Demand",score:document.getElementById("scoreField").value,status:document.getElementById("statusField").value,session:document.getElementById("sessionField").value,entry:document.getElementById("entryField").value,sl:document.getElementById("slField").value,tp:document.getElementById("tpField").value,result:document.getElementById("resultField").value,note:document.getElementById("noteField").value,image:previewData,date:new Date().toLocaleDateString()};
+ journalEntries.push(entry); saveJournalStorage(); renderJournalList();
+};
+updateUI(); renderJournalList();
 </script>
 </body>
 </html>
