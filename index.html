@@ -93,9 +93,108 @@ textarea.field{min-height:88px;resize:vertical}
     <div class="section"><h2 class="sectionTitle">Saved Goals</h2><div id="goalSummary" class="accountList"></div></div>
   </section>
 
+  
   <section class="view" id="plan">
-    <div class="section"><h2 class="sectionTitle">Plan</h2><div class="fieldLabel">Session Bias</div><textarea class="field" id="planBias"></textarea><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Primary Setup</div><select class="field" id="planSetup"><option>Supply & Demand</option><option>ORB</option><option>EMA/TEMA</option><option>ICC</option></select></div><div><div class="fieldLabel">Session</div><select class="field" id="planSession"><option>Asia</option><option>London</option><option>New York</option></select></div></div><button class="cta" onclick="savePlan()">Save Plan</button></div>
+    <div class="section">
+      <h2 class="sectionTitle">Plan</h2>
+      <div class="muted">Fresh pre-trade plan. Nothing saves here.</div>
+
+      <div class="fieldLabel" style="margin-top:10px">Mental State</div>
+      <select class="field" id="planMental">
+        <option value="">Select</option>
+        <option>Calm / Focused</option>
+        <option>Anxious / Impatient</option>
+      </select>
+
+      <div class="grid2" style="margin-top:10px">
+        <div>
+          <div class="fieldLabel">Ticker</div>
+          <select class="field" id="planTicker">
+            <option>MNQ</option>
+            <option>MES</option>
+            <option>MGC</option>
+            <option>MYM</option>
+          </select>
+        </div>
+        <div>
+          <div class="fieldLabel">Contracts</div>
+          <select class="field" id="planContracts">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:10px">
+        <div>
+          <div class="fieldLabel">Daily Goal</div>
+          <select class="field" id="planGoal">
+            <option>125</option>
+            <option>250</option>
+            <option>300</option>
+            <option>500</option>
+            <option>750</option>
+            <option>1000</option>
+          </select>
+        </div>
+        <div>
+          <div class="fieldLabel">Risk Reward</div>
+          <select class="field" id="planRR">
+            <option>1:1</option>
+            <option>1:2</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fieldLabel" style="margin-top:10px">Stop Size (points)</div>
+      <input class="field" id="planStop" type="number" min="0" step="0.25" placeholder="Example: 5" />
+
+      <div class="btnrow">
+        <button class="btn" type="button" id="planResetBtn">Reset</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="sectionTitle">Plan Summary</h2>
+      <div class="kpiGrid">
+        <div class="kpi">
+          <div class="label">$/Point</div>
+          <div class="num" id="planPerPoint">$0</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Risk</div>
+          <div class="num" id="planRisk">$0</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Target</div>
+          <div class="num" id="planTarget">$0</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Wins Needed</div>
+          <div class="num" id="planWins">0</div>
+        </div>
+      </div>
+      <div class="kpiGrid" style="margin-top:10px">
+        <div class="kpi">
+          <div class="label">Status</div>
+          <div class="num" id="planStatus" style="font-size:18px">Waiting</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Mental Check</div>
+          <div class="num" id="planMentalOut" style="font-size:18px">—</div>
+        </div>
+      </div>
+    </div>
   </section>
+
 
   
   <section class="view" id="strategy">
@@ -2304,6 +2403,95 @@ window.addEventListener('load', () => {
   setTimeout(syncExternalStrategyStats, 1000);
   setInterval(syncExternalStrategyStats, 2000);
 });
+</script>
+
+
+<script>
+(function(){
+  const TICKER_VALUES = { MNQ: 2, MES: 5, MGC: 10, MYM: 0.5 };
+
+  function formatMoney(value){
+    return "$" + Number(value || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
+  }
+
+  function resetPlanFields(){
+    const mental = document.getElementById("planMental");
+    const ticker = document.getElementById("planTicker");
+    const contracts = document.getElementById("planContracts");
+    const goal = document.getElementById("planGoal");
+    const rr = document.getElementById("planRR");
+    const stop = document.getElementById("planStop");
+
+    if (mental) mental.value = "";
+    if (ticker) ticker.value = "MNQ";
+    if (contracts) contracts.value = "1";
+    if (goal) goal.value = "125";
+    if (rr) rr.value = "1:1";
+    if (stop) stop.value = "";
+
+    updatePlanTab();
+  }
+
+  function updatePlanTab(){
+    const mental = document.getElementById("planMental")?.value || "";
+    const ticker = document.getElementById("planTicker")?.value || "MNQ";
+    const contracts = Number(document.getElementById("planContracts")?.value || 0);
+    const goal = Number(document.getElementById("planGoal")?.value || 0);
+    const rr = document.getElementById("planRR")?.value || "1:1";
+    const stop = Number(document.getElementById("planStop")?.value || 0);
+
+    const perPoint = TICKER_VALUES[ticker] || 0;
+    const risk = contracts * stop * perPoint;
+    const target = rr === "1:2" ? risk * 2 : risk;
+    const wins = target > 0 ? Math.ceil(goal / target) : 0;
+
+    const status =
+      stop <= 0 ? "Add stop" :
+      risk <= 0 ? "Waiting" :
+      risk > goal ? "Over risk" :
+      "Valid";
+
+    const mentalOut =
+      mental === "Calm / Focused" ? "Proceed" :
+      mental === "Anxious / Impatient" ? "Slow down" :
+      "—";
+
+    const perPointEl = document.getElementById("planPerPoint");
+    const riskEl = document.getElementById("planRisk");
+    const targetEl = document.getElementById("planTarget");
+    const winsEl = document.getElementById("planWins");
+    const statusEl = document.getElementById("planStatus");
+    const mentalEl = document.getElementById("planMentalOut");
+
+    if (perPointEl) perPointEl.textContent = formatMoney(perPoint);
+    if (riskEl) riskEl.textContent = formatMoney(risk);
+    if (targetEl) targetEl.textContent = formatMoney(target);
+    if (winsEl) winsEl.textContent = String(wins);
+    if (statusEl) statusEl.textContent = status;
+    if (mentalEl) mentalEl.textContent = mentalOut;
+  }
+
+  function bindPlanTab(){
+    ["planMental","planTicker","planContracts","planGoal","planRR","planStop"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", updatePlanTab);
+        el.addEventListener("input", updatePlanTab);
+      }
+    });
+
+    const resetBtn = document.getElementById("planResetBtn");
+    if (resetBtn) resetBtn.addEventListener("click", resetPlanFields);
+
+    resetPlanFields();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindPlanTab);
+  } else {
+    bindPlanTab();
+  }
+})();
 </script>
 
 </body>
