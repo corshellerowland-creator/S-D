@@ -2,9 +2,1826 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Supply & Demand — ICC Style</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Faceless Trader</title>
 <style>
+:root{
+  --bg:#090711; --bg2:#120d22; --text:#f7efff; --muted:#c7b9da;
+  --pink:#ff3bbd; --purple:#8b5cf6; --blue:#39b8ff; --green:#44e1a7; --yellow:#ffce52; --red:#ff5e7e;
+  --line:rgba(255,255,255,.09); --shadow:0 12px 32px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.04) inset;
+  --grad1:var(--pink); --grad2:var(--purple); --panelGlow:rgba(255,59,189,.12);
+  --hero1:rgba(139,92,246,.18); --hero2:rgba(57,184,255,.12);
+}
+body[data-palette="quantum"]{--grad1:var(--blue);--grad2:var(--green);--panelGlow:rgba(57,184,255,.16);--hero1:rgba(57,184,255,.20);--hero2:rgba(68,225,167,.14)}
+*{box-sizing:border-box}
+html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+  radial-gradient(circle at top left,var(--hero1),transparent 28%),radial-gradient(circle at top right,var(--hero2),transparent 25%),linear-gradient(180deg,var(--bg),#0d0a18 50%,var(--bg2))}
+body{padding:18px}
+.app{max-width:430px;margin:0 auto}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow),0 0 28px var(--panelGlow);backdrop-filter:blur(12px)}
+.hero{padding:18px 18px 16px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--grad1) 35%,transparent),transparent 62%);filter:blur(10px)}
+.heroTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.brandWrap{display:flex;gap:12px;align-items:center}
+.avatarWrap{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:0 0 20px var(--panelGlow)}
+.avatar{width:56px;height:56px;border-radius:16px;background:radial-gradient(circle at 50% 22%,color-mix(in srgb,var(--grad1) 40%,transparent),transparent 34%),linear-gradient(180deg,#1a1430,#0d0a18);position:relative}
+.avatar:before{content:"";position:absolute;inset:8px 11px 10px;border-radius:40px 40px 28px 28px/36px 36px 24px 24px;background:#08060f}
+.avatar:after{content:"";position:absolute;left:18px;right:18px;top:23px;height:8px;background:radial-gradient(circle at 20% 50%,var(--grad1) 0 2px,transparent 3px),radial-gradient(circle at 80% 50%,var(--grad1) 0 2px,transparent 3px);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--grad1) 60%,transparent))}
+h1{font-size:26px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;line-height:1.35}
+.styleBtn{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#1b1431;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.topStats,.grid2,.statsGrid,.kpiGrid,.homeQuick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.topStats{margin-top:14px}
+.stat,.section,.kpi,.listItem,.phaseCard{padding:14px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));border:1px solid var(--line)}
+.label{color:var(--muted);font-size:12px}.big{font-size:28px;font-weight:800;margin-top:4px}
+.smallBadge,.chip,.status{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.tabs,.strategyTabs{display:flex;gap:10px;margin-top:14px;overflow:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.strategyTabs::-webkit-scrollbar{display:none}
+.pill{flex:0 0 auto;border:none;color:var(--text);background:#1a1430;padding:12px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid rgba(255,255,255,.06);cursor:pointer}
+.pill.active{background:linear-gradient(135deg,var(--grad1),var(--grad2));box-shadow:0 10px 24px var(--panelGlow)}
+.view{display:none;margin-top:14px}.view.active{display:block}.section+.section{margin-top:12px}
+.sectionTitle{font-weight:800;font-size:16px;margin:0 0 10px}
+.kpi .num{font-size:22px;font-weight:900;margin-top:8px}
+.fieldLabel{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
+.field,select.field,textarea.field{width:100%;background:#130f22;border:1px solid rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:12px 14px;outline:none}
+textarea.field{min-height:88px;resize:vertical}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn,.cta{border:none;border-radius:16px;padding:13px 14px;font-weight:800;color:white;cursor:pointer;background:#211736}
+.btn.primary,.cta{background:linear-gradient(135deg,var(--grad1),var(--grad2));box-shadow:0 12px 24px var(--panelGlow)}
+.btn.warn{background:linear-gradient(135deg,rgba(255,94,126,.85),rgba(139,92,246,.8))}
+.cta{margin-top:14px;width:100%;border-radius:18px;font-size:15px;font-weight:900}
+.accountList,.journalList,.phaseGrid{display:grid;gap:12px}
+.accountTop,.journalTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.accountTitle{font-size:15px;font-weight:900}.muted{color:var(--muted)}
+.kvGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.kv{padding:10px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.kv .k{font-size:11px;color:var(--muted)}.kv .v{margin-top:4px;font-weight:800}
+.positive{color:var(--green)} .negative{color:var(--red)}
+.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.12);border-radius:18px}
+.iccPhase{display:none}.iccPhase.active{display:block}
+.progressWrap{margin-top:14px}.track{height:12px;background:#150f28;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--grad1),var(--grad2),var(--blue));border-radius:999px;transition:width .25s ease}
+.checkrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);margin-top:10px}
+.timer{text-align:center}.clock{font-size:42px;font-weight:900;letter-spacing:1px;margin:8px 0 6px}
+.quickBtn{padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:800;cursor:pointer;text-align:left;color:var(--text)}
+.previewImg{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none}
+@media (max-width:390px){.grid2,.statsGrid,.kpiGrid,.homeQuick,.topStats,.kvGrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-palette="amethyst">
+<div class="app">
+  <div class="panel hero">
+    <div class="heroTop">
+      <div class="brandWrap"><div class="avatarWrap"><div class="avatar"></div></div><div><h1>Faceless Trader</h1><div class="sub">ICC look + full app engine + journal syncing</div></div></div>
+      <button class="styleBtn" id="styleCycleBtn">Style</button>
+    </div>
+    <div class="topStats">
+      <div class="stat"><div class="label">Today PnL</div><div class="big" id="todayPnl">$0</div><div class="smallBadge" id="todayBadge">No goal active</div></div>
+      <div class="stat"><div class="label">Session Status</div><div class="big" style="font-size:23px" id="sessionStatus">Waiting</div><div class="smallBadge" id="themeBadge">Soft Amethyst</div></div>
+    </div>
+    <div class="tabs" id="mainTabs">
+      <button class="pill active" data-view="home">Home</button><button class="pill" data-view="goals">Goals</button><button class="pill" data-view="plan">Plan</button><button class="pill" data-view="strategy">Strategy</button><button class="pill" data-view="eval">Eval</button><button class="pill" data-view="funded">Fund</button><button class="pill" data-view="live">Live</button><button class="pill" data-view="journal">Journal</button><button class="pill" data-view="stats">Stats</button><button class="pill" data-view="lock">Lock</button><button class="pill" data-view="pnl">PnL</button><button class="pill" data-view="sizer">Sizer</button><button class="pill" data-view="timer">Timer</button>
+    </div>
+  </div>
+
+  <section class="view active" id="home">
+    <div class="section"><h2 class="sectionTitle">Command Center</h2><div class="kpiGrid"><div class="kpi"><div class="label">Active Goal</div><div class="num" id="homeGoal">$—</div><div class="muted" id="homeGoalType">No goal set</div></div><div class="kpi"><div class="label">Max Loss</div><div class="num" id="homeLoss">$—</div><div class="muted">Used by lock rules</div></div><div class="kpi"><div class="label">Best Strategy</div><div class="num" style="font-size:18px" id="bestStrategy">—</div><div class="muted" id="bestStrategyMeta">Waiting for trades</div></div><div class="kpi"><div class="label">Accounts</div><div class="num" id="accountCount">0</div><div class="muted">Eval + Funded + Live</div></div></div></div>
+    <div class="section"><h2 class="sectionTitle">Quick Access</h2><div class="homeQuick"><button class="quickBtn" onclick="switchView('journal')">Open Journal</button><button class="quickBtn" onclick="switchView('strategy')">Open Strategy</button><button class="quickBtn" onclick="switchView('eval')">Open Eval</button><button class="quickBtn" onclick="switchView('pnl')">Open PnL</button></div></div>
+    <div class="section"><h2 class="sectionTitle">Recent Journal</h2><div id="recentJournal" class="journalList"></div></div>
+  </section>
+
+  <section class="view" id="goals">
+    <div class="section"><h2 class="sectionTitle">Goals</h2><div class="fieldLabel">Account Type</div><select class="field" id="goalType"><option value="eval">Eval</option><option value="funded">Funded</option><option value="live">Live</option></select><div class="grid2" style="margin-top:10px"><button class="btn" onclick="applyGoalPreset(150,75)">Conservative</button><button class="btn" onclick="applyGoalPreset(300,150)">Standard</button></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Daily Goal</div><input class="field" id="goalDaily" type="number"></div><div><div class="fieldLabel">Max Loss</div><input class="field" id="goalLoss" type="number"></div></div><button class="cta" onclick="saveGoal()">Save Goal</button></div>
+    <div class="section"><h2 class="sectionTitle">Saved Goals</h2><div id="goalSummary" class="accountList"></div></div>
+  </section>
+
+  <section class="view" id="plan">
+    <div class="section"><h2 class="sectionTitle">Plan</h2><div class="fieldLabel">Session Bias</div><textarea class="field" id="planBias"></textarea><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Primary Setup</div><select class="field" id="planSetup"><option>Supply & Demand</option><option>ORB</option><option>EMA/TEMA</option><option>ICC</option></select></div><div><div class="fieldLabel">Session</div><select class="field" id="planSession"><option>Asia</option><option>London</option><option>New York</option></select></div></div><button class="cta" onclick="savePlan()">Save Plan</button></div>
+  </section>
+
+  
+  <section class="view" id="strategy">
+    <div class="section">
+      <h2 class="sectionTitle">Strategy</h2>
+      <div class="muted">Old strategy placeholders removed. ICC, EMA, and Supply &amp; Demand are now separate under this tab.</div>
+
+      <div class="strategyTabs" id="mergedStrategyTabs">
+        <button class="pill active" data-merged-strategy="icc">ICC</button>
+        <button class="pill" data-merged-strategy="ema">EMA / TEMA</button>
+        <button class="pill" data-merged-strategy="sd">Supply &amp; Demand</button>
+      </div>
+
+      <div class="mergedStrategyPane active" id="merged-icc" style="margin-top:14px;">
+        <iframe
+          title="ICC Strategy"
+          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot; /&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+&lt;title&gt;ICC Strategy&lt;/title&gt;
+&lt;style&gt;
+  :root{
+    --bg:#090711; --bg2:#120d22; --card:#17122a; --text:#f7efff; --muted:#c7b9da;
+    --pink:#ff3bbd; --purple:#8b5cf6; --blue:#39b8ff; --green:#44e1a7; --yellow:#ffce52; --red:#ff5e7e;
+    --line:rgba(255,255,255,.09); --shadow:0 12px 32px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.04) inset;
+    --glow:0 0 0 1px rgba(255,255,255,.05), 0 0 28px rgba(255,59,189,.12); --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(139,92,246,.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(57,184,255,.12), transparent 25%),
+      linear-gradient(180deg, var(--bg), #0d0a18 50%, var(--bg2));
+  }
+  body{padding:18px}
+  .app{max-width:420px;margin:0 auto}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+    border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow), var(--glow); backdrop-filter:blur(12px);
+  }
+  .hero{padding:18px 18px 16px}
+  .heroTop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  h1{font-size:28px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;line-height:1.35}
+  .badge{
+    padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;
+    background:linear-gradient(135deg, rgba(255,59,189,.22), rgba(139,92,246,.22)); border:1px solid rgba(255,255,255,.08);
+    white-space:nowrap;
+  }
+  .tabs,.sessions,.strategyTabs{display:flex;gap:10px;margin-top:14px}
+  .pill{
+    flex:1;border:none;color:var(--text);background:#1a1430;padding:12px 14px;border-radius:999px;font-weight:700;font-size:14px;
+    border:1px solid rgba(255,255,255,.06); cursor:pointer;
+  }
+  .pill.active{background:linear-gradient(135deg, rgba(255,59,189,.92), rgba(139,92,246,.92)); box-shadow:0 10px 24px rgba(255,59,189,.22)}
+  .pill.secondary.active{background:linear-gradient(135deg, rgba(57,184,255,.92), rgba(139,92,246,.92)); box-shadow:0 10px 24px rgba(57,184,255,.18)}
+  .stats,.grid,.actionCards,.bottomBtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .stat,.phaseCard,.actionCard,.section{padding:16px;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));border:1px solid var(--line)}
+  .label{color:var(--muted);font-size:12px}
+  .big{font-size:32px;font-weight:800;margin-top:4px}
+  .smallBadge{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06)}
+  .progressWrap{margin-top:14px}
+  .track{height:12px;background:#150f28;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg, var(--pink), var(--purple), var(--blue));border-radius:999px;transition:width .25s ease}
+  .phaseCard,.actionCard{min-height:118px;cursor:pointer;position:relative;overflow:hidden}
+  .phaseTitle,.actionTitle{font-size:16px;font-weight:800;margin-bottom:6px}
+  .phaseDesc,.actionDesc{font-size:12px;line-height:1.35;color:var(--muted)}
+  .phaseMeta,.actionMeta{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  .miniCount{font-size:11px;color:var(--muted)}
+  .openBtn{font-size:12px;font-weight:800;color:#fff;opacity:.9}
+  .btnWide{
+    border:none;border-radius:18px;padding:14px 16px;font-size:14px;font-weight:800;color:white;cursor:pointer
+  }
+  .journalBtn{background:linear-gradient(135deg, rgba(68,225,167,.8), rgba(57,184,255,.7));box-shadow:0 12px 24px rgba(68,225,167,.16)}
+  .resetBtn{background:#211736}
+  .rulesBtn{background:linear-gradient(135deg, rgba(255,94,126,.8), rgba(139,92,246,.75));box-shadow:0 12px 24px rgba(255,94,126,.14)}
+  .sectionTitle{font-weight:800;font-size:16px;margin:0 0 10px}
+  .journalGrid{display:grid;gap:10px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{
+    background:#130f22;border:1px solid rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:12px 14px;width:100%;outline:none
+  }
+  textarea.field{min-height:88px;resize:vertical}
+  .cta{
+    margin-top:14px;width:100%;border:none;border-radius:18px;padding:15px 16px;font-size:15px;font-weight:900;color:white;cursor:pointer;
+    background:linear-gradient(135deg, var(--pink), var(--purple));box-shadow:0 12px 24px rgba(255,59,189,.22)
+  }
+  .feedback{margin-top:14px;padding:16px;display:none}
+  .feedback.show{display:block}
+  .feedback h3{margin:0 0 10px;font-size:19px}
+  .tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;background:rgba(255,255,255,.06);margin-right:6px;margin-bottom:6px}
+  .list{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5}
+  .entryList{display:grid;gap:12px;margin-top:14px}
+  .entryCard{padding:14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07)}
+  .entryTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .entryTitle{font-size:16px;font-weight:800}
+  .entryMeta{font-size:12px;color:var(--muted);margin-top:4px}
+  .entryImg{width:100%;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none;max-height:220px;object-fit:cover}
+  .previewImg{width:100%;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none;max-height:220px;object-fit:cover}
+  .tiny{font-size:11px;color:var(--muted)}
+  .sheet,.popup{
+    position:fixed;inset:0;background:rgba(5,4,10,.62);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:60;padding:12px
+  }
+  .sheet.show,.popup.show{display:flex}
+  .sheetCard,.popupCard{
+    width:min(100%,420px);max-height:90vh;overflow:auto;background:linear-gradient(180deg, rgba(20,14,34,.98), rgba(15,11,26,.98));
+    border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:var(--shadow), 0 0 34px rgba(255,59,189,.16);padding:18px
+  }
+  .sheetHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+  .sheetTitle{font-size:24px;font-weight:900;margin:0}
+  .sheetSub{font-size:12px;color:var(--muted);margin-top:4px}
+  .x{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;color:#fff;background:#22173a;font-size:18px;font-weight:900}
+  .checklist{display:grid;gap:10px;margin-top:12px}
+  .item{
+    padding:14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);
+    cursor:pointer;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:flex-start
+  }
+  .box{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.22);margin-top:2px;display:grid;place-items:center;font-size:14px;font-weight:900}
+  .item.checked .box{background:linear-gradient(135deg, var(--green), var(--blue));border-color:transparent;color:#061312}
+  .itemTitle{font-size:15px;font-weight:800}
+  .itemDesc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:4px}
+  .rule{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,206,82,.12), rgba(255,206,82,.05));border:1px solid rgba(255,206,82,.22);font-size:12px;color:#ffebaf}
+  .danger{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,94,126,.12), rgba(255,94,126,.05));border:1px solid rgba(255,94,126,.22);font-size:12px;color:#ffc0cb}
+  .sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .miniBtn{border:none;border-radius:16px;padding:13px 14px;font-weight:800;color:white;cursor:pointer;background:#211736}
+  .miniBtn.primary{background:linear-gradient(135deg, var(--pink), var(--purple))}
+  .popupCard h3{margin:0 0 6px;font-size:22px}
+  .popupCard p{margin:0;color:var(--muted);line-height:1.45}
+  .warnList{margin:14px 0 0;padding-left:18px;color:#ffd0da}
+  .strategyView{display:none}
+  .strategyView.active{display:block}
+&lt;/style&gt;
+
+&lt;style&gt;
+/* Standalone ICC build */
+.strategyTabs { display:none !important; }
+#emaView { display:none !important; }
+#iccView { display:block !important; }
+&lt;/style&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;app&quot;&gt;
+  &lt;div class=&quot;strategyTabs&quot;&gt;
+    &lt;button class=&quot;pill&quot; data-strategy=&quot;icc&quot;&gt;ICC Strategy&lt;/button&gt;
+    &lt;button class=&quot;pill&quot; data-strategy=&quot;ema&quot;&gt;EMA Strategy&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;iccView&quot; class=&quot;strategyView active&quot;&gt;
+    &lt;div class=&quot;panel hero&quot;&gt;
+      &lt;div class=&quot;heroTop&quot;&gt;
+        &lt;div&gt;
+          &lt;h1&gt;ICC Strategy&lt;/h1&gt;
+          &lt;div class=&quot;sub&quot;&gt;Indication • Correction • Continuation&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;badge&quot; id=&quot;statusBadge&quot;&gt;WAIT&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;tabs&quot;&gt;
+        &lt;button class=&quot;pill active&quot; data-mode=&quot;1M&quot;&gt;1M ⚡&lt;/button&gt;
+        &lt;button class=&quot;pill&quot; data-mode=&quot;5M&quot;&gt;5M 🧘🏽‍♀️&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;sessions&quot;&gt;
+        &lt;button class=&quot;pill secondary&quot; data-session=&quot;Asia&quot;&gt;Asia&lt;/button&gt;
+        &lt;button class=&quot;pill secondary&quot; data-session=&quot;London&quot;&gt;London&lt;/button&gt;
+        &lt;button class=&quot;pill secondary active&quot; data-session=&quot;NY&quot;&gt;NY&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;stats&quot;&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;big&quot; id=&quot;scoreValue&quot;&gt;0%&lt;/div&gt;
+          &lt;div class=&quot;label&quot;&gt;Setup Strength&lt;/div&gt;
+          &lt;div class=&quot;smallBadge&quot; id=&quot;scoreHint&quot;&gt;WAIT&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;label&quot;&gt;Status&lt;/div&gt;
+          &lt;div class=&quot;big&quot; style=&quot;font-size:28px;&quot; id=&quot;statusText&quot;&gt;Not Clean Yet&lt;/div&gt;
+          &lt;div class=&quot;sub&quot; id=&quot;statusSub&quot; style=&quot;margin-top:8px;&quot;&gt;More confirmation needed before entry.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;progressWrap&quot;&gt;
+        &lt;div class=&quot;track&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;progressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;grid&quot;&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;bias&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Bias + Setup&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;HTF bias, swing levels, pre-indication, target.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-bias&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;indication&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Indication&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;1M close past level. Confirm direction. No entry here.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-indication&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;correction&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Correction&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Clean pullback, internal shift, retest, no wrong-side break.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-correction&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;entry&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Continuation Entry&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;1M close back through level, limit entry, SL, TP1/TP2, no chasing.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-entry&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;actionCards&quot;&gt;
+      &lt;div class=&quot;panel actionCard&quot; id=&quot;walkAwayCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Walk Away Rules&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Auto no-trade conditions and discipline lockouts.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;activeRules&quot;&gt;0 active&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel actionCard&quot; id=&quot;takeTradeCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Take Trade&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Push ICC result into journal with score, session, timeframe, and notes.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;tradeState&quot;&gt;Locked&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;bottomBtns&quot;&gt;
+      &lt;button class=&quot;btnWide journalBtn&quot; id=&quot;journalItTop&quot;&gt;⭐ Journal It&lt;/button&gt;
+      &lt;button class=&quot;btnWide resetBtn&quot; id=&quot;resetAllBtn&quot;&gt;🔄 Reset&lt;/button&gt;
+      &lt;button class=&quot;btnWide rulesBtn&quot; id=&quot;rulesBtn&quot;&gt;🚫 Rules&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+      &lt;h2 class=&quot;sectionTitle&quot;&gt;ICC Journal Entry&lt;/h2&gt;
+      &lt;div class=&quot;sub&quot; style=&quot;margin-bottom:12px;&quot;&gt;Auto-filled from your checklist. Add your chart screenshot too.&lt;/div&gt;
+      &lt;div class=&quot;smallBadge&quot; id=&quot;journalBadge&quot;&gt;WAIT&lt;/div&gt;
+      &lt;div class=&quot;journalGrid&quot; style=&quot;margin-top:12px;&quot;&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccStrategyField&quot; value=&quot;ICC&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccModeField&quot; value=&quot;1M&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccSessionField&quot; value=&quot;NY&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccScoreField&quot; value=&quot;0%&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccEntryField&quot; placeholder=&quot;Entry&quot; /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccSlField&quot; placeholder=&quot;Stop Loss&quot; /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccTpField&quot; placeholder=&quot;TP1 / TP2&quot; /&gt;
+          &lt;select class=&quot;field&quot; id=&quot;iccResultField&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Result&lt;/option&gt;
+            &lt;option&gt;Win&lt;/option&gt;
+            &lt;option&gt;Loss&lt;/option&gt;
+            &lt;option&gt;Breakeven&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+        &lt;textarea class=&quot;field&quot; id=&quot;iccLessonField&quot; placeholder=&quot;Mistake / lesson / note&quot;&gt;&lt;/textarea&gt;
+        &lt;input class=&quot;field&quot; type=&quot;file&quot; id=&quot;iccScreenshotField&quot; accept=&quot;image/*&quot; /&gt;
+        &lt;img id=&quot;iccPreview&quot; class=&quot;previewImg&quot; /&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;cta&quot; id=&quot;saveICCTradeBtn&quot;&gt;Save Trade + Feedback&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;emaView&quot; class=&quot;strategyView&quot;&gt;
+    &lt;div class=&quot;panel hero&quot;&gt;
+      &lt;div class=&quot;heroTop&quot;&gt;
+        &lt;div&gt;
+          &lt;h1&gt;EMA / TEMA Strategy&lt;/h1&gt;
+          &lt;div class=&quot;sub&quot;&gt;Setup • Indication • Correction • Entry&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;badge&quot; id=&quot;emaStatusBadge&quot;&gt;NO TRADE&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;tabs&quot;&gt;
+        &lt;button class=&quot;pill active&quot; data-ema-direction=&quot;Long&quot;&gt;Long&lt;/button&gt;
+        &lt;button class=&quot;pill&quot; data-ema-direction=&quot;Short&quot;&gt;Short&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;stats&quot;&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;big&quot; id=&quot;emaScoreValue&quot;&gt;0%&lt;/div&gt;
+          &lt;div class=&quot;label&quot;&gt;Checklist Score&lt;/div&gt;
+          &lt;div class=&quot;smallBadge&quot; id=&quot;emaScoreHint&quot;&gt;NO TRADE&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;label&quot;&gt;Status&lt;/div&gt;
+          &lt;div class=&quot;big&quot; style=&quot;font-size:28px;&quot; id=&quot;emaStatusText&quot;&gt;Not Clean Yet&lt;/div&gt;
+          &lt;div class=&quot;sub&quot; id=&quot;emaStatusSub&quot; style=&quot;margin-top:8px;&quot;&gt;Wait for crossover, retest, and momentum before entry.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;progressWrap&quot;&gt;
+        &lt;div class=&quot;track&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;emaProgressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;grid&quot;&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;setup&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Setup&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Indicators loaded, chart clean, direction framework ready.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-setup&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;indication&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Indication&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Clean crossover, close confirmation, direction clear.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-indication&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;correction&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Correction&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Retest holds, entry is not late, momentum still alive.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-correction&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;entry&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Entry&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Momentum confirms, stop is logical, targets set.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-entry&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;actionCards&quot;&gt;
+      &lt;div class=&quot;panel actionCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Direction&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot; id=&quot;emaDirectionCopy&quot;&gt;Long setup selected. Wait for bullish crossover + retest.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;emaDirectionBadge&quot;&gt;Long&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel actionCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Unlock Trade&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Use score + phase completion before taking the setup.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;emaTradeState&quot;&gt;Locked&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;bottomBtns&quot;&gt;
+      &lt;button class=&quot;btnWide journalBtn&quot; id=&quot;emaJournalTop&quot;&gt;⭐ Journal It&lt;/button&gt;
+      &lt;button class=&quot;btnWide resetBtn&quot; id=&quot;emaResetAllBtn&quot;&gt;🔄 Reset&lt;/button&gt;
+      &lt;button class=&quot;btnWide rulesBtn&quot; id=&quot;emaRulesBtn&quot;&gt;🚫 Rules&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+      &lt;h2 class=&quot;sectionTitle&quot;&gt;EMA Journal Entry&lt;/h2&gt;
+      &lt;div class=&quot;sub&quot; style=&quot;margin-bottom:12px;&quot;&gt;Auto-filled from your EMA checklist. Add your chart screenshot too.&lt;/div&gt;
+      &lt;div class=&quot;smallBadge&quot; id=&quot;emaJournalBadge&quot;&gt;NO TRADE&lt;/div&gt;
+      &lt;div class=&quot;journalGrid&quot; style=&quot;margin-top:12px;&quot;&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaStrategyField&quot; value=&quot;EMA / TEMA&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaDirectionField&quot; value=&quot;Long&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaScoreField&quot; value=&quot;0%&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaStatusField&quot; value=&quot;NO TRADE&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaEntryField&quot; placeholder=&quot;Entry&quot; /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaSlField&quot; placeholder=&quot;Stop Loss&quot; /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaTpField&quot; placeholder=&quot;TP1 / TP2&quot; /&gt;
+          &lt;select class=&quot;field&quot; id=&quot;emaResultField&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Result&lt;/option&gt;
+            &lt;option&gt;Win&lt;/option&gt;
+            &lt;option&gt;Loss&lt;/option&gt;
+            &lt;option&gt;Breakeven&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+        &lt;textarea class=&quot;field&quot; id=&quot;emaLessonField&quot; placeholder=&quot;Mistake / lesson / note&quot;&gt;&lt;/textarea&gt;
+        &lt;input class=&quot;field&quot; type=&quot;file&quot; id=&quot;emaScreenshotField&quot; accept=&quot;image/*&quot; /&gt;
+        &lt;img id=&quot;emaPreview&quot; class=&quot;previewImg&quot; /&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;cta&quot; id=&quot;saveEMATradeBtn&quot;&gt;Save Trade + Feedback&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+    &lt;h2 class=&quot;sectionTitle&quot;&gt;Linked Journal&lt;/h2&gt;
+    &lt;div class=&quot;sub&quot;&gt;Trades saved from ICC and EMA show here.&lt;/div&gt;
+    &lt;div id=&quot;journalList&quot; class=&quot;entryList&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;sheet&quot; id=&quot;sheet&quot;&gt;
+  &lt;div class=&quot;sheetCard&quot;&gt;
+    &lt;div class=&quot;sheetHead&quot;&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;sheetTitle&quot; id=&quot;sheetTitle&quot;&gt;Phase&lt;/div&gt;
+        &lt;div class=&quot;sheetSub&quot; id=&quot;sheetSub&quot;&gt;Checklist&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;x&quot; id=&quot;closeSheet&quot;&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;checklist&quot; id=&quot;checklist&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;rule&quot; id=&quot;ruleBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;danger&quot; id=&quot;dangerBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;sheetActions&quot;&gt;
+      &lt;button class=&quot;miniBtn&quot; id=&quot;resetPhaseBtn&quot;&gt;Reset Phase&lt;/button&gt;
+      &lt;button class=&quot;miniBtn primary&quot; id=&quot;donePhaseBtn&quot;&gt;Done&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;popup&quot; id=&quot;warningPopup&quot;&gt;
+  &lt;div class=&quot;popupCard&quot;&gt;
+    &lt;h3&gt;⚠️ Warning&lt;/h3&gt;
+    &lt;p id=&quot;warningIntro&quot;&gt;This setup is breaking one or more no-trade rules.&lt;/p&gt;
+    &lt;ul class=&quot;warnList&quot; id=&quot;warningList&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;sheetActions&quot; style=&quot;margin-top:16px;&quot;&gt;
+      &lt;button class=&quot;miniBtn&quot; id=&quot;closeWarningBtn&quot;&gt;Go Back&lt;/button&gt;
+      &lt;button class=&quot;miniBtn primary&quot; id=&quot;reviewRulesBtn&quot;&gt;Review&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const STORAGE_KEY = &#x27;faceless_strategy_journal_v1&#x27;;
+let journalEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || &#x27;[]&#x27;);
+const strategyTabs = document.querySelectorAll(&#x27;[data-strategy]&#x27;);
+strategyTabs.forEach(btn =&gt; {
+  btn.addEventListener(&#x27;click&#x27;, () =&gt; {
+    strategyTabs.forEach(b =&gt; b.classList.remove(&#x27;active&#x27;));
+    btn.classList.add(&#x27;active&#x27;);
+    const isICC = btn.dataset.strategy === &#x27;icc&#x27;;
+    document.getElementById(&#x27;iccView&#x27;).classList.toggle(&#x27;active&#x27;, isICC);
+    document.getElementById(&#x27;emaView&#x27;).classList.toggle(&#x27;active&#x27;, !isICC);
+    window.scrollTo({top:0, behavior:&#x27;smooth&#x27;});
+  });
+});
+strategyTabs[0].classList.add(&#x27;active&#x27;);
+
+const iccData = {
+  bias: {
+    title: &quot;Bias + Setup&quot;,
+    sub: &quot;Phase 1 • Mark the higher time frame before execution&quot;,
+    rule: &quot;Use the 1H and 4H to build bias first. These levels are what you are actively watching for reaction.&quot;,
+    danger: &quot;No HTF bias = automatic No Trade.&quot;,
+    items: [
+      { key:&quot;htf_bias&quot;, title:&quot;HTF Bias Clear&quot;, desc:&quot;Use the 1H and 4H to determine overall direction before looking for an entry.&quot; },
+      { key:&quot;swing_levels&quot;, title:&quot;Swing High / Low&quot;, desc:&quot;These can be marked on both the 1H and 4H. These are the levels you are actively watching for reaction.&quot; },
+      { key:&quot;pre_indication&quot;, title:&quot;Pre-Indication Level&quot;, desc:&quot;This is the key level price has not fully broken yet. You are waiting for a clean close beyond it.&quot; },
+      { key:&quot;target_identified&quot;, title:&quot;Target Identified&quot;, desc:&quot;Know where price is likely moving before entering the trade.&quot; }
+    ]
+  },
+  indication: {
+    title: &quot;Indication&quot;,
+    sub: &quot;Phase 2 • Wait for the true break&quot;,
+    rule: &quot;Indication confirms direction only. Entry does not happen here.&quot;,
+    danger: &quot;Wick only or early entry = No Trade.&quot;,
+    items: [
+      { key:&quot;close_past_level&quot;, title:&quot;Candle Close Past Level&quot;, desc:&quot;This must be a true candle close, not just a wick through the level.&quot; },
+      { key:&quot;bullish_or_bearish&quot;, title:&quot;Directional Confirmation&quot;, desc:&quot;The close should clearly support the direction of the trade above swing high or below swing low.&quot; },
+      { key:&quot;no_entry_yet&quot;, title:&quot;No Entry Yet&quot;, desc:&quot;Indication confirms direction only. Do not enter at this stage.&quot; },
+      { key:&quot;no_wick_only&quot;, title:&quot;No Wick-Only Confirmation&quot;, desc:&quot;A wick without a close does not count as confirmation.&quot; }
+    ]
+  },
+  correction: {
+    title: &quot;Correction&quot;,
+    sub: &quot;Phase 3 • Let the pullback finish&quot;,
+    rule: &quot;The correction is not complete at the pullback. It completes at the retest + close.&quot;,
+    danger: &quot;Wrong-side structure break = No Trade.&quot;,
+    items: [
+      { key:&quot;clean_pullback&quot;, title:&quot;Clean Pullback&quot;, desc:&quot;Price should pull back in a controlled way, not randomly spike around.&quot; },
+      { key:&quot;observe_retrace&quot;, title:&quot;Observe Retrace&quot;, desc:&quot;Let the retrace develop naturally. Watch, do not rush.&quot; },
+      { key:&quot;internal_shift&quot;, title:&quot;Structure Shift Forms&quot;, desc:&quot;Watch for internal structure to form during the pullback.&quot; },
+      { key:&quot;retest_close&quot;, title:&quot;Retest + Close&quot;, desc:&quot;The correction is complete only when the retest and close confirm it.&quot; }
+    ]
+  },
+  entry: {
+    title: &quot;Continuation Entry&quot;,
+    sub: &quot;Phase 4 • Confirmation first, then execution&quot;,
+    rule: &quot;Enter only after continuation is confirmed. No chasing.&quot;,
+    danger: &quot;No close, no SL, or chasing = No Trade.&quot;,
+    items: [
+      { key:&quot;continuation_close&quot;, title:&quot;Continuation Close&quot;, desc:&quot;Enter only after continuation is confirmed back through the level.&quot; },
+      { key:&quot;limit_entry&quot;, title:&quot;Limit Entry&quot;, desc:&quot;Respect the setup. No chasing the move if the level is missed.&quot; },
+      { key:&quot;stop_loss&quot;, title:&quot;Stop Loss Set&quot;, desc:&quot;Your risk should already be defined before entry.&quot; },
+      { key:&quot;targets_marked&quot;, title:&quot;TP1 / TP2 Marked&quot;, desc:&quot;Know where partials and full targets are before taking the trade.&quot; }
+    ]
+  }
+};
+
+const emaData = {
+  setup: {
+    title: &quot;Setup&quot;,
+    sub: &quot;Phase 1 • Load the environment before the signal&quot;,
+    rule: &quot;Your chart should already be prepared before you even look for a crossover.&quot;,
+    danger: &quot;Missing indicators or a messy chart = No Trade.&quot;,
+    items: [
+      { key:&quot;ema_8&quot;, title:&quot;8 EMA Is On Chart&quot;, desc:&quot;The fast EMA must be visible before the setup can be graded.&quot; },
+      { key:&quot;tema_55&quot;, title:&quot;55 TEMA Is On Chart&quot;, desc:&quot;The main trend TEMA must be present and readable.&quot; },
+      { key:&quot;tema_13_21&quot;, title:&quot;13 / 21 TEMA Are Visible&quot;, desc:&quot;The internal trend structure should be visible before the signal appears.&quot; },
+      { key:&quot;clean_chart&quot;, title:&quot;Chart Is Clean&quot;, desc:&quot;No heavy clutter, overlapping drawings, or conditions that hide the setup.&quot; }
+    ]
+  },
+  indication: {
+    title: &quot;Indication&quot;,
+    sub: &quot;Phase 2 • Wait for the crossover to confirm direction&quot;,
+    rule: &quot;The crossover must be clean and direction must be obvious before you consider the entry.&quot;,
+    danger: &quot;Messy crossover or unclear direction = No Trade.&quot;,
+    items: [
+      { key:&quot;clean_cross&quot;, title:&quot;Clean Crossover Happened&quot;, desc:&quot;The crossover should be visible and not just a touch or fake-out.&quot; },
+      { key:&quot;direction_clear&quot;, title:&quot;Direction Is Clear After Crossover&quot;, desc:&quot;Long means bullish structure. Short means bearish structure.&quot; },
+      { key:&quot;tema_stacked&quot;, title:&quot;55 TEMA Is Stacked Correctly&quot;, desc:&quot;The slow trend line must support the direction of the setup.&quot; },
+      { key:&quot;close_confirmed&quot;, title:&quot;Close Confirmed The Signal&quot;, desc:&quot;Wait for the candle close to confirm the crossover instead of reacting early.&quot; }
+    ]
+  },
+  correction: {
+    title: &quot;Correction&quot;,
+    sub: &quot;Phase 3 • Let the retest do its job&quot;,
+    rule: &quot;The retest should respect the EMA zone and prove the setup is not late.&quot;,
+    danger: &quot;Deep break or late extension = No Trade.&quot;,
+    items: [
+      { key:&quot;retest_8&quot;, title:&quot;Price Retested The 8 EMA&quot;, desc:&quot;Price should come back into the retest area instead of running away.&quot; },
+      { key:&quot;retest_respected&quot;, title:&quot;Candle Respected The Retest Area&quot;, desc:&quot;The retest should hold and show reaction instead of slicing through.&quot; },
+      { key:&quot;not_late&quot;, title:&quot;Entry Is Not Late Or Extended&quot;, desc:&quot;Do not chase after the move is already stretched.&quot; },
+      { key:&quot;1m_5m_aligned&quot;, title:&quot;1 Min And 5 Min Are Aligned&quot;, desc:&quot;The lower and execution timeframes should support each other.&quot; }
+    ]
+  },
+  entry: {
+    title: &quot;Entry&quot;,
+    sub: &quot;Phase 4 • Momentum confirms execution&quot;,
+    rule: &quot;Take the entry only after momentum, risk, and target are already defined.&quot;,
+    danger: &quot;No momentum, no stop, or no target = No Trade.&quot;,
+    items: [
+      { key:&quot;momentum_confirms&quot;, title:&quot;Strong Push / Momentum Confirms Entry&quot;, desc:&quot;The move should have energy, not weak drift.&quot; },
+      { key:&quot;no_chop&quot;, title:&quot;No Chop / Not Tangled Up&quot;, desc:&quot;Avoid entry when price is chopping around the moving averages.&quot; },
+      { key:&quot;target_defined&quot;, title:&quot;Target Is Defined Before Entry&quot;, desc:&quot;Your TP has to be known before you click in.&quot; },
+      { key:&quot;stop_logical&quot;, title:&quot;Stop Loss Is Logical&quot;, desc:&quot;The stop should make sense structurally and fit the setup.&quot; }
+    ]
+  }
+};
+
+const sheet = document.getElementById(&quot;sheet&quot;);
+const checklist = document.getElementById(&quot;checklist&quot;);
+const warningPopup = document.getElementById(&quot;warningPopup&quot;);
+const warningList = document.getElementById(&quot;warningList&quot;);
+const warningIntro = document.getElementById(&quot;warningIntro&quot;);
+
+const iccState = { strategy:&quot;icc&quot;, mode:&quot;1M&quot;, session:&quot;NY&quot;, activePhase:null, checked:{} };
+Object.values(iccData).forEach(phase =&gt; phase.items.forEach(item =&gt; iccState.checked[item.key] = false));
+const iccPhaseOrder = [&quot;bias&quot;,&quot;indication&quot;,&quot;correction&quot;,&quot;entry&quot;];
+
+const emaState = { strategy:&quot;ema&quot;, direction:&quot;Long&quot;, activePhase:null, checked:{} };
+Object.values(emaData).forEach(phase =&gt; phase.items.forEach(item =&gt; emaState.checked[item.key] = false));
+const emaPhaseOrder = [&quot;setup&quot;,&quot;indication&quot;,&quot;correction&quot;,&quot;entry&quot;];
+
+let iccPreviewData = &#x27;&#x27;;
+let emaPreviewData = &#x27;&#x27;;
+
+function saveJournalStorage(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(journalEntries));
+}
+function renderJournalList(){
+  const list = document.getElementById(&#x27;journalList&#x27;);
+  if(!journalEntries.length){
+    list.innerHTML = &#x27;&lt;div class=&quot;entryCard&quot;&gt;&lt;div class=&quot;entryTitle&quot;&gt;No journal entries yet&lt;/div&gt;&lt;div class=&quot;entryMeta&quot;&gt;Saved ICC and EMA trades will appear here.&lt;/div&gt;&lt;/div&gt;&#x27;;
+    return;
+  }
+  list.innerHTML = journalEntries.slice().reverse().map((entry, idx) =&gt; `
+    &lt;div class=&quot;entryCard&quot;&gt;
+      &lt;div class=&quot;entryTop&quot;&gt;
+        &lt;div&gt;
+          &lt;div class=&quot;entryTitle&quot;&gt;${entry.strategy} • ${entry.result || &#x27;Unlogged&#x27;}&lt;/div&gt;
+          &lt;div class=&quot;entryMeta&quot;&gt;${entry.modeOrDirection} • ${entry.sessionOrStatus} • ${entry.score}&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;smallBadge&quot;&gt;${entry.date}&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;Entry: ${entry.entry || &#x27;-&#x27;} · SL: ${entry.sl || &#x27;-&#x27;} · TP: ${entry.tp || &#x27;-&#x27;}&lt;/div&gt;
+      &lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;${entry.note || &#x27;No note added.&#x27;}&lt;/div&gt;
+      ${entry.image ? `&lt;img class=&quot;entryImg&quot; style=&quot;display:block&quot; src=&quot;${entry.image}&quot; /&gt;` : &#x27;&#x27;}
+    &lt;/div&gt;
+  `).join(&#x27;&#x27;);
+}
+function bindPreview(inputId, imgId, setter){
+  document.getElementById(inputId).addEventListener(&#x27;change&#x27;, e =&gt; {
+    const file = e.target.files &amp;&amp; e.target.files[0];
+    const img = document.getElementById(imgId);
+    if(!file){ setter(&#x27;&#x27;); img.style.display=&#x27;none&#x27;; img.src=&#x27;&#x27;; return; }
+    const reader = new FileReader();
+    reader.onload = () =&gt; {
+      setter(reader.result);
+      img.src = reader.result;
+      img.style.display = &#x27;block&#x27;;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+bindPreview(&#x27;iccScreenshotField&#x27;,&#x27;iccPreview&#x27;,v=&gt;iccPreviewData=v);
+bindPreview(&#x27;emaScreenshotField&#x27;,&#x27;emaPreview&#x27;,v=&gt;emaPreviewData=v);
+
+function openGenericPhase(stateObj, dataObj, phaseKey){
+  stateObj.activePhase = phaseKey;
+  const phase = dataObj[phaseKey];
+  document.getElementById(&quot;sheetTitle&quot;).textContent = phase.title;
+  document.getElementById(&quot;sheetSub&quot;).textContent = phase.sub;
+  document.getElementById(&quot;ruleBox&quot;).textContent = phase.rule;
+  document.getElementById(&quot;dangerBox&quot;).textContent = phase.danger;
+  checklist.innerHTML = &quot;&quot;;
+  phase.items.forEach(item =&gt; {
+    const div = document.createElement(&quot;div&quot;);
+    div.className = &quot;item&quot; + (stateObj.checked[item.key] ? &quot; checked&quot; : &quot;&quot;);
+    div.innerHTML = `
+      &lt;div class=&quot;box&quot;&gt;${stateObj.checked[item.key] ? &quot;✓&quot; : &quot;&quot;}&lt;/div&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;itemTitle&quot;&gt;${item.title}&lt;/div&gt;
+        &lt;div class=&quot;itemDesc&quot;&gt;${item.desc}&lt;/div&gt;
+      &lt;/div&gt;`;
+    div.onclick = () =&gt; {
+      stateObj.checked[item.key] = !stateObj.checked[item.key];
+      if (stateObj.strategy === &#x27;icc&#x27;) updateICCUI();
+      if (stateObj.strategy === &#x27;ema&#x27;) updateEMAUI();
+      openGenericPhase(stateObj, dataObj, phaseKey);
+    };
+    checklist.appendChild(div);
+  });
+  sheet.classList.add(&quot;show&quot;);
+}
+function closePhase(){ sheet.classList.remove(&quot;show&quot;); }
+
+document.getElementById(&quot;closeSheet&quot;).onclick = closePhase;
+document.getElementById(&quot;donePhaseBtn&quot;).onclick = closePhase;
+sheet.addEventListener(&quot;click&quot;, e =&gt; { if (e.target.id === &quot;sheet&quot;) closePhase(); });
+
+document.querySelectorAll(&quot;[data-phase]&quot;).forEach(el =&gt; el.onclick = () =&gt; openGenericPhase(iccState, iccData, el.dataset.phase));
+document.querySelectorAll(&quot;[data-ema-phase]&quot;).forEach(el =&gt; el.onclick = () =&gt; openGenericPhase(emaState, emaData, el.dataset.emaPhase));
+
+document.getElementById(&quot;resetPhaseBtn&quot;).onclick = () =&gt; {
+  const current = document.getElementById(&quot;sheetTitle&quot;).textContent;
+  if (iccState.activePhase &amp;&amp; iccData[iccState.activePhase] &amp;&amp; iccData[iccState.activePhase].title === current){
+    iccData[iccState.activePhase].items.forEach(item =&gt; iccState.checked[item.key] = false);
+    updateICCUI();
+    openGenericPhase(iccState, iccData, iccState.activePhase);
+    return;
+  }
+  if (emaState.activePhase &amp;&amp; emaData[emaState.activePhase] &amp;&amp; emaData[emaState.activePhase].title === current){
+    emaData[emaState.activePhase].items.forEach(item =&gt; emaState.checked[item.key] = false);
+    updateEMAUI();
+    openGenericPhase(emaState, emaData, emaState.activePhase);
+  }
+};
+
+document.querySelectorAll(&quot;[data-mode]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-mode]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); iccState.mode = btn.dataset.mode; updateICCUI();
+});
+document.querySelectorAll(&quot;[data-session]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-session]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); iccState.session = btn.dataset.session; updateICCUI();
+});
+document.querySelectorAll(&quot;[data-ema-direction]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-ema-direction]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); emaState.direction = btn.dataset.emaDirection; updateEMAUI();
+});
+
+function getCounts(dataObj, order, checked){
+  const counts = {};
+  order.forEach(phaseKey =&gt; {
+    const phase = dataObj[phaseKey];
+    counts[phaseKey] = { total: phase.items.length, done: phase.items.filter(item =&gt; checked[item.key]).length };
+  });
+  return counts;
+}
+
+function getICCViolations(){
+  const v = [];
+  if (!iccState.checked.htf_bias) v.push(&quot;No clear 1H / 4H bias.&quot;);
+  if (iccState.checked.close_past_level &amp;&amp; !iccState.checked.no_wick_only) v.push(&quot;Wick-only confirmation is not valid.&quot;);
+  if (iccState.checked.continuation_close &amp;&amp; !iccState.checked.stop_loss) v.push(&quot;No stop loss set before entry.&quot;);
+  if (iccState.checked.continuation_close &amp;&amp; !iccState.checked.limit_entry) v.push(&quot;Continuation marked without respecting limit entry.&quot;);
+  if (iccState.checked.close_past_level &amp;&amp; !iccState.checked.no_entry_yet) v.push(&quot;You may be entering during indication instead of waiting.&quot;);
+  return v;
+}
+function computeICCScore(){
+  const total = Object.values(iccState.checked).length;
+  const done = Object.values(iccState.checked).filter(Boolean).length;
+  let score = Math.round((done / total) * 100);
+  if (!iccState.checked.htf_bias) score = Math.max(0, score - 20);
+  if (!iccState.checked.no_wick_only) score = Math.max(0, score - 10);
+  if (!iccState.checked.stop_loss) score = Math.max(0, score - 10);
+  return score;
+}
+function computeICCStatus(score){
+  const violations = getICCViolations();
+  const hardFail = violations.length &gt; 0;
+  if (hardFail &amp;&amp; score &lt; 75) return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;WAIT&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Rule violation detected. Fix setup before entry.&quot;, tradeState:&quot;Locked&quot;};
+  if (score &gt;= 90) return {badge:&quot;A SETUP&quot;, scoreHint:&quot;A SETUP&quot;, title:&quot;Execute Trade&quot;, sub:&quot;Clean confirmation, strong structure, valid execution plan.&quot;, tradeState:&quot;Ready&quot;};
+  if (score &gt;= 75) return {badge:&quot;B SETUP&quot;, scoreHint:&quot;B SETUP&quot;, title:&quot;Almost There&quot;, sub:&quot;Tradable, but review any weak areas first.&quot;, tradeState:&quot;Ready&quot;};
+  return {badge:&quot;WAIT&quot;, scoreHint:&quot;WAIT&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;More confirmation needed before entry.&quot;, tradeState:&quot;Locked&quot;};
+}
+function updateICCUI(){
+  const counts = getCounts(iccData, iccPhaseOrder, iccState.checked);
+  iccPhaseOrder.forEach(key =&gt; document.getElementById(&quot;count-&quot; + key).textContent = counts[key].done + &quot; / &quot; + counts[key].total);
+  const totalDone = Object.values(counts).reduce((a,b) =&gt; a + b.done, 0);
+  const totalItems = Object.values(counts).reduce((a,b) =&gt; a + b.total, 0);
+  const score = computeICCScore();
+  const status = computeICCStatus(score);
+  const violations = getICCViolations();
+
+  document.getElementById(&quot;scoreValue&quot;).textContent = score + &quot;%&quot;;
+  document.getElementById(&quot;scoreHint&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;statusBadge&quot;).textContent = status.badge;
+  document.getElementById(&quot;statusText&quot;).textContent = status.title;
+  document.getElementById(&quot;statusSub&quot;).textContent = status.sub;
+  document.getElementById(&quot;progressFill&quot;).style.width = Math.round((totalDone/totalItems)*100) + &quot;%&quot;;
+  document.getElementById(&quot;activeRules&quot;).textContent = violations.length + &quot; active&quot;;
+  document.getElementById(&quot;tradeState&quot;).textContent = status.tradeState;
+  document.getElementById(&quot;journalBadge&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;iccModeField&quot;).value = iccState.mode;
+  document.getElementById(&quot;iccSessionField&quot;).value = iccState.session;
+  document.getElementById(&quot;iccScoreField&quot;).value = score + &quot;%&quot;;
+}
+
+function getEMAViolations(){
+  const v = [];
+  if (!emaState.checked.clean_cross) v.push(&quot;No clean crossover yet.&quot;);
+  if (!emaState.checked.direction_clear) v.push(&quot;Direction is still unclear.&quot;);
+  if (!emaState.checked.retest_respected &amp;&amp; emaState.checked.retest_8) v.push(&quot;Retest did not hold cleanly.&quot;);
+  if (!emaState.checked.stop_logical) v.push(&quot;Stop loss is not logical.&quot;);
+  if (!emaState.checked.target_defined) v.push(&quot;Target is not defined before entry.&quot;);
+  return v;
+}
+function computeEMAScore(){
+  const total = Object.values(emaState.checked).length;
+  const done = Object.values(emaState.checked).filter(Boolean).length;
+  let score = Math.round((done / total) * 100);
+  if (!emaState.checked.clean_cross) score = Math.max(0, score - 15);
+  if (!emaState.checked.direction_clear) score = Math.max(0, score - 10);
+  if (!emaState.checked.stop_logical) score = Math.max(0, score - 10);
+  return score;
+}
+function computeEMAStatus(score){
+  const violations = getEMAViolations();
+  if (violations.length &amp;&amp; score &lt; 75) return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;NO TRADE&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Wait for crossover, retest, and momentum before entry.&quot;, tradeState:&quot;Locked&quot;};
+  if (score &gt;= 90) return {badge:&quot;A SETUP&quot;, scoreHint:&quot;A SETUP&quot;, title:&quot;Ready To Trade&quot;, sub:&quot;Trend, retest, and execution all line up.&quot;, tradeState:&quot;Ready&quot;};
+  if (score &gt;= 75) return {badge:&quot;B SETUP&quot;, scoreHint:&quot;WATCH&quot;, title:&quot;Almost There&quot;, sub:&quot;Good trend setup. Review the weak spots before entry.&quot;, tradeState:&quot;Watch&quot;};
+  return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;NO TRADE&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Wait for crossover, retest, and momentum before entry.&quot;, tradeState:&quot;Locked&quot;};
+}
+function updateEMAUI(){
+  const counts = getCounts(emaData, emaPhaseOrder, emaState.checked);
+  emaPhaseOrder.forEach(key =&gt; document.getElementById(&quot;ema-count-&quot; + key).textContent = counts[key].done + &quot; / &quot; + counts[key].total);
+  const totalDone = Object.values(counts).reduce((a,b) =&gt; a + b.done, 0);
+  const totalItems = Object.values(counts).reduce((a,b) =&gt; a + b.total, 0);
+  const score = computeEMAScore();
+  const status = computeEMAStatus(score);
+
+  document.getElementById(&quot;emaScoreValue&quot;).textContent = score + &quot;%&quot;;
+  document.getElementById(&quot;emaScoreHint&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;emaStatusBadge&quot;).textContent = status.badge;
+  document.getElementById(&quot;emaStatusText&quot;).textContent = status.title;
+  document.getElementById(&quot;emaStatusSub&quot;).textContent = status.sub;
+  document.getElementById(&quot;emaProgressFill&quot;).style.width = Math.round((totalDone/totalItems)*100) + &quot;%&quot;;
+  document.getElementById(&quot;emaTradeState&quot;).textContent = status.tradeState;
+  document.getElementById(&quot;emaDirectionBadge&quot;).textContent = emaState.direction;
+  document.getElementById(&quot;emaDirectionCopy&quot;).textContent =
+    emaState.direction === &quot;Long&quot;
+      ? &quot;Long setup selected. Wait for bullish crossover + retest.&quot;
+      : &quot;Short setup selected. Wait for bearish crossover + retest.&quot;;
+  document.getElementById(&quot;emaDirectionField&quot;).value = emaState.direction;
+  document.getElementById(&quot;emaScoreField&quot;).value = score + &quot;%&quot;;
+  document.getElementById(&quot;emaStatusField&quot;).value = status.badge;
+  document.getElementById(&quot;emaJournalBadge&quot;).textContent = status.scoreHint;
+}
+
+document.getElementById(&quot;resetAllBtn&quot;).onclick = () =&gt; {
+  Object.keys(iccState.checked).forEach(k =&gt; iccState.checked[k] = false);
+  updateICCUI();
+};
+document.getElementById(&quot;emaResetAllBtn&quot;).onclick = () =&gt; {
+  Object.keys(emaState.checked).forEach(k =&gt; emaState.checked[k] = false);
+  updateEMAUI();
+};
+
+document.getElementById(&quot;rulesBtn&quot;).onclick = () =&gt; {
+  const violations = getICCViolations();
+  warningIntro.textContent = &quot;This ICC setup is breaking one or more no-trade rules.&quot;;
+  warningList.innerHTML = (violations.length ? violations : [
+    &quot;No clear 1H / 4H bias.&quot;,
+    &quot;Wick-only confirmation.&quot;,
+    &quot;Entering during indication.&quot;,
+    &quot;No stop loss before entry.&quot;,
+    &quot;Chasing instead of respecting limit entry.&quot;
+  ]).map(v =&gt; &quot;&lt;li&gt;&quot;+v+&quot;&lt;/li&gt;&quot;).join(&quot;&quot;);
+  warningPopup.classList.add(&quot;show&quot;);
+};
+document.getElementById(&quot;emaRulesBtn&quot;).onclick = () =&gt; {
+  const violations = getEMAViolations();
+  warningIntro.textContent = &quot;This EMA setup is breaking one or more no-trade rules.&quot;;
+  warningList.innerHTML = (violations.length ? violations : [
+    &quot;No clean crossover.&quot;,
+    &quot;Direction is unclear.&quot;,
+    &quot;Retest is weak.&quot;,
+    &quot;No logical stop loss.&quot;,
+    &quot;No target defined.&quot;
+  ]).map(v =&gt; &quot;&lt;li&gt;&quot;+v+&quot;&lt;/li&gt;&quot;).join(&quot;&quot;);
+  warningPopup.classList.add(&quot;show&quot;);
+};
+
+document.getElementById(&quot;closeWarningBtn&quot;).onclick = () =&gt; warningPopup.classList.remove(&quot;show&quot;);
+document.getElementById(&quot;reviewRulesBtn&quot;).onclick = () =&gt; warningPopup.classList.remove(&quot;show&quot;);
+warningPopup.addEventListener(&quot;click&quot;, e =&gt; { if (e.target.id === &quot;warningPopup&quot;) warningPopup.classList.remove(&quot;show&quot;); });
+
+document.getElementById(&quot;journalItTop&quot;).onclick = () =&gt; {
+  document.querySelector(&#x27;#iccView .section&#x27;).scrollIntoView({behavior:&#x27;smooth&#x27;, block:&#x27;start&#x27;});
+};
+document.getElementById(&quot;emaJournalTop&quot;).onclick = () =&gt; {
+  document.querySelector(&#x27;#emaView .section&#x27;).scrollIntoView({behavior:&#x27;smooth&#x27;, block:&#x27;start&#x27;});
+};
+
+document.getElementById(&#x27;saveICCTradeBtn&#x27;).onclick = () =&gt; {
+  const entry = {
+    strategy: &#x27;ICC&#x27;,
+    modeOrDirection: document.getElementById(&#x27;iccModeField&#x27;).value,
+    sessionOrStatus: document.getElementById(&#x27;iccSessionField&#x27;).value,
+    score: document.getElementById(&#x27;iccScoreField&#x27;).value,
+    entry: document.getElementById(&#x27;iccEntryField&#x27;).value,
+    sl: document.getElementById(&#x27;iccSlField&#x27;).value,
+    tp: document.getElementById(&#x27;iccTpField&#x27;).value,
+    result: document.getElementById(&#x27;iccResultField&#x27;).value,
+    note: document.getElementById(&#x27;iccLessonField&#x27;).value,
+    image: iccPreviewData,
+    date: new Date().toLocaleDateString()
+  };
+  journalEntries.push(entry);
+  saveJournalStorage();
+  renderJournalList();
+};
+
+document.getElementById(&#x27;saveEMATradeBtn&#x27;).onclick = () =&gt; {
+  const entry = {
+    strategy: &#x27;EMA / TEMA&#x27;,
+    modeOrDirection: document.getElementById(&#x27;emaDirectionField&#x27;).value,
+    sessionOrStatus: document.getElementById(&#x27;emaStatusField&#x27;).value,
+    score: document.getElementById(&#x27;emaScoreField&#x27;).value,
+    entry: document.getElementById(&#x27;emaEntryField&#x27;).value,
+    sl: document.getElementById(&#x27;emaSlField&#x27;).value,
+    tp: document.getElementById(&#x27;emaTpField&#x27;).value,
+    result: document.getElementById(&#x27;emaResultField&#x27;).value,
+    note: document.getElementById(&#x27;emaLessonField&#x27;).value,
+    image: emaPreviewData,
+    date: new Date().toLocaleDateString()
+  };
+  journalEntries.push(entry);
+  saveJournalStorage();
+  renderJournalList();
+};
+
+updateICCUI();
+updateEMAUI();
+renderJournalList();
+&lt;/script&gt;
+
+&lt;script&gt;
+document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
+  var icc = document.getElementById(&#x27;iccView&#x27;);
+  var ema = document.getElementById(&#x27;emaView&#x27;);
+  if (icc) icc.classList.add(&#x27;active&#x27;);
+  if (ema) ema.classList.remove(&#x27;active&#x27;);
+});
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+      </div>
+
+      <div class="mergedStrategyPane" id="merged-ema" style="display:none;margin-top:14px;">
+        <iframe
+          title="EMA Strategy"
+          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot; /&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+&lt;title&gt;EMA Strategy&lt;/title&gt;
+&lt;style&gt;
+  :root{
+    --bg:#090711; --bg2:#120d22; --card:#17122a; --text:#f7efff; --muted:#c7b9da;
+    --pink:#ff3bbd; --purple:#8b5cf6; --blue:#39b8ff; --green:#44e1a7; --yellow:#ffce52; --red:#ff5e7e;
+    --line:rgba(255,255,255,.09); --shadow:0 12px 32px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.04) inset;
+    --glow:0 0 0 1px rgba(255,255,255,.05), 0 0 28px rgba(255,59,189,.12); --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(139,92,246,.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(57,184,255,.12), transparent 25%),
+      linear-gradient(180deg, var(--bg), #0d0a18 50%, var(--bg2));
+  }
+  body{padding:18px}
+  .app{max-width:420px;margin:0 auto}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+    border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow), var(--glow); backdrop-filter:blur(12px);
+  }
+  .hero{padding:18px 18px 16px}
+  .heroTop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  h1{font-size:28px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;line-height:1.35}
+  .badge{
+    padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;
+    background:linear-gradient(135deg, rgba(255,59,189,.22), rgba(139,92,246,.22)); border:1px solid rgba(255,255,255,.08);
+    white-space:nowrap;
+  }
+  .tabs,.sessions,.strategyTabs{display:flex;gap:10px;margin-top:14px}
+  .pill{
+    flex:1;border:none;color:var(--text);background:#1a1430;padding:12px 14px;border-radius:999px;font-weight:700;font-size:14px;
+    border:1px solid rgba(255,255,255,.06); cursor:pointer;
+  }
+  .pill.active{background:linear-gradient(135deg, rgba(255,59,189,.92), rgba(139,92,246,.92)); box-shadow:0 10px 24px rgba(255,59,189,.22)}
+  .pill.secondary.active{background:linear-gradient(135deg, rgba(57,184,255,.92), rgba(139,92,246,.92)); box-shadow:0 10px 24px rgba(57,184,255,.18)}
+  .stats,.grid,.actionCards,.bottomBtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .stat,.phaseCard,.actionCard,.section{padding:16px;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));border:1px solid var(--line)}
+  .label{color:var(--muted);font-size:12px}
+  .big{font-size:32px;font-weight:800;margin-top:4px}
+  .smallBadge{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06)}
+  .progressWrap{margin-top:14px}
+  .track{height:12px;background:#150f28;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg, var(--pink), var(--purple), var(--blue));border-radius:999px;transition:width .25s ease}
+  .phaseCard,.actionCard{min-height:118px;cursor:pointer;position:relative;overflow:hidden}
+  .phaseTitle,.actionTitle{font-size:16px;font-weight:800;margin-bottom:6px}
+  .phaseDesc,.actionDesc{font-size:12px;line-height:1.35;color:var(--muted)}
+  .phaseMeta,.actionMeta{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  .miniCount{font-size:11px;color:var(--muted)}
+  .openBtn{font-size:12px;font-weight:800;color:#fff;opacity:.9}
+  .btnWide{
+    border:none;border-radius:18px;padding:14px 16px;font-size:14px;font-weight:800;color:white;cursor:pointer
+  }
+  .journalBtn{background:linear-gradient(135deg, rgba(68,225,167,.8), rgba(57,184,255,.7));box-shadow:0 12px 24px rgba(68,225,167,.16)}
+  .resetBtn{background:#211736}
+  .rulesBtn{background:linear-gradient(135deg, rgba(255,94,126,.8), rgba(139,92,246,.75));box-shadow:0 12px 24px rgba(255,94,126,.14)}
+  .sectionTitle{font-weight:800;font-size:16px;margin:0 0 10px}
+  .journalGrid{display:grid;gap:10px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{
+    background:#130f22;border:1px solid rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:12px 14px;width:100%;outline:none
+  }
+  textarea.field{min-height:88px;resize:vertical}
+  .cta{
+    margin-top:14px;width:100%;border:none;border-radius:18px;padding:15px 16px;font-size:15px;font-weight:900;color:white;cursor:pointer;
+    background:linear-gradient(135deg, var(--pink), var(--purple));box-shadow:0 12px 24px rgba(255,59,189,.22)
+  }
+  .feedback{margin-top:14px;padding:16px;display:none}
+  .feedback.show{display:block}
+  .feedback h3{margin:0 0 10px;font-size:19px}
+  .tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;background:rgba(255,255,255,.06);margin-right:6px;margin-bottom:6px}
+  .list{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5}
+  .entryList{display:grid;gap:12px;margin-top:14px}
+  .entryCard{padding:14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07)}
+  .entryTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .entryTitle{font-size:16px;font-weight:800}
+  .entryMeta{font-size:12px;color:var(--muted);margin-top:4px}
+  .entryImg{width:100%;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none;max-height:220px;object-fit:cover}
+  .previewImg{width:100%;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.08);display:none;max-height:220px;object-fit:cover}
+  .tiny{font-size:11px;color:var(--muted)}
+  .sheet,.popup{
+    position:fixed;inset:0;background:rgba(5,4,10,.62);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:60;padding:12px
+  }
+  .sheet.show,.popup.show{display:flex}
+  .sheetCard,.popupCard{
+    width:min(100%,420px);max-height:90vh;overflow:auto;background:linear-gradient(180deg, rgba(20,14,34,.98), rgba(15,11,26,.98));
+    border:1px solid rgba(255,255,255,.08);border-radius:28px;box-shadow:var(--shadow), 0 0 34px rgba(255,59,189,.16);padding:18px
+  }
+  .sheetHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+  .sheetTitle{font-size:24px;font-weight:900;margin:0}
+  .sheetSub{font-size:12px;color:var(--muted);margin-top:4px}
+  .x{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;color:#fff;background:#22173a;font-size:18px;font-weight:900}
+  .checklist{display:grid;gap:10px;margin-top:12px}
+  .item{
+    padding:14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);
+    cursor:pointer;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:flex-start
+  }
+  .box{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.22);margin-top:2px;display:grid;place-items:center;font-size:14px;font-weight:900}
+  .item.checked .box{background:linear-gradient(135deg, var(--green), var(--blue));border-color:transparent;color:#061312}
+  .itemTitle{font-size:15px;font-weight:800}
+  .itemDesc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:4px}
+  .rule{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,206,82,.12), rgba(255,206,82,.05));border:1px solid rgba(255,206,82,.22);font-size:12px;color:#ffebaf}
+  .danger{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg, rgba(255,94,126,.12), rgba(255,94,126,.05));border:1px solid rgba(255,94,126,.22);font-size:12px;color:#ffc0cb}
+  .sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .miniBtn{border:none;border-radius:16px;padding:13px 14px;font-weight:800;color:white;cursor:pointer;background:#211736}
+  .miniBtn.primary{background:linear-gradient(135deg, var(--pink), var(--purple))}
+  .popupCard h3{margin:0 0 6px;font-size:22px}
+  .popupCard p{margin:0;color:var(--muted);line-height:1.45}
+  .warnList{margin:14px 0 0;padding-left:18px;color:#ffd0da}
+  .strategyView{display:none}
+  .strategyView.active{display:block}
+&lt;/style&gt;
+
+&lt;style&gt;
+/* Standalone EMA build */
+.strategyTabs { display:none !important; }
+#iccView { display:none !important; }
+#emaView { display:block !important; }
+&lt;/style&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;app&quot;&gt;
+  &lt;div class=&quot;strategyTabs&quot;&gt;
+    &lt;button class=&quot;pill&quot; data-strategy=&quot;icc&quot;&gt;ICC Strategy&lt;/button&gt;
+    &lt;button class=&quot;pill&quot; data-strategy=&quot;ema&quot;&gt;EMA Strategy&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;iccView&quot; class=&quot;strategyView active&quot;&gt;
+    &lt;div class=&quot;panel hero&quot;&gt;
+      &lt;div class=&quot;heroTop&quot;&gt;
+        &lt;div&gt;
+          &lt;h1&gt;ICC Strategy&lt;/h1&gt;
+          &lt;div class=&quot;sub&quot;&gt;Indication • Correction • Continuation&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;badge&quot; id=&quot;statusBadge&quot;&gt;WAIT&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;tabs&quot;&gt;
+        &lt;button class=&quot;pill active&quot; data-mode=&quot;1M&quot;&gt;1M ⚡&lt;/button&gt;
+        &lt;button class=&quot;pill&quot; data-mode=&quot;5M&quot;&gt;5M 🧘🏽‍♀️&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;sessions&quot;&gt;
+        &lt;button class=&quot;pill secondary&quot; data-session=&quot;Asia&quot;&gt;Asia&lt;/button&gt;
+        &lt;button class=&quot;pill secondary&quot; data-session=&quot;London&quot;&gt;London&lt;/button&gt;
+        &lt;button class=&quot;pill secondary active&quot; data-session=&quot;NY&quot;&gt;NY&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;stats&quot;&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;big&quot; id=&quot;scoreValue&quot;&gt;0%&lt;/div&gt;
+          &lt;div class=&quot;label&quot;&gt;Setup Strength&lt;/div&gt;
+          &lt;div class=&quot;smallBadge&quot; id=&quot;scoreHint&quot;&gt;WAIT&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;label&quot;&gt;Status&lt;/div&gt;
+          &lt;div class=&quot;big&quot; style=&quot;font-size:28px;&quot; id=&quot;statusText&quot;&gt;Not Clean Yet&lt;/div&gt;
+          &lt;div class=&quot;sub&quot; id=&quot;statusSub&quot; style=&quot;margin-top:8px;&quot;&gt;More confirmation needed before entry.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;progressWrap&quot;&gt;
+        &lt;div class=&quot;track&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;progressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;grid&quot;&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;bias&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Bias + Setup&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;HTF bias, swing levels, pre-indication, target.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-bias&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;indication&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Indication&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;1M close past level. Confirm direction. No entry here.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-indication&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;correction&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Correction&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Clean pullback, internal shift, retest, no wrong-side break.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-correction&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;entry&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Continuation Entry&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;1M close back through level, limit entry, SL, TP1/TP2, no chasing.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-entry&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;actionCards&quot;&gt;
+      &lt;div class=&quot;panel actionCard&quot; id=&quot;walkAwayCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Walk Away Rules&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Auto no-trade conditions and discipline lockouts.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;activeRules&quot;&gt;0 active&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel actionCard&quot; id=&quot;takeTradeCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Take Trade&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Push ICC result into journal with score, session, timeframe, and notes.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;tradeState&quot;&gt;Locked&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;bottomBtns&quot;&gt;
+      &lt;button class=&quot;btnWide journalBtn&quot; id=&quot;journalItTop&quot;&gt;⭐ Journal It&lt;/button&gt;
+      &lt;button class=&quot;btnWide resetBtn&quot; id=&quot;resetAllBtn&quot;&gt;🔄 Reset&lt;/button&gt;
+      &lt;button class=&quot;btnWide rulesBtn&quot; id=&quot;rulesBtn&quot;&gt;🚫 Rules&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+      &lt;h2 class=&quot;sectionTitle&quot;&gt;ICC Journal Entry&lt;/h2&gt;
+      &lt;div class=&quot;sub&quot; style=&quot;margin-bottom:12px;&quot;&gt;Auto-filled from your checklist. Add your chart screenshot too.&lt;/div&gt;
+      &lt;div class=&quot;smallBadge&quot; id=&quot;journalBadge&quot;&gt;WAIT&lt;/div&gt;
+      &lt;div class=&quot;journalGrid&quot; style=&quot;margin-top:12px;&quot;&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccStrategyField&quot; value=&quot;ICC&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccModeField&quot; value=&quot;1M&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccSessionField&quot; value=&quot;NY&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccScoreField&quot; value=&quot;0%&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccEntryField&quot; placeholder=&quot;Entry&quot; /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccSlField&quot; placeholder=&quot;Stop Loss&quot; /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;iccTpField&quot; placeholder=&quot;TP1 / TP2&quot; /&gt;
+          &lt;select class=&quot;field&quot; id=&quot;iccResultField&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Result&lt;/option&gt;
+            &lt;option&gt;Win&lt;/option&gt;
+            &lt;option&gt;Loss&lt;/option&gt;
+            &lt;option&gt;Breakeven&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+        &lt;textarea class=&quot;field&quot; id=&quot;iccLessonField&quot; placeholder=&quot;Mistake / lesson / note&quot;&gt;&lt;/textarea&gt;
+        &lt;input class=&quot;field&quot; type=&quot;file&quot; id=&quot;iccScreenshotField&quot; accept=&quot;image/*&quot; /&gt;
+        &lt;img id=&quot;iccPreview&quot; class=&quot;previewImg&quot; /&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;cta&quot; id=&quot;saveICCTradeBtn&quot;&gt;Save Trade + Feedback&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;emaView&quot; class=&quot;strategyView&quot;&gt;
+    &lt;div class=&quot;panel hero&quot;&gt;
+      &lt;div class=&quot;heroTop&quot;&gt;
+        &lt;div&gt;
+          &lt;h1&gt;EMA / TEMA Strategy&lt;/h1&gt;
+          &lt;div class=&quot;sub&quot;&gt;Setup • Indication • Correction • Entry&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;badge&quot; id=&quot;emaStatusBadge&quot;&gt;NO TRADE&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;tabs&quot;&gt;
+        &lt;button class=&quot;pill active&quot; data-ema-direction=&quot;Long&quot;&gt;Long&lt;/button&gt;
+        &lt;button class=&quot;pill&quot; data-ema-direction=&quot;Short&quot;&gt;Short&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;stats&quot;&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;big&quot; id=&quot;emaScoreValue&quot;&gt;0%&lt;/div&gt;
+          &lt;div class=&quot;label&quot;&gt;Checklist Score&lt;/div&gt;
+          &lt;div class=&quot;smallBadge&quot; id=&quot;emaScoreHint&quot;&gt;NO TRADE&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;stat&quot;&gt;
+          &lt;div class=&quot;label&quot;&gt;Status&lt;/div&gt;
+          &lt;div class=&quot;big&quot; style=&quot;font-size:28px;&quot; id=&quot;emaStatusText&quot;&gt;Not Clean Yet&lt;/div&gt;
+          &lt;div class=&quot;sub&quot; id=&quot;emaStatusSub&quot; style=&quot;margin-top:8px;&quot;&gt;Wait for crossover, retest, and momentum before entry.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;progressWrap&quot;&gt;
+        &lt;div class=&quot;track&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;emaProgressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;grid&quot;&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;setup&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Setup&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Indicators loaded, chart clean, direction framework ready.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-setup&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;indication&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Indication&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Clean crossover, close confirmation, direction clear.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-indication&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;correction&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Correction&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Retest holds, entry is not late, momentum still alive.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-correction&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel phaseCard&quot; data-ema-phase=&quot;entry&quot;&gt;
+        &lt;div class=&quot;phaseTitle&quot;&gt;Entry&lt;/div&gt;
+        &lt;div class=&quot;phaseDesc&quot;&gt;Momentum confirms, stop is logical, targets set.&lt;/div&gt;
+        &lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;ema-count-entry&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Not complete&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;actionCards&quot;&gt;
+      &lt;div class=&quot;panel actionCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Direction&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot; id=&quot;emaDirectionCopy&quot;&gt;Long setup selected. Wait for bullish crossover + retest.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;emaDirectionBadge&quot;&gt;Long&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel actionCard&quot;&gt;
+        &lt;div class=&quot;actionTitle&quot;&gt;Unlock Trade&lt;/div&gt;
+        &lt;div class=&quot;actionDesc&quot;&gt;Use score + phase completion before taking the setup.&lt;/div&gt;
+        &lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;emaTradeState&quot;&gt;Locked&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;bottomBtns&quot;&gt;
+      &lt;button class=&quot;btnWide journalBtn&quot; id=&quot;emaJournalTop&quot;&gt;⭐ Journal It&lt;/button&gt;
+      &lt;button class=&quot;btnWide resetBtn&quot; id=&quot;emaResetAllBtn&quot;&gt;🔄 Reset&lt;/button&gt;
+      &lt;button class=&quot;btnWide rulesBtn&quot; id=&quot;emaRulesBtn&quot;&gt;🚫 Rules&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+      &lt;h2 class=&quot;sectionTitle&quot;&gt;EMA Journal Entry&lt;/h2&gt;
+      &lt;div class=&quot;sub&quot; style=&quot;margin-bottom:12px;&quot;&gt;Auto-filled from your EMA checklist. Add your chart screenshot too.&lt;/div&gt;
+      &lt;div class=&quot;smallBadge&quot; id=&quot;emaJournalBadge&quot;&gt;NO TRADE&lt;/div&gt;
+      &lt;div class=&quot;journalGrid&quot; style=&quot;margin-top:12px;&quot;&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaStrategyField&quot; value=&quot;EMA / TEMA&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaDirectionField&quot; value=&quot;Long&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaScoreField&quot; value=&quot;0%&quot; readonly /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaStatusField&quot; value=&quot;NO TRADE&quot; readonly /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaEntryField&quot; placeholder=&quot;Entry&quot; /&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaSlField&quot; placeholder=&quot;Stop Loss&quot; /&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row2&quot;&gt;
+          &lt;input class=&quot;field&quot; id=&quot;emaTpField&quot; placeholder=&quot;TP1 / TP2&quot; /&gt;
+          &lt;select class=&quot;field&quot; id=&quot;emaResultField&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Result&lt;/option&gt;
+            &lt;option&gt;Win&lt;/option&gt;
+            &lt;option&gt;Loss&lt;/option&gt;
+            &lt;option&gt;Breakeven&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+        &lt;textarea class=&quot;field&quot; id=&quot;emaLessonField&quot; placeholder=&quot;Mistake / lesson / note&quot;&gt;&lt;/textarea&gt;
+        &lt;input class=&quot;field&quot; type=&quot;file&quot; id=&quot;emaScreenshotField&quot; accept=&quot;image/*&quot; /&gt;
+        &lt;img id=&quot;emaPreview&quot; class=&quot;previewImg&quot; /&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;cta&quot; id=&quot;saveEMATradeBtn&quot;&gt;Save Trade + Feedback&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+    &lt;h2 class=&quot;sectionTitle&quot;&gt;Linked Journal&lt;/h2&gt;
+    &lt;div class=&quot;sub&quot;&gt;Trades saved from ICC and EMA show here.&lt;/div&gt;
+    &lt;div id=&quot;journalList&quot; class=&quot;entryList&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;sheet&quot; id=&quot;sheet&quot;&gt;
+  &lt;div class=&quot;sheetCard&quot;&gt;
+    &lt;div class=&quot;sheetHead&quot;&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;sheetTitle&quot; id=&quot;sheetTitle&quot;&gt;Phase&lt;/div&gt;
+        &lt;div class=&quot;sheetSub&quot; id=&quot;sheetSub&quot;&gt;Checklist&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;x&quot; id=&quot;closeSheet&quot;&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;checklist&quot; id=&quot;checklist&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;rule&quot; id=&quot;ruleBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;danger&quot; id=&quot;dangerBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;sheetActions&quot;&gt;
+      &lt;button class=&quot;miniBtn&quot; id=&quot;resetPhaseBtn&quot;&gt;Reset Phase&lt;/button&gt;
+      &lt;button class=&quot;miniBtn primary&quot; id=&quot;donePhaseBtn&quot;&gt;Done&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;popup&quot; id=&quot;warningPopup&quot;&gt;
+  &lt;div class=&quot;popupCard&quot;&gt;
+    &lt;h3&gt;⚠️ Warning&lt;/h3&gt;
+    &lt;p id=&quot;warningIntro&quot;&gt;This setup is breaking one or more no-trade rules.&lt;/p&gt;
+    &lt;ul class=&quot;warnList&quot; id=&quot;warningList&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;sheetActions&quot; style=&quot;margin-top:16px;&quot;&gt;
+      &lt;button class=&quot;miniBtn&quot; id=&quot;closeWarningBtn&quot;&gt;Go Back&lt;/button&gt;
+      &lt;button class=&quot;miniBtn primary&quot; id=&quot;reviewRulesBtn&quot;&gt;Review&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const STORAGE_KEY = &#x27;faceless_strategy_journal_v1&#x27;;
+let journalEntries = JSON.parse(localStorage.getItem(STORAGE_KEY) || &#x27;[]&#x27;);
+const strategyTabs = document.querySelectorAll(&#x27;[data-strategy]&#x27;);
+strategyTabs.forEach(btn =&gt; {
+  btn.addEventListener(&#x27;click&#x27;, () =&gt; {
+    strategyTabs.forEach(b =&gt; b.classList.remove(&#x27;active&#x27;));
+    btn.classList.add(&#x27;active&#x27;);
+    const isICC = btn.dataset.strategy === &#x27;icc&#x27;;
+    document.getElementById(&#x27;iccView&#x27;).classList.toggle(&#x27;active&#x27;, isICC);
+    document.getElementById(&#x27;emaView&#x27;).classList.toggle(&#x27;active&#x27;, !isICC);
+    window.scrollTo({top:0, behavior:&#x27;smooth&#x27;});
+  });
+});
+strategyTabs[0].classList.add(&#x27;active&#x27;);
+
+const iccData = {
+  bias: {
+    title: &quot;Bias + Setup&quot;,
+    sub: &quot;Phase 1 • Mark the higher time frame before execution&quot;,
+    rule: &quot;Use the 1H and 4H to build bias first. These levels are what you are actively watching for reaction.&quot;,
+    danger: &quot;No HTF bias = automatic No Trade.&quot;,
+    items: [
+      { key:&quot;htf_bias&quot;, title:&quot;HTF Bias Clear&quot;, desc:&quot;Use the 1H and 4H to determine overall direction before looking for an entry.&quot; },
+      { key:&quot;swing_levels&quot;, title:&quot;Swing High / Low&quot;, desc:&quot;These can be marked on both the 1H and 4H. These are the levels you are actively watching for reaction.&quot; },
+      { key:&quot;pre_indication&quot;, title:&quot;Pre-Indication Level&quot;, desc:&quot;This is the key level price has not fully broken yet. You are waiting for a clean close beyond it.&quot; },
+      { key:&quot;target_identified&quot;, title:&quot;Target Identified&quot;, desc:&quot;Know where price is likely moving before entering the trade.&quot; }
+    ]
+  },
+  indication: {
+    title: &quot;Indication&quot;,
+    sub: &quot;Phase 2 • Wait for the true break&quot;,
+    rule: &quot;Indication confirms direction only. Entry does not happen here.&quot;,
+    danger: &quot;Wick only or early entry = No Trade.&quot;,
+    items: [
+      { key:&quot;close_past_level&quot;, title:&quot;Candle Close Past Level&quot;, desc:&quot;This must be a true candle close, not just a wick through the level.&quot; },
+      { key:&quot;bullish_or_bearish&quot;, title:&quot;Directional Confirmation&quot;, desc:&quot;The close should clearly support the direction of the trade above swing high or below swing low.&quot; },
+      { key:&quot;no_entry_yet&quot;, title:&quot;No Entry Yet&quot;, desc:&quot;Indication confirms direction only. Do not enter at this stage.&quot; },
+      { key:&quot;no_wick_only&quot;, title:&quot;No Wick-Only Confirmation&quot;, desc:&quot;A wick without a close does not count as confirmation.&quot; }
+    ]
+  },
+  correction: {
+    title: &quot;Correction&quot;,
+    sub: &quot;Phase 3 • Let the pullback finish&quot;,
+    rule: &quot;The correction is not complete at the pullback. It completes at the retest + close.&quot;,
+    danger: &quot;Wrong-side structure break = No Trade.&quot;,
+    items: [
+      { key:&quot;clean_pullback&quot;, title:&quot;Clean Pullback&quot;, desc:&quot;Price should pull back in a controlled way, not randomly spike around.&quot; },
+      { key:&quot;observe_retrace&quot;, title:&quot;Observe Retrace&quot;, desc:&quot;Let the retrace develop naturally. Watch, do not rush.&quot; },
+      { key:&quot;internal_shift&quot;, title:&quot;Structure Shift Forms&quot;, desc:&quot;Watch for internal structure to form during the pullback.&quot; },
+      { key:&quot;retest_close&quot;, title:&quot;Retest + Close&quot;, desc:&quot;The correction is complete only when the retest and close confirm it.&quot; }
+    ]
+  },
+  entry: {
+    title: &quot;Continuation Entry&quot;,
+    sub: &quot;Phase 4 • Confirmation first, then execution&quot;,
+    rule: &quot;Enter only after continuation is confirmed. No chasing.&quot;,
+    danger: &quot;No close, no SL, or chasing = No Trade.&quot;,
+    items: [
+      { key:&quot;continuation_close&quot;, title:&quot;Continuation Close&quot;, desc:&quot;Enter only after continuation is confirmed back through the level.&quot; },
+      { key:&quot;limit_entry&quot;, title:&quot;Limit Entry&quot;, desc:&quot;Respect the setup. No chasing the move if the level is missed.&quot; },
+      { key:&quot;stop_loss&quot;, title:&quot;Stop Loss Set&quot;, desc:&quot;Your risk should already be defined before entry.&quot; },
+      { key:&quot;targets_marked&quot;, title:&quot;TP1 / TP2 Marked&quot;, desc:&quot;Know where partials and full targets are before taking the trade.&quot; }
+    ]
+  }
+};
+
+const emaData = {
+  setup: {
+    title: &quot;Setup&quot;,
+    sub: &quot;Phase 1 • Load the environment before the signal&quot;,
+    rule: &quot;Your chart should already be prepared before you even look for a crossover.&quot;,
+    danger: &quot;Missing indicators or a messy chart = No Trade.&quot;,
+    items: [
+      { key:&quot;ema_8&quot;, title:&quot;8 EMA Is On Chart&quot;, desc:&quot;The fast EMA must be visible before the setup can be graded.&quot; },
+      { key:&quot;tema_55&quot;, title:&quot;55 TEMA Is On Chart&quot;, desc:&quot;The main trend TEMA must be present and readable.&quot; },
+      { key:&quot;tema_13_21&quot;, title:&quot;13 / 21 TEMA Are Visible&quot;, desc:&quot;The internal trend structure should be visible before the signal appears.&quot; },
+      { key:&quot;clean_chart&quot;, title:&quot;Chart Is Clean&quot;, desc:&quot;No heavy clutter, overlapping drawings, or conditions that hide the setup.&quot; }
+    ]
+  },
+  indication: {
+    title: &quot;Indication&quot;,
+    sub: &quot;Phase 2 • Wait for the crossover to confirm direction&quot;,
+    rule: &quot;The crossover must be clean and direction must be obvious before you consider the entry.&quot;,
+    danger: &quot;Messy crossover or unclear direction = No Trade.&quot;,
+    items: [
+      { key:&quot;clean_cross&quot;, title:&quot;Clean Crossover Happened&quot;, desc:&quot;The crossover should be visible and not just a touch or fake-out.&quot; },
+      { key:&quot;direction_clear&quot;, title:&quot;Direction Is Clear After Crossover&quot;, desc:&quot;Long means bullish structure. Short means bearish structure.&quot; },
+      { key:&quot;tema_stacked&quot;, title:&quot;55 TEMA Is Stacked Correctly&quot;, desc:&quot;The slow trend line must support the direction of the setup.&quot; },
+      { key:&quot;close_confirmed&quot;, title:&quot;Close Confirmed The Signal&quot;, desc:&quot;Wait for the candle close to confirm the crossover instead of reacting early.&quot; }
+    ]
+  },
+  correction: {
+    title: &quot;Correction&quot;,
+    sub: &quot;Phase 3 • Let the retest do its job&quot;,
+    rule: &quot;The retest should respect the EMA zone and prove the setup is not late.&quot;,
+    danger: &quot;Deep break or late extension = No Trade.&quot;,
+    items: [
+      { key:&quot;retest_8&quot;, title:&quot;Price Retested The 8 EMA&quot;, desc:&quot;Price should come back into the retest area instead of running away.&quot; },
+      { key:&quot;retest_respected&quot;, title:&quot;Candle Respected The Retest Area&quot;, desc:&quot;The retest should hold and show reaction instead of slicing through.&quot; },
+      { key:&quot;not_late&quot;, title:&quot;Entry Is Not Late Or Extended&quot;, desc:&quot;Do not chase after the move is already stretched.&quot; },
+      { key:&quot;1m_5m_aligned&quot;, title:&quot;1 Min And 5 Min Are Aligned&quot;, desc:&quot;The lower and execution timeframes should support each other.&quot; }
+    ]
+  },
+  entry: {
+    title: &quot;Entry&quot;,
+    sub: &quot;Phase 4 • Momentum confirms execution&quot;,
+    rule: &quot;Take the entry only after momentum, risk, and target are already defined.&quot;,
+    danger: &quot;No momentum, no stop, or no target = No Trade.&quot;,
+    items: [
+      { key:&quot;momentum_confirms&quot;, title:&quot;Strong Push / Momentum Confirms Entry&quot;, desc:&quot;The move should have energy, not weak drift.&quot; },
+      { key:&quot;no_chop&quot;, title:&quot;No Chop / Not Tangled Up&quot;, desc:&quot;Avoid entry when price is chopping around the moving averages.&quot; },
+      { key:&quot;target_defined&quot;, title:&quot;Target Is Defined Before Entry&quot;, desc:&quot;Your TP has to be known before you click in.&quot; },
+      { key:&quot;stop_logical&quot;, title:&quot;Stop Loss Is Logical&quot;, desc:&quot;The stop should make sense structurally and fit the setup.&quot; }
+    ]
+  }
+};
+
+const sheet = document.getElementById(&quot;sheet&quot;);
+const checklist = document.getElementById(&quot;checklist&quot;);
+const warningPopup = document.getElementById(&quot;warningPopup&quot;);
+const warningList = document.getElementById(&quot;warningList&quot;);
+const warningIntro = document.getElementById(&quot;warningIntro&quot;);
+
+const iccState = { strategy:&quot;icc&quot;, mode:&quot;1M&quot;, session:&quot;NY&quot;, activePhase:null, checked:{} };
+Object.values(iccData).forEach(phase =&gt; phase.items.forEach(item =&gt; iccState.checked[item.key] = false));
+const iccPhaseOrder = [&quot;bias&quot;,&quot;indication&quot;,&quot;correction&quot;,&quot;entry&quot;];
+
+const emaState = { strategy:&quot;ema&quot;, direction:&quot;Long&quot;, activePhase:null, checked:{} };
+Object.values(emaData).forEach(phase =&gt; phase.items.forEach(item =&gt; emaState.checked[item.key] = false));
+const emaPhaseOrder = [&quot;setup&quot;,&quot;indication&quot;,&quot;correction&quot;,&quot;entry&quot;];
+
+let iccPreviewData = &#x27;&#x27;;
+let emaPreviewData = &#x27;&#x27;;
+
+function saveJournalStorage(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(journalEntries));
+}
+function renderJournalList(){
+  const list = document.getElementById(&#x27;journalList&#x27;);
+  if(!journalEntries.length){
+    list.innerHTML = &#x27;&lt;div class=&quot;entryCard&quot;&gt;&lt;div class=&quot;entryTitle&quot;&gt;No journal entries yet&lt;/div&gt;&lt;div class=&quot;entryMeta&quot;&gt;Saved ICC and EMA trades will appear here.&lt;/div&gt;&lt;/div&gt;&#x27;;
+    return;
+  }
+  list.innerHTML = journalEntries.slice().reverse().map((entry, idx) =&gt; `
+    &lt;div class=&quot;entryCard&quot;&gt;
+      &lt;div class=&quot;entryTop&quot;&gt;
+        &lt;div&gt;
+          &lt;div class=&quot;entryTitle&quot;&gt;${entry.strategy} • ${entry.result || &#x27;Unlogged&#x27;}&lt;/div&gt;
+          &lt;div class=&quot;entryMeta&quot;&gt;${entry.modeOrDirection} • ${entry.sessionOrStatus} • ${entry.score}&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;smallBadge&quot;&gt;${entry.date}&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;Entry: ${entry.entry || &#x27;-&#x27;} · SL: ${entry.sl || &#x27;-&#x27;} · TP: ${entry.tp || &#x27;-&#x27;}&lt;/div&gt;
+      &lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;${entry.note || &#x27;No note added.&#x27;}&lt;/div&gt;
+      ${entry.image ? `&lt;img class=&quot;entryImg&quot; style=&quot;display:block&quot; src=&quot;${entry.image}&quot; /&gt;` : &#x27;&#x27;}
+    &lt;/div&gt;
+  `).join(&#x27;&#x27;);
+}
+function bindPreview(inputId, imgId, setter){
+  document.getElementById(inputId).addEventListener(&#x27;change&#x27;, e =&gt; {
+    const file = e.target.files &amp;&amp; e.target.files[0];
+    const img = document.getElementById(imgId);
+    if(!file){ setter(&#x27;&#x27;); img.style.display=&#x27;none&#x27;; img.src=&#x27;&#x27;; return; }
+    const reader = new FileReader();
+    reader.onload = () =&gt; {
+      setter(reader.result);
+      img.src = reader.result;
+      img.style.display = &#x27;block&#x27;;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+bindPreview(&#x27;iccScreenshotField&#x27;,&#x27;iccPreview&#x27;,v=&gt;iccPreviewData=v);
+bindPreview(&#x27;emaScreenshotField&#x27;,&#x27;emaPreview&#x27;,v=&gt;emaPreviewData=v);
+
+function openGenericPhase(stateObj, dataObj, phaseKey){
+  stateObj.activePhase = phaseKey;
+  const phase = dataObj[phaseKey];
+  document.getElementById(&quot;sheetTitle&quot;).textContent = phase.title;
+  document.getElementById(&quot;sheetSub&quot;).textContent = phase.sub;
+  document.getElementById(&quot;ruleBox&quot;).textContent = phase.rule;
+  document.getElementById(&quot;dangerBox&quot;).textContent = phase.danger;
+  checklist.innerHTML = &quot;&quot;;
+  phase.items.forEach(item =&gt; {
+    const div = document.createElement(&quot;div&quot;);
+    div.className = &quot;item&quot; + (stateObj.checked[item.key] ? &quot; checked&quot; : &quot;&quot;);
+    div.innerHTML = `
+      &lt;div class=&quot;box&quot;&gt;${stateObj.checked[item.key] ? &quot;✓&quot; : &quot;&quot;}&lt;/div&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;itemTitle&quot;&gt;${item.title}&lt;/div&gt;
+        &lt;div class=&quot;itemDesc&quot;&gt;${item.desc}&lt;/div&gt;
+      &lt;/div&gt;`;
+    div.onclick = () =&gt; {
+      stateObj.checked[item.key] = !stateObj.checked[item.key];
+      if (stateObj.strategy === &#x27;icc&#x27;) updateICCUI();
+      if (stateObj.strategy === &#x27;ema&#x27;) updateEMAUI();
+      openGenericPhase(stateObj, dataObj, phaseKey);
+    };
+    checklist.appendChild(div);
+  });
+  sheet.classList.add(&quot;show&quot;);
+}
+function closePhase(){ sheet.classList.remove(&quot;show&quot;); }
+
+document.getElementById(&quot;closeSheet&quot;).onclick = closePhase;
+document.getElementById(&quot;donePhaseBtn&quot;).onclick = closePhase;
+sheet.addEventListener(&quot;click&quot;, e =&gt; { if (e.target.id === &quot;sheet&quot;) closePhase(); });
+
+document.querySelectorAll(&quot;[data-phase]&quot;).forEach(el =&gt; el.onclick = () =&gt; openGenericPhase(iccState, iccData, el.dataset.phase));
+document.querySelectorAll(&quot;[data-ema-phase]&quot;).forEach(el =&gt; el.onclick = () =&gt; openGenericPhase(emaState, emaData, el.dataset.emaPhase));
+
+document.getElementById(&quot;resetPhaseBtn&quot;).onclick = () =&gt; {
+  const current = document.getElementById(&quot;sheetTitle&quot;).textContent;
+  if (iccState.activePhase &amp;&amp; iccData[iccState.activePhase] &amp;&amp; iccData[iccState.activePhase].title === current){
+    iccData[iccState.activePhase].items.forEach(item =&gt; iccState.checked[item.key] = false);
+    updateICCUI();
+    openGenericPhase(iccState, iccData, iccState.activePhase);
+    return;
+  }
+  if (emaState.activePhase &amp;&amp; emaData[emaState.activePhase] &amp;&amp; emaData[emaState.activePhase].title === current){
+    emaData[emaState.activePhase].items.forEach(item =&gt; emaState.checked[item.key] = false);
+    updateEMAUI();
+    openGenericPhase(emaState, emaData, emaState.activePhase);
+  }
+};
+
+document.querySelectorAll(&quot;[data-mode]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-mode]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); iccState.mode = btn.dataset.mode; updateICCUI();
+});
+document.querySelectorAll(&quot;[data-session]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-session]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); iccState.session = btn.dataset.session; updateICCUI();
+});
+document.querySelectorAll(&quot;[data-ema-direction]&quot;).forEach(btn =&gt; btn.onclick = () =&gt; {
+  document.querySelectorAll(&quot;[data-ema-direction]&quot;).forEach(b =&gt; b.classList.remove(&quot;active&quot;));
+  btn.classList.add(&quot;active&quot;); emaState.direction = btn.dataset.emaDirection; updateEMAUI();
+});
+
+function getCounts(dataObj, order, checked){
+  const counts = {};
+  order.forEach(phaseKey =&gt; {
+    const phase = dataObj[phaseKey];
+    counts[phaseKey] = { total: phase.items.length, done: phase.items.filter(item =&gt; checked[item.key]).length };
+  });
+  return counts;
+}
+
+function getICCViolations(){
+  const v = [];
+  if (!iccState.checked.htf_bias) v.push(&quot;No clear 1H / 4H bias.&quot;);
+  if (iccState.checked.close_past_level &amp;&amp; !iccState.checked.no_wick_only) v.push(&quot;Wick-only confirmation is not valid.&quot;);
+  if (iccState.checked.continuation_close &amp;&amp; !iccState.checked.stop_loss) v.push(&quot;No stop loss set before entry.&quot;);
+  if (iccState.checked.continuation_close &amp;&amp; !iccState.checked.limit_entry) v.push(&quot;Continuation marked without respecting limit entry.&quot;);
+  if (iccState.checked.close_past_level &amp;&amp; !iccState.checked.no_entry_yet) v.push(&quot;You may be entering during indication instead of waiting.&quot;);
+  return v;
+}
+function computeICCScore(){
+  const total = Object.values(iccState.checked).length;
+  const done = Object.values(iccState.checked).filter(Boolean).length;
+  let score = Math.round((done / total) * 100);
+  if (!iccState.checked.htf_bias) score = Math.max(0, score - 20);
+  if (!iccState.checked.no_wick_only) score = Math.max(0, score - 10);
+  if (!iccState.checked.stop_loss) score = Math.max(0, score - 10);
+  return score;
+}
+function computeICCStatus(score){
+  const violations = getICCViolations();
+  const hardFail = violations.length &gt; 0;
+  if (hardFail &amp;&amp; score &lt; 75) return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;WAIT&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Rule violation detected. Fix setup before entry.&quot;, tradeState:&quot;Locked&quot;};
+  if (score &gt;= 90) return {badge:&quot;A SETUP&quot;, scoreHint:&quot;A SETUP&quot;, title:&quot;Execute Trade&quot;, sub:&quot;Clean confirmation, strong structure, valid execution plan.&quot;, tradeState:&quot;Ready&quot;};
+  if (score &gt;= 75) return {badge:&quot;B SETUP&quot;, scoreHint:&quot;B SETUP&quot;, title:&quot;Almost There&quot;, sub:&quot;Tradable, but review any weak areas first.&quot;, tradeState:&quot;Ready&quot;};
+  return {badge:&quot;WAIT&quot;, scoreHint:&quot;WAIT&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;More confirmation needed before entry.&quot;, tradeState:&quot;Locked&quot;};
+}
+function updateICCUI(){
+  const counts = getCounts(iccData, iccPhaseOrder, iccState.checked);
+  iccPhaseOrder.forEach(key =&gt; document.getElementById(&quot;count-&quot; + key).textContent = counts[key].done + &quot; / &quot; + counts[key].total);
+  const totalDone = Object.values(counts).reduce((a,b) =&gt; a + b.done, 0);
+  const totalItems = Object.values(counts).reduce((a,b) =&gt; a + b.total, 0);
+  const score = computeICCScore();
+  const status = computeICCStatus(score);
+  const violations = getICCViolations();
+
+  document.getElementById(&quot;scoreValue&quot;).textContent = score + &quot;%&quot;;
+  document.getElementById(&quot;scoreHint&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;statusBadge&quot;).textContent = status.badge;
+  document.getElementById(&quot;statusText&quot;).textContent = status.title;
+  document.getElementById(&quot;statusSub&quot;).textContent = status.sub;
+  document.getElementById(&quot;progressFill&quot;).style.width = Math.round((totalDone/totalItems)*100) + &quot;%&quot;;
+  document.getElementById(&quot;activeRules&quot;).textContent = violations.length + &quot; active&quot;;
+  document.getElementById(&quot;tradeState&quot;).textContent = status.tradeState;
+  document.getElementById(&quot;journalBadge&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;iccModeField&quot;).value = iccState.mode;
+  document.getElementById(&quot;iccSessionField&quot;).value = iccState.session;
+  document.getElementById(&quot;iccScoreField&quot;).value = score + &quot;%&quot;;
+}
+
+function getEMAViolations(){
+  const v = [];
+  if (!emaState.checked.clean_cross) v.push(&quot;No clean crossover yet.&quot;);
+  if (!emaState.checked.direction_clear) v.push(&quot;Direction is still unclear.&quot;);
+  if (!emaState.checked.retest_respected &amp;&amp; emaState.checked.retest_8) v.push(&quot;Retest did not hold cleanly.&quot;);
+  if (!emaState.checked.stop_logical) v.push(&quot;Stop loss is not logical.&quot;);
+  if (!emaState.checked.target_defined) v.push(&quot;Target is not defined before entry.&quot;);
+  return v;
+}
+function computeEMAScore(){
+  const total = Object.values(emaState.checked).length;
+  const done = Object.values(emaState.checked).filter(Boolean).length;
+  let score = Math.round((done / total) * 100);
+  if (!emaState.checked.clean_cross) score = Math.max(0, score - 15);
+  if (!emaState.checked.direction_clear) score = Math.max(0, score - 10);
+  if (!emaState.checked.stop_logical) score = Math.max(0, score - 10);
+  return score;
+}
+function computeEMAStatus(score){
+  const violations = getEMAViolations();
+  if (violations.length &amp;&amp; score &lt; 75) return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;NO TRADE&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Wait for crossover, retest, and momentum before entry.&quot;, tradeState:&quot;Locked&quot;};
+  if (score &gt;= 90) return {badge:&quot;A SETUP&quot;, scoreHint:&quot;A SETUP&quot;, title:&quot;Ready To Trade&quot;, sub:&quot;Trend, retest, and execution all line up.&quot;, tradeState:&quot;Ready&quot;};
+  if (score &gt;= 75) return {badge:&quot;B SETUP&quot;, scoreHint:&quot;WATCH&quot;, title:&quot;Almost There&quot;, sub:&quot;Good trend setup. Review the weak spots before entry.&quot;, tradeState:&quot;Watch&quot;};
+  return {badge:&quot;NO TRADE&quot;, scoreHint:&quot;NO TRADE&quot;, title:&quot;Not Clean Yet&quot;, sub:&quot;Wait for crossover, retest, and momentum before entry.&quot;, tradeState:&quot;Locked&quot;};
+}
+function updateEMAUI(){
+  const counts = getCounts(emaData, emaPhaseOrder, emaState.checked);
+  emaPhaseOrder.forEach(key =&gt; document.getElementById(&quot;ema-count-&quot; + key).textContent = counts[key].done + &quot; / &quot; + counts[key].total);
+  const totalDone = Object.values(counts).reduce((a,b) =&gt; a + b.done, 0);
+  const totalItems = Object.values(counts).reduce((a,b) =&gt; a + b.total, 0);
+  const score = computeEMAScore();
+  const status = computeEMAStatus(score);
+
+  document.getElementById(&quot;emaScoreValue&quot;).textContent = score + &quot;%&quot;;
+  document.getElementById(&quot;emaScoreHint&quot;).textContent = status.scoreHint;
+  document.getElementById(&quot;emaStatusBadge&quot;).textContent = status.badge;
+  document.getElementById(&quot;emaStatusText&quot;).textContent = status.title;
+  document.getElementById(&quot;emaStatusSub&quot;).textContent = status.sub;
+  document.getElementById(&quot;emaProgressFill&quot;).style.width = Math.round((totalDone/totalItems)*100) + &quot;%&quot;;
+  document.getElementById(&quot;emaTradeState&quot;).textContent = status.tradeState;
+  document.getElementById(&quot;emaDirectionBadge&quot;).textContent = emaState.direction;
+  document.getElementById(&quot;emaDirectionCopy&quot;).textContent =
+    emaState.direction === &quot;Long&quot;
+      ? &quot;Long setup selected. Wait for bullish crossover + retest.&quot;
+      : &quot;Short setup selected. Wait for bearish crossover + retest.&quot;;
+  document.getElementById(&quot;emaDirectionField&quot;).value = emaState.direction;
+  document.getElementById(&quot;emaScoreField&quot;).value = score + &quot;%&quot;;
+  document.getElementById(&quot;emaStatusField&quot;).value = status.badge;
+  document.getElementById(&quot;emaJournalBadge&quot;).textContent = status.scoreHint;
+}
+
+document.getElementById(&quot;resetAllBtn&quot;).onclick = () =&gt; {
+  Object.keys(iccState.checked).forEach(k =&gt; iccState.checked[k] = false);
+  updateICCUI();
+};
+document.getElementById(&quot;emaResetAllBtn&quot;).onclick = () =&gt; {
+  Object.keys(emaState.checked).forEach(k =&gt; emaState.checked[k] = false);
+  updateEMAUI();
+};
+
+document.getElementById(&quot;rulesBtn&quot;).onclick = () =&gt; {
+  const violations = getICCViolations();
+  warningIntro.textContent = &quot;This ICC setup is breaking one or more no-trade rules.&quot;;
+  warningList.innerHTML = (violations.length ? violations : [
+    &quot;No clear 1H / 4H bias.&quot;,
+    &quot;Wick-only confirmation.&quot;,
+    &quot;Entering during indication.&quot;,
+    &quot;No stop loss before entry.&quot;,
+    &quot;Chasing instead of respecting limit entry.&quot;
+  ]).map(v =&gt; &quot;&lt;li&gt;&quot;+v+&quot;&lt;/li&gt;&quot;).join(&quot;&quot;);
+  warningPopup.classList.add(&quot;show&quot;);
+};
+document.getElementById(&quot;emaRulesBtn&quot;).onclick = () =&gt; {
+  const violations = getEMAViolations();
+  warningIntro.textContent = &quot;This EMA setup is breaking one or more no-trade rules.&quot;;
+  warningList.innerHTML = (violations.length ? violations : [
+    &quot;No clean crossover.&quot;,
+    &quot;Direction is unclear.&quot;,
+    &quot;Retest is weak.&quot;,
+    &quot;No logical stop loss.&quot;,
+    &quot;No target defined.&quot;
+  ]).map(v =&gt; &quot;&lt;li&gt;&quot;+v+&quot;&lt;/li&gt;&quot;).join(&quot;&quot;);
+  warningPopup.classList.add(&quot;show&quot;);
+};
+
+document.getElementById(&quot;closeWarningBtn&quot;).onclick = () =&gt; warningPopup.classList.remove(&quot;show&quot;);
+document.getElementById(&quot;reviewRulesBtn&quot;).onclick = () =&gt; warningPopup.classList.remove(&quot;show&quot;);
+warningPopup.addEventListener(&quot;click&quot;, e =&gt; { if (e.target.id === &quot;warningPopup&quot;) warningPopup.classList.remove(&quot;show&quot;); });
+
+document.getElementById(&quot;journalItTop&quot;).onclick = () =&gt; {
+  document.querySelector(&#x27;#iccView .section&#x27;).scrollIntoView({behavior:&#x27;smooth&#x27;, block:&#x27;start&#x27;});
+};
+document.getElementById(&quot;emaJournalTop&quot;).onclick = () =&gt; {
+  document.querySelector(&#x27;#emaView .section&#x27;).scrollIntoView({behavior:&#x27;smooth&#x27;, block:&#x27;start&#x27;});
+};
+
+document.getElementById(&#x27;saveICCTradeBtn&#x27;).onclick = () =&gt; {
+  const entry = {
+    strategy: &#x27;ICC&#x27;,
+    modeOrDirection: document.getElementById(&#x27;iccModeField&#x27;).value,
+    sessionOrStatus: document.getElementById(&#x27;iccSessionField&#x27;).value,
+    score: document.getElementById(&#x27;iccScoreField&#x27;).value,
+    entry: document.getElementById(&#x27;iccEntryField&#x27;).value,
+    sl: document.getElementById(&#x27;iccSlField&#x27;).value,
+    tp: document.getElementById(&#x27;iccTpField&#x27;).value,
+    result: document.getElementById(&#x27;iccResultField&#x27;).value,
+    note: document.getElementById(&#x27;iccLessonField&#x27;).value,
+    image: iccPreviewData,
+    date: new Date().toLocaleDateString()
+  };
+  journalEntries.push(entry);
+  saveJournalStorage();
+  renderJournalList();
+};
+
+document.getElementById(&#x27;saveEMATradeBtn&#x27;).onclick = () =&gt; {
+  const entry = {
+    strategy: &#x27;EMA / TEMA&#x27;,
+    modeOrDirection: document.getElementById(&#x27;emaDirectionField&#x27;).value,
+    sessionOrStatus: document.getElementById(&#x27;emaStatusField&#x27;).value,
+    score: document.getElementById(&#x27;emaScoreField&#x27;).value,
+    entry: document.getElementById(&#x27;emaEntryField&#x27;).value,
+    sl: document.getElementById(&#x27;emaSlField&#x27;).value,
+    tp: document.getElementById(&#x27;emaTpField&#x27;).value,
+    result: document.getElementById(&#x27;emaResultField&#x27;).value,
+    note: document.getElementById(&#x27;emaLessonField&#x27;).value,
+    image: emaPreviewData,
+    date: new Date().toLocaleDateString()
+  };
+  journalEntries.push(entry);
+  saveJournalStorage();
+  renderJournalList();
+};
+
+updateICCUI();
+updateEMAUI();
+renderJournalList();
+&lt;/script&gt;
+
+&lt;script&gt;
+document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
+  var icc = document.getElementById(&#x27;iccView&#x27;);
+  var ema = document.getElementById(&#x27;emaView&#x27;);
+  if (icc) icc.classList.remove(&#x27;active&#x27;);
+  if (ema) ema.classList.add(&#x27;active&#x27;);
+});
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+      </div>
+
+      <div class="mergedStrategyPane" id="merged-sd" style="display:none;margin-top:14px;">
+        <iframe
+          title="Supply and Demand Strategy"
+          style="width:100%;height:1900px;border:none;border-radius:22px;background:transparent;"
+          srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot; /&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+&lt;title&gt;Supply &amp; Demand — ICC Style&lt;/title&gt;
+&lt;style&gt;
 :root{--bg:#090711;--bg2:#120d22;--text:#f7efff;--muted:#c7b9da;--pink:#ff3bbd;--purple:#8b5cf6;--blue:#39b8ff;--green:#44e1a7;--yellow:#ffce52;--red:#ff5e7e;--line:rgba(255,255,255,.09);--shadow:0 12px 32px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.04) inset;--glow:0 0 0 1px rgba(255,255,255,.05),0 0 28px rgba(255,59,189,.12);--radius:22px}
 *{box-sizing:border-box}
 html,body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(139,92,246,.18),transparent 28%),radial-gradient(circle at top right,rgba(57,184,255,.12),transparent 25%),linear-gradient(180deg,var(--bg),#0d0a18 50%,var(--bg2))}
@@ -49,212 +1866,306 @@ textarea.field{min-height:88px;resize:vertical}
 .danger{margin-top:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(180deg,rgba(255,94,126,.12),rgba(255,94,126,.05));border:1px solid rgba(255,94,126,.22);font-size:12px;color:#ffc0cb}
 .sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.miniBtn{background:#211736}.miniBtn.primary{background:linear-gradient(135deg,var(--pink),var(--purple))}
 .warnList{margin:14px 0 0;padding-left:18px;color:#ffd0da}
-</style>
-</head>
-<body>
-<div class="app">
-  <div class="panel hero">
-    <div class="heroTop">
-      <div><h1>Supply & Demand</h1><div class="sub">Zone Quality • HTF Direction • Entry • Weakness</div></div>
-      <div class="badge" id="statusBadge">WAIT</div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="big" id="scoreValue">0%</div><div class="label">Setup Strength</div><div class="smallBadge" id="scoreHint">WAIT</div></div>
-      <div class="stat"><div class="label">Status</div><div class="big" style="font-size:28px" id="statusText">Waiting</div><div class="sub" id="statusSub" style="margin-top:8px">Build the setup before thinking about entry.</div></div>
-    </div>
-    <div class="progressWrap"><div class="track"><div class="fill" id="progressFill"></div></div></div>
-  </div>
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;app&quot;&gt;
+  &lt;div class=&quot;panel hero&quot;&gt;
+    &lt;div class=&quot;heroTop&quot;&gt;
+      &lt;div&gt;&lt;h1&gt;Supply &amp; Demand&lt;/h1&gt;&lt;div class=&quot;sub&quot;&gt;Zone Quality • HTF Direction • Entry • Weakness&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;badge&quot; id=&quot;statusBadge&quot;&gt;WAIT&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;stats&quot;&gt;
+      &lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;big&quot; id=&quot;scoreValue&quot;&gt;0%&lt;/div&gt;&lt;div class=&quot;label&quot;&gt;Setup Strength&lt;/div&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;scoreHint&quot;&gt;WAIT&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;label&quot;&gt;Status&lt;/div&gt;&lt;div class=&quot;big&quot; style=&quot;font-size:28px&quot; id=&quot;statusText&quot;&gt;Waiting&lt;/div&gt;&lt;div class=&quot;sub&quot; id=&quot;statusSub&quot; style=&quot;margin-top:8px&quot;&gt;Build the setup before thinking about entry.&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;progressWrap&quot;&gt;&lt;div class=&quot;track&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;progressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
 
-  <div class="grid">
-    <div class="panel phaseCard" data-phase="zone"><div class="phaseTitle">Zone Quality</div><div class="phaseDesc">Fresh zone, strong impulse, imbalance, clean structure.</div><div class="phaseMeta"><div class="miniCount" id="count-zone">0 / 4</div><div class="openBtn">Open</div></div></div>
-    <div class="panel phaseCard" data-phase="htf"><div class="phaseTitle">HTF Direction</div><div class="phaseDesc">HTF alignment, trend, target, extreme location.</div><div class="phaseMeta"><div class="miniCount" id="count-htf">0 / 4</div><div class="openBtn">Open</div></div></div>
-    <div class="panel phaseCard" data-phase="entry"><div class="phaseTitle">Entry Confirmation</div><div class="phaseDesc">Reaction, structure shift, clean tap, momentum.</div><div class="phaseMeta"><div class="miniCount" id="count-entry">0 / 4</div><div class="openBtn">Open</div></div></div>
-    <div class="panel phaseCard" data-phase="weakness"><div class="phaseTitle">Weakness</div><div class="phaseDesc">Multiple taps, weak reaction, mid-range, poor RR.</div><div class="phaseMeta"><div class="miniCount" id="count-weakness">0 / 4</div><div class="openBtn">Open</div></div></div>
-  </div>
+  &lt;div class=&quot;grid&quot;&gt;
+    &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;zone&quot;&gt;&lt;div class=&quot;phaseTitle&quot;&gt;Zone Quality&lt;/div&gt;&lt;div class=&quot;phaseDesc&quot;&gt;Fresh zone, strong impulse, imbalance, clean structure.&lt;/div&gt;&lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-zone&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Open&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;htf&quot;&gt;&lt;div class=&quot;phaseTitle&quot;&gt;HTF Direction&lt;/div&gt;&lt;div class=&quot;phaseDesc&quot;&gt;HTF alignment, trend, target, extreme location.&lt;/div&gt;&lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-htf&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Open&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;entry&quot;&gt;&lt;div class=&quot;phaseTitle&quot;&gt;Entry Confirmation&lt;/div&gt;&lt;div class=&quot;phaseDesc&quot;&gt;Reaction, structure shift, clean tap, momentum.&lt;/div&gt;&lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-entry&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Open&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;panel phaseCard&quot; data-phase=&quot;weakness&quot;&gt;&lt;div class=&quot;phaseTitle&quot;&gt;Weakness&lt;/div&gt;&lt;div class=&quot;phaseDesc&quot;&gt;Multiple taps, weak reaction, mid-range, poor RR.&lt;/div&gt;&lt;div class=&quot;phaseMeta&quot;&gt;&lt;div class=&quot;miniCount&quot; id=&quot;count-weakness&quot;&gt;0 / 4&lt;/div&gt;&lt;div class=&quot;openBtn&quot;&gt;Open&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
 
-  <div class="actionCards">
-    <div class="panel actionCard"><div class="actionTitle">Trade Decision</div><div class="actionDesc">The score updates as you complete phases. Weakness lowers score but does not hard block.</div><div class="actionMeta"><div class="smallBadge" id="decisionBadge">WAIT</div></div></div>
-    <div class="panel actionCard"><div class="actionTitle">Unlock Trade</div><div class="actionDesc">Journaling is best when the setup reaches READY.</div><div class="actionMeta"><div class="smallBadge" id="tradeState">Locked</div></div></div>
-  </div>
+  &lt;div class=&quot;actionCards&quot;&gt;
+    &lt;div class=&quot;panel actionCard&quot;&gt;&lt;div class=&quot;actionTitle&quot;&gt;Trade Decision&lt;/div&gt;&lt;div class=&quot;actionDesc&quot;&gt;The score updates as you complete phases. Weakness lowers score but does not hard block.&lt;/div&gt;&lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;decisionBadge&quot;&gt;WAIT&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;panel actionCard&quot;&gt;&lt;div class=&quot;actionTitle&quot;&gt;Unlock Trade&lt;/div&gt;&lt;div class=&quot;actionDesc&quot;&gt;Journaling is best when the setup reaches READY.&lt;/div&gt;&lt;div class=&quot;actionMeta&quot;&gt;&lt;div class=&quot;smallBadge&quot; id=&quot;tradeState&quot;&gt;Locked&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
 
-  <div class="bottomBtns">
-    <button class="btnWide journalBtn" id="journalTopBtn">⭐ Journal It</button>
-    <button class="btnWide resetBtn" id="resetAllBtn">🔄 Reset</button>
-    <button class="btnWide rulesBtn" id="rulesBtn">🚫 Rules</button>
-    <button class="btnWide tradeBtn locked" id="unlockTradeBtn">🔓 Unlock Trade</button>
-  </div>
+  &lt;div class=&quot;bottomBtns&quot;&gt;
+    &lt;button class=&quot;btnWide journalBtn&quot; id=&quot;journalTopBtn&quot;&gt;⭐ Journal It&lt;/button&gt;
+    &lt;button class=&quot;btnWide resetBtn&quot; id=&quot;resetAllBtn&quot;&gt;🔄 Reset&lt;/button&gt;
+    &lt;button class=&quot;btnWide rulesBtn&quot; id=&quot;rulesBtn&quot;&gt;🚫 Rules&lt;/button&gt;
+    &lt;button class=&quot;btnWide tradeBtn locked&quot; id=&quot;unlockTradeBtn&quot;&gt;🔓 Unlock Trade&lt;/button&gt;
+  &lt;/div&gt;
 
-  <div class="panel section" style="margin-top:14px;">
-    <h2 class="sectionTitle">S&D Journal Entry</h2>
-    <div class="sub" style="margin-bottom:12px;">Auto-filled from your checklist. Add your chart screenshot too.</div>
-    <div class="smallBadge" id="journalBadge">WAIT</div>
-    <div class="journalGrid" style="margin-top:12px;">
-      <div class="row2"><input class="field" id="strategyField" value="Supply & Demand" readonly /><input class="field" id="scoreField" value="0%" readonly /></div>
-      <div class="row2"><input class="field" id="statusField" value="WAIT" readonly /><input class="field" id="sessionField" placeholder="Session" /></div>
-      <div class="row2"><input class="field" id="entryField" placeholder="Entry" /><input class="field" id="slField" placeholder="Stop Loss" /></div>
-      <div class="row2"><input class="field" id="tpField" placeholder="TP1 / TP2" /><select class="field" id="resultField"><option value="">Result</option><option>Win</option><option>Loss</option><option>Breakeven</option><option>No Trade</option></select></div>
-      <textarea class="field" id="noteField" placeholder="Mistake / lesson / note"></textarea>
-      <input class="field" type="file" id="screenshotField" accept="image/*" />
-      <img id="previewImg" class="previewImg" />
-    </div>
-    <button class="cta" id="saveTradeBtn">Save Trade To Journal</button>
-  </div>
+  &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+    &lt;h2 class=&quot;sectionTitle&quot;&gt;S&amp;D Journal Entry&lt;/h2&gt;
+    &lt;div class=&quot;sub&quot; style=&quot;margin-bottom:12px;&quot;&gt;Auto-filled from your checklist. Add your chart screenshot too.&lt;/div&gt;
+    &lt;div class=&quot;smallBadge&quot; id=&quot;journalBadge&quot;&gt;WAIT&lt;/div&gt;
+    &lt;div class=&quot;journalGrid&quot; style=&quot;margin-top:12px;&quot;&gt;
+      &lt;div class=&quot;row2&quot;&gt;&lt;input class=&quot;field&quot; id=&quot;strategyField&quot; value=&quot;Supply &amp; Demand&quot; readonly /&gt;&lt;input class=&quot;field&quot; id=&quot;scoreField&quot; value=&quot;0%&quot; readonly /&gt;&lt;/div&gt;
+      &lt;div class=&quot;row2&quot;&gt;&lt;input class=&quot;field&quot; id=&quot;statusField&quot; value=&quot;WAIT&quot; readonly /&gt;&lt;input class=&quot;field&quot; id=&quot;sessionField&quot; placeholder=&quot;Session&quot; /&gt;&lt;/div&gt;
+      &lt;div class=&quot;row2&quot;&gt;&lt;input class=&quot;field&quot; id=&quot;entryField&quot; placeholder=&quot;Entry&quot; /&gt;&lt;input class=&quot;field&quot; id=&quot;slField&quot; placeholder=&quot;Stop Loss&quot; /&gt;&lt;/div&gt;
+      &lt;div class=&quot;row2&quot;&gt;&lt;input class=&quot;field&quot; id=&quot;tpField&quot; placeholder=&quot;TP1 / TP2&quot; /&gt;&lt;select class=&quot;field&quot; id=&quot;resultField&quot;&gt;&lt;option value=&quot;&quot;&gt;Result&lt;/option&gt;&lt;option&gt;Win&lt;/option&gt;&lt;option&gt;Loss&lt;/option&gt;&lt;option&gt;Breakeven&lt;/option&gt;&lt;option&gt;No Trade&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+      &lt;textarea class=&quot;field&quot; id=&quot;noteField&quot; placeholder=&quot;Mistake / lesson / note&quot;&gt;&lt;/textarea&gt;
+      &lt;input class=&quot;field&quot; type=&quot;file&quot; id=&quot;screenshotField&quot; accept=&quot;image/*&quot; /&gt;
+      &lt;img id=&quot;previewImg&quot; class=&quot;previewImg&quot; /&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;cta&quot; id=&quot;saveTradeBtn&quot;&gt;Save Trade To Journal&lt;/button&gt;
+  &lt;/div&gt;
 
-  <div class="panel section" style="margin-top:14px;">
-    <h2 class="sectionTitle">Linked Journal</h2>
-    <div class="sub">Saved Supply & Demand trades show here.</div>
-    <div id="journalList" class="entryList"></div>
-  </div>
-</div>
+  &lt;div class=&quot;panel section&quot; style=&quot;margin-top:14px;&quot;&gt;
+    &lt;h2 class=&quot;sectionTitle&quot;&gt;Linked Journal&lt;/h2&gt;
+    &lt;div class=&quot;sub&quot;&gt;Saved Supply &amp; Demand trades show here.&lt;/div&gt;
+    &lt;div id=&quot;journalList&quot; class=&quot;entryList&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 
-<div class="sheet" id="sheet">
-  <div class="sheetCard">
-    <div class="sheetHead">
-      <div><div class="sheetTitle" id="sheetTitle">Phase</div><div class="sheetSub" id="sheetSub">Checklist</div></div>
-      <button class="x" id="closeSheet">×</button>
-    </div>
-    <div class="checklist" id="checklist"></div>
-    <div class="rule" id="ruleBox"></div>
-    <div class="danger" id="dangerBox"></div>
-    <div class="sheetActions"><button class="miniBtn" id="resetPhaseBtn">Reset Phase</button><button class="miniBtn primary" id="donePhaseBtn">Done</button></div>
-  </div>
-</div>
+&lt;div class=&quot;sheet&quot; id=&quot;sheet&quot;&gt;
+  &lt;div class=&quot;sheetCard&quot;&gt;
+    &lt;div class=&quot;sheetHead&quot;&gt;
+      &lt;div&gt;&lt;div class=&quot;sheetTitle&quot; id=&quot;sheetTitle&quot;&gt;Phase&lt;/div&gt;&lt;div class=&quot;sheetSub&quot; id=&quot;sheetSub&quot;&gt;Checklist&lt;/div&gt;&lt;/div&gt;
+      &lt;button class=&quot;x&quot; id=&quot;closeSheet&quot;&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;checklist&quot; id=&quot;checklist&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;rule&quot; id=&quot;ruleBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;danger&quot; id=&quot;dangerBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;sheetActions&quot;&gt;&lt;button class=&quot;miniBtn&quot; id=&quot;resetPhaseBtn&quot;&gt;Reset Phase&lt;/button&gt;&lt;button class=&quot;miniBtn primary&quot; id=&quot;donePhaseBtn&quot;&gt;Done&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 
-<div class="popup" id="warningPopup">
-  <div class="popupCard">
-    <h3>⚠️ S&amp;D Warning</h3>
-    <p>This setup has weaknesses that lower confidence.</p>
-    <ul class="warnList" id="warningList"></ul>
-    <div class="sheetActions" style="margin-top:16px;"><button class="miniBtn" id="closeWarningBtn">Go Back</button><button class="miniBtn primary" id="reviewRulesBtn">Review Weakness</button></div>
-  </div>
-</div>
+&lt;div class=&quot;popup&quot; id=&quot;warningPopup&quot;&gt;
+  &lt;div class=&quot;popupCard&quot;&gt;
+    &lt;h3&gt;⚠️ S&amp;amp;D Warning&lt;/h3&gt;
+    &lt;p&gt;This setup has weaknesses that lower confidence.&lt;/p&gt;
+    &lt;ul class=&quot;warnList&quot; id=&quot;warningList&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;sheetActions&quot; style=&quot;margin-top:16px;&quot;&gt;&lt;button class=&quot;miniBtn&quot; id=&quot;closeWarningBtn&quot;&gt;Go Back&lt;/button&gt;&lt;button class=&quot;miniBtn primary&quot; id=&quot;reviewRulesBtn&quot;&gt;Review Weakness&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 
-<script>
-const STORAGE_KEY='snd_icc_style_journal_v2';
-let journalEntries=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-let previewData='';
+&lt;script&gt;
+const STORAGE_KEY=&#x27;snd_icc_style_journal_v2&#x27;;
+let journalEntries=JSON.parse(localStorage.getItem(STORAGE_KEY)||&#x27;[]&#x27;);
+let previewData=&#x27;&#x27;;
 const data={
- zone:{title:"Zone Quality",sub:"Phase 1 • Is the zone actually worth trading?",rule:"A strong zone should be fresh, obvious, and backed by displacement.",danger:"If the zone is messy or overused, the setup loses quality fast.",items:[
-  {key:"fresh_zone",title:"Fresh / Untouched Zone",desc:"The zone has not been repeatedly tested or traded through."},
-  {key:"strong_impulse",title:"Strong Impulse Away",desc:"Price left the zone with clear displacement instead of drifting slowly."},
-  {key:"imbalance",title:"Clear Imbalance / FVG",desc:"There is a visible inefficiency connected to the move away from the zone."},
-  {key:"no_consolidation",title:"No Messy Consolidation",desc:"The base is clean instead of cluttered with sideways price action."}]},
- htf:{title:"HTF Direction",sub:"Phase 2 • Does the higher timeframe agree?",rule:"The best zones line up with the higher timeframe and point toward a logical target.",danger:"Mid-range trades and countertrend guesses weaken the setup.",items:[
-  {key:"htf_aligned",title:"HTF Zones Are Aligned",desc:"The zone fits the higher timeframe structure instead of fighting it."},
-  {key:"trend_clear",title:"Trend Direction Is Clear",desc:"The overall market direction supports the trade idea."},
-  {key:"target_identified",title:"Target Zone Identified",desc:"You already know where price is likely headed if the trade works."},
-  {key:"extreme_location",title:"Extreme Location",desc:"The setup forms at a meaningful edge, not in the middle of the range."}]},
- entry:{title:"Entry Confirmation",sub:"Phase 3 • Is there a clean reason to execute now?",rule:"The tap into the zone should show reaction, structure, and momentum before entry.",danger:"Blindly tapping the zone without confirmation lowers trade quality.",items:[
-  {key:"reaction_clear",title:"Reaction Is Clear",desc:"Price reacted to the zone instead of slicing through it immediately."},
-  {key:"structure_shift",title:"Structure Shift Confirms",desc:"There is a local change in order flow or momentum that supports the trade."},
-  {key:"clean_tap",title:"Clean Tap Into Zone",desc:"The entry area was respected instead of being blown through."},
-  {key:"momentum_confirms",title:"Momentum Confirms Entry",desc:"The move away from the zone has intent, not weak drift."}]},
- weakness:{title:"Weakness",sub:"Phase 4 • What lowers confidence?",rule:"Weakness does not hard block the trade, but it reduces confidence and score.",danger:"Too many weaknesses mean the setup may still be tradable, but should be treated with caution.",items:[
-  {key:"multiple_taps",title:"Multiple Taps",desc:"The zone has been hit too many times and may be weakening."},
-  {key:"weak_reaction",title:"Weak / No Reaction",desc:"Price is not rejecting strongly from the zone."},
-  {key:"mid_range",title:"Mid-Range Entry",desc:"The setup is not forming at a meaningful edge or extreme."},
-  {key:"poor_rr",title:"Poor Risk / Reward",desc:"The stop feels too large or the target feels too close."}]}
+ zone:{title:&quot;Zone Quality&quot;,sub:&quot;Phase 1 • Is the zone actually worth trading?&quot;,rule:&quot;A strong zone should be fresh, obvious, and backed by displacement.&quot;,danger:&quot;If the zone is messy or overused, the setup loses quality fast.&quot;,items:[
+  {key:&quot;fresh_zone&quot;,title:&quot;Fresh / Untouched Zone&quot;,desc:&quot;The zone has not been repeatedly tested or traded through.&quot;},
+  {key:&quot;strong_impulse&quot;,title:&quot;Strong Impulse Away&quot;,desc:&quot;Price left the zone with clear displacement instead of drifting slowly.&quot;},
+  {key:&quot;imbalance&quot;,title:&quot;Clear Imbalance / FVG&quot;,desc:&quot;There is a visible inefficiency connected to the move away from the zone.&quot;},
+  {key:&quot;no_consolidation&quot;,title:&quot;No Messy Consolidation&quot;,desc:&quot;The base is clean instead of cluttered with sideways price action.&quot;}]},
+ htf:{title:&quot;HTF Direction&quot;,sub:&quot;Phase 2 • Does the higher timeframe agree?&quot;,rule:&quot;The best zones line up with the higher timeframe and point toward a logical target.&quot;,danger:&quot;Mid-range trades and countertrend guesses weaken the setup.&quot;,items:[
+  {key:&quot;htf_aligned&quot;,title:&quot;HTF Zones Are Aligned&quot;,desc:&quot;The zone fits the higher timeframe structure instead of fighting it.&quot;},
+  {key:&quot;trend_clear&quot;,title:&quot;Trend Direction Is Clear&quot;,desc:&quot;The overall market direction supports the trade idea.&quot;},
+  {key:&quot;target_identified&quot;,title:&quot;Target Zone Identified&quot;,desc:&quot;You already know where price is likely headed if the trade works.&quot;},
+  {key:&quot;extreme_location&quot;,title:&quot;Extreme Location&quot;,desc:&quot;The setup forms at a meaningful edge, not in the middle of the range.&quot;}]},
+ entry:{title:&quot;Entry Confirmation&quot;,sub:&quot;Phase 3 • Is there a clean reason to execute now?&quot;,rule:&quot;The tap into the zone should show reaction, structure, and momentum before entry.&quot;,danger:&quot;Blindly tapping the zone without confirmation lowers trade quality.&quot;,items:[
+  {key:&quot;reaction_clear&quot;,title:&quot;Reaction Is Clear&quot;,desc:&quot;Price reacted to the zone instead of slicing through it immediately.&quot;},
+  {key:&quot;structure_shift&quot;,title:&quot;Structure Shift Confirms&quot;,desc:&quot;There is a local change in order flow or momentum that supports the trade.&quot;},
+  {key:&quot;clean_tap&quot;,title:&quot;Clean Tap Into Zone&quot;,desc:&quot;The entry area was respected instead of being blown through.&quot;},
+  {key:&quot;momentum_confirms&quot;,title:&quot;Momentum Confirms Entry&quot;,desc:&quot;The move away from the zone has intent, not weak drift.&quot;}]},
+ weakness:{title:&quot;Weakness&quot;,sub:&quot;Phase 4 • What lowers confidence?&quot;,rule:&quot;Weakness does not hard block the trade, but it reduces confidence and score.&quot;,danger:&quot;Too many weaknesses mean the setup may still be tradable, but should be treated with caution.&quot;,items:[
+  {key:&quot;multiple_taps&quot;,title:&quot;Multiple Taps&quot;,desc:&quot;The zone has been hit too many times and may be weakening.&quot;},
+  {key:&quot;weak_reaction&quot;,title:&quot;Weak / No Reaction&quot;,desc:&quot;Price is not rejecting strongly from the zone.&quot;},
+  {key:&quot;mid_range&quot;,title:&quot;Mid-Range Entry&quot;,desc:&quot;The setup is not forming at a meaningful edge or extreme.&quot;},
+  {key:&quot;poor_rr&quot;,title:&quot;Poor Risk / Reward&quot;,desc:&quot;The stop feels too large or the target feels too close.&quot;}]}
 };
 const state={activePhase:null,checked:{}};
-Object.values(data).forEach(phase=>phase.items.forEach(item=>state.checked[item.key]=false));
-const phaseOrder=["zone","htf","entry","weakness"];
-const weaknessKeys=new Set(data.weakness.items.map(i=>i.key));
+Object.values(data).forEach(phase=&gt;phase.items.forEach(item=&gt;state.checked[item.key]=false));
+const phaseOrder=[&quot;zone&quot;,&quot;htf&quot;,&quot;entry&quot;,&quot;weakness&quot;];
+const weaknessKeys=new Set(data.weakness.items.map(i=&gt;i.key));
 
 function saveJournalStorage(){localStorage.setItem(STORAGE_KEY,JSON.stringify(journalEntries))}
 function renderJournalList(){
- const list=document.getElementById('journalList');
- if(!journalEntries.length){list.innerHTML='<div class="entryCard"><div class="entryTitle">No journal entries yet</div><div class="entryMeta">Saved Supply & Demand trades will appear here.</div></div>';return;}
- list.innerHTML=journalEntries.slice().reverse().map(entry=>`<div class="entryCard"><div class="entryTop"><div><div class="entryTitle">${entry.strategy} • ${entry.result||'Unlogged'}</div><div class="entryMeta">${entry.score} • ${entry.status} • ${entry.session||'No session'}</div></div><div class="smallBadge">${entry.date}</div></div><div class="entryMeta" style="margin-top:8px;">Entry: ${entry.entry||'-'} · SL: ${entry.sl||'-'} · TP: ${entry.tp||'-'}</div><div class="entryMeta" style="margin-top:8px;">${entry.note||'No note added.'}</div>${entry.image?`<img class="entryImg" style="display:block" src="${entry.image}" />`:''}</div>`).join('');
+ const list=document.getElementById(&#x27;journalList&#x27;);
+ if(!journalEntries.length){list.innerHTML=&#x27;&lt;div class=&quot;entryCard&quot;&gt;&lt;div class=&quot;entryTitle&quot;&gt;No journal entries yet&lt;/div&gt;&lt;div class=&quot;entryMeta&quot;&gt;Saved Supply &amp; Demand trades will appear here.&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
+ list.innerHTML=journalEntries.slice().reverse().map(entry=&gt;`&lt;div class=&quot;entryCard&quot;&gt;&lt;div class=&quot;entryTop&quot;&gt;&lt;div&gt;&lt;div class=&quot;entryTitle&quot;&gt;${entry.strategy} • ${entry.result||&#x27;Unlogged&#x27;}&lt;/div&gt;&lt;div class=&quot;entryMeta&quot;&gt;${entry.score} • ${entry.status} • ${entry.session||&#x27;No session&#x27;}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;smallBadge&quot;&gt;${entry.date}&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;Entry: ${entry.entry||&#x27;-&#x27;} · SL: ${entry.sl||&#x27;-&#x27;} · TP: ${entry.tp||&#x27;-&#x27;}&lt;/div&gt;&lt;div class=&quot;entryMeta&quot; style=&quot;margin-top:8px;&quot;&gt;${entry.note||&#x27;No note added.&#x27;}&lt;/div&gt;${entry.image?`&lt;img class=&quot;entryImg&quot; style=&quot;display:block&quot; src=&quot;${entry.image}&quot; /&gt;`:&#x27;&#x27;}&lt;/div&gt;`).join(&#x27;&#x27;);
 }
-document.getElementById('screenshotField').addEventListener('change',e=>{
- const file=e.target.files&&e.target.files[0],img=document.getElementById('previewImg');
- if(!file){previewData='';img.src='';img.style.display='none';return;}
+document.getElementById(&#x27;screenshotField&#x27;).addEventListener(&#x27;change&#x27;,e=&gt;{
+ const file=e.target.files&amp;&amp;e.target.files[0],img=document.getElementById(&#x27;previewImg&#x27;);
+ if(!file){previewData=&#x27;&#x27;;img.src=&#x27;&#x27;;img.style.display=&#x27;none&#x27;;return;}
  const reader=new FileReader();
- reader.onload=()=>{previewData=reader.result;img.src=reader.result;img.style.display='block';};
+ reader.onload=()=&gt;{previewData=reader.result;img.src=reader.result;img.style.display=&#x27;block&#x27;;};
  reader.readAsDataURL(file);
 });
-function getCounts(){const counts={};phaseOrder.forEach(pk=>{const phase=data[pk];counts[pk]={total:phase.items.length,done:phase.items.filter(item=>state.checked[item.key]).length};});return counts;}
+function getCounts(){const counts={};phaseOrder.forEach(pk=&gt;{const phase=data[pk];counts[pk]={total:phase.items.length,done:phase.items.filter(item=&gt;state.checked[item.key]).length};});return counts;}
 function computeScore(){
- const positiveKeys=Object.keys(state.checked).filter(k=>!weaknessKeys.has(k));
- const weaknessChosen=Array.from(weaknessKeys).filter(k=>state.checked[k]).length;
- const positiveCount=positiveKeys.filter(k=>state.checked[k]).length;
+ const positiveKeys=Object.keys(state.checked).filter(k=&gt;!weaknessKeys.has(k));
+ const weaknessChosen=Array.from(weaknessKeys).filter(k=&gt;state.checked[k]).length;
+ const positiveCount=positiveKeys.filter(k=&gt;state.checked[k]).length;
  const raw=positiveCount-weaknessChosen,max=positiveKeys.length,normalized=Math.max(0,Math.min(max,raw));
  return Math.round((normalized/max)*100);
 }
 function computeStatus(score){
- if(score>=70)return{badge:"READY",hint:"READY",title:"Trade Is Ready",sub:"The setup quality is strong enough to journal and execute.",tradeState:"Unlocked"};
- if(score>=40)return{badge:"BUILDING",hint:"BUILDING",title:"Setup Is Building",sub:"The zone has potential, but it still needs more confirmation.",tradeState:"Watch"};
- return{badge:"WAIT",hint:"WAIT",title:"Wait For More Quality",sub:"The setup is not developed enough yet.",tradeState:"Locked"};
+ if(score&gt;=70)return{badge:&quot;READY&quot;,hint:&quot;READY&quot;,title:&quot;Trade Is Ready&quot;,sub:&quot;The setup quality is strong enough to journal and execute.&quot;,tradeState:&quot;Unlocked&quot;};
+ if(score&gt;=40)return{badge:&quot;BUILDING&quot;,hint:&quot;BUILDING&quot;,title:&quot;Setup Is Building&quot;,sub:&quot;The zone has potential, but it still needs more confirmation.&quot;,tradeState:&quot;Watch&quot;};
+ return{badge:&quot;WAIT&quot;,hint:&quot;WAIT&quot;,title:&quot;Wait For More Quality&quot;,sub:&quot;The setup is not developed enough yet.&quot;,tradeState:&quot;Locked&quot;};
 }
 function getWeaknessWarnings(){
- const w=[]; if(state.checked.multiple_taps)w.push("Multiple taps weaken the zone."); if(state.checked.weak_reaction)w.push("Weak reaction lowers conviction."); if(state.checked.mid_range)w.push("Mid-range entry lowers edge."); if(state.checked.poor_rr)w.push("Poor risk/reward reduces quality."); return w;
+ const w=[]; if(state.checked.multiple_taps)w.push(&quot;Multiple taps weaken the zone.&quot;); if(state.checked.weak_reaction)w.push(&quot;Weak reaction lowers conviction.&quot;); if(state.checked.mid_range)w.push(&quot;Mid-range entry lowers edge.&quot;); if(state.checked.poor_rr)w.push(&quot;Poor risk/reward reduces quality.&quot;); return w;
 }
 function updateUI(){
- const counts=getCounts(); phaseOrder.forEach(key=>document.getElementById("count-"+key).textContent=counts[key].done+" / "+counts[key].total);
+ const counts=getCounts(); phaseOrder.forEach(key=&gt;document.getElementById(&quot;count-&quot;+key).textContent=counts[key].done+&quot; / &quot;+counts[key].total);
  const score=computeScore(),status=computeStatus(score);
- document.getElementById("scoreValue").textContent=score+"%";
- document.getElementById("scoreHint").textContent=status.hint;
- document.getElementById("statusBadge").textContent=status.badge;
- document.getElementById("statusText").textContent=status.title;
- document.getElementById("statusSub").textContent=status.sub;
- document.getElementById("decisionBadge").textContent=status.badge;
- document.getElementById("tradeState").textContent=status.tradeState;
- document.getElementById("journalBadge").textContent=status.hint;
- document.getElementById("scoreField").value=score+"%";
- document.getElementById("statusField").value=status.badge;
- const totalDone=Object.values(counts).reduce((a,b)=>a+b.done,0), totalItems=Object.values(counts).reduce((a,b)=>a+b.total,0);
- document.getElementById("progressFill").style.width=Math.round((totalDone/totalItems)*100)+"%";
- const tradeBtn=document.getElementById("unlockTradeBtn");
- tradeBtn.classList.toggle("locked",status.badge!=="READY");
- tradeBtn.textContent=status.badge==="READY"?"🔓 Unlock Trade":"🔒 Unlock Trade";
- document.querySelectorAll('.phaseCard').forEach(card=>card.classList.remove('ready'));
- if(status.badge==="READY") document.querySelectorAll('.phaseCard').forEach(card=>card.classList.add('ready'));
+ document.getElementById(&quot;scoreValue&quot;).textContent=score+&quot;%&quot;;
+ document.getElementById(&quot;scoreHint&quot;).textContent=status.hint;
+ document.getElementById(&quot;statusBadge&quot;).textContent=status.badge;
+ document.getElementById(&quot;statusText&quot;).textContent=status.title;
+ document.getElementById(&quot;statusSub&quot;).textContent=status.sub;
+ document.getElementById(&quot;decisionBadge&quot;).textContent=status.badge;
+ document.getElementById(&quot;tradeState&quot;).textContent=status.tradeState;
+ document.getElementById(&quot;journalBadge&quot;).textContent=status.hint;
+ document.getElementById(&quot;scoreField&quot;).value=score+&quot;%&quot;;
+ document.getElementById(&quot;statusField&quot;).value=status.badge;
+ const totalDone=Object.values(counts).reduce((a,b)=&gt;a+b.done,0), totalItems=Object.values(counts).reduce((a,b)=&gt;a+b.total,0);
+ document.getElementById(&quot;progressFill&quot;).style.width=Math.round((totalDone/totalItems)*100)+&quot;%&quot;;
+ const tradeBtn=document.getElementById(&quot;unlockTradeBtn&quot;);
+ tradeBtn.classList.toggle(&quot;locked&quot;,status.badge!==&quot;READY&quot;);
+ tradeBtn.textContent=status.badge===&quot;READY&quot;?&quot;🔓 Unlock Trade&quot;:&quot;🔒 Unlock Trade&quot;;
+ document.querySelectorAll(&#x27;.phaseCard&#x27;).forEach(card=&gt;card.classList.remove(&#x27;ready&#x27;));
+ if(status.badge===&quot;READY&quot;) document.querySelectorAll(&#x27;.phaseCard&#x27;).forEach(card=&gt;card.classList.add(&#x27;ready&#x27;));
 }
 function openPhase(phaseKey){
  state.activePhase=phaseKey; const phase=data[phaseKey];
- document.getElementById("sheetTitle").textContent=phase.title;
- document.getElementById("sheetSub").textContent=phase.sub;
- document.getElementById("ruleBox").textContent=phase.rule;
- document.getElementById("dangerBox").textContent=phase.danger;
- const list=document.getElementById("checklist"); list.innerHTML="";
- phase.items.forEach(item=>{
-   const div=document.createElement("div");
-   div.className="item"+(state.checked[item.key]?" checked":"");
-   div.innerHTML=`<div class="box">${state.checked[item.key]?"✓":""}</div><div><div class="itemTitle">${item.title}</div><div class="itemDesc">${item.desc}</div></div>`;
-   div.onclick=()=>{state.checked[item.key]=!state.checked[item.key];updateUI();openPhase(phaseKey);};
+ document.getElementById(&quot;sheetTitle&quot;).textContent=phase.title;
+ document.getElementById(&quot;sheetSub&quot;).textContent=phase.sub;
+ document.getElementById(&quot;ruleBox&quot;).textContent=phase.rule;
+ document.getElementById(&quot;dangerBox&quot;).textContent=phase.danger;
+ const list=document.getElementById(&quot;checklist&quot;); list.innerHTML=&quot;&quot;;
+ phase.items.forEach(item=&gt;{
+   const div=document.createElement(&quot;div&quot;);
+   div.className=&quot;item&quot;+(state.checked[item.key]?&quot; checked&quot;:&quot;&quot;);
+   div.innerHTML=`&lt;div class=&quot;box&quot;&gt;${state.checked[item.key]?&quot;✓&quot;:&quot;&quot;}&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;itemTitle&quot;&gt;${item.title}&lt;/div&gt;&lt;div class=&quot;itemDesc&quot;&gt;${item.desc}&lt;/div&gt;&lt;/div&gt;`;
+   div.onclick=()=&gt;{state.checked[item.key]=!state.checked[item.key];updateUI();openPhase(phaseKey);};
    list.appendChild(div);
  });
- document.getElementById("sheet").classList.add("show");
+ document.getElementById(&quot;sheet&quot;).classList.add(&quot;show&quot;);
 }
-function closePhase(){document.getElementById("sheet").classList.remove("show")}
-document.querySelectorAll("[data-phase]").forEach(el=>el.onclick=()=>openPhase(el.dataset.phase));
-document.getElementById("closeSheet").onclick=closePhase;
-document.getElementById("donePhaseBtn").onclick=closePhase;
-document.getElementById("sheet").addEventListener("click",e=>{if(e.target.id==="sheet")closePhase()});
-document.getElementById("resetPhaseBtn").onclick=()=>{
+function closePhase(){document.getElementById(&quot;sheet&quot;).classList.remove(&quot;show&quot;)}
+document.querySelectorAll(&quot;[data-phase]&quot;).forEach(el=&gt;el.onclick=()=&gt;openPhase(el.dataset.phase));
+document.getElementById(&quot;closeSheet&quot;).onclick=closePhase;
+document.getElementById(&quot;donePhaseBtn&quot;).onclick=closePhase;
+document.getElementById(&quot;sheet&quot;).addEventListener(&quot;click&quot;,e=&gt;{if(e.target.id===&quot;sheet&quot;)closePhase()});
+document.getElementById(&quot;resetPhaseBtn&quot;).onclick=()=&gt;{
  const phase=data[state.activePhase]; if(!phase)return;
- phase.items.forEach(item=>state.checked[item.key]=false); updateUI(); openPhase(state.activePhase);
+ phase.items.forEach(item=&gt;state.checked[item.key]=false); updateUI(); openPhase(state.activePhase);
 };
-document.getElementById("resetAllBtn").onclick=()=>{Object.keys(state.checked).forEach(k=>state.checked[k]=false);updateUI();};
-document.getElementById("rulesBtn").onclick=()=>{
+document.getElementById(&quot;resetAllBtn&quot;).onclick=()=&gt;{Object.keys(state.checked).forEach(k=&gt;state.checked[k]=false);updateUI();};
+document.getElementById(&quot;rulesBtn&quot;).onclick=()=&gt;{
  const warnings=getWeaknessWarnings();
- document.getElementById("warningList").innerHTML=(warnings.length?warnings:["No major weaknesses selected yet.","This means the setup still needs to be checked honestly."]).map(v=>"<li>"+v+"</li>").join("");
- document.getElementById("warningPopup").classList.add("show");
+ document.getElementById(&quot;warningList&quot;).innerHTML=(warnings.length?warnings:[&quot;No major weaknesses selected yet.&quot;,&quot;This means the setup still needs to be checked honestly.&quot;]).map(v=&gt;&quot;&lt;li&gt;&quot;+v+&quot;&lt;/li&gt;&quot;).join(&quot;&quot;);
+ document.getElementById(&quot;warningPopup&quot;).classList.add(&quot;show&quot;);
 };
-document.getElementById("closeWarningBtn").onclick=()=>document.getElementById("warningPopup").classList.remove("show");
-document.getElementById("reviewRulesBtn").onclick=()=>{document.getElementById("warningPopup").classList.remove("show");openPhase("weakness");};
-document.getElementById("warningPopup").addEventListener("click",e=>{if(e.target.id==="warningPopup")document.getElementById("warningPopup").classList.remove("show");});
-document.getElementById("journalTopBtn").onclick=()=>{document.querySelector(".section").scrollIntoView({behavior:"smooth",block:"start"});};
-document.getElementById("unlockTradeBtn").onclick=()=>{
+document.getElementById(&quot;closeWarningBtn&quot;).onclick=()=&gt;document.getElementById(&quot;warningPopup&quot;).classList.remove(&quot;show&quot;);
+document.getElementById(&quot;reviewRulesBtn&quot;).onclick=()=&gt;{document.getElementById(&quot;warningPopup&quot;).classList.remove(&quot;show&quot;);openPhase(&quot;weakness&quot;);};
+document.getElementById(&quot;warningPopup&quot;).addEventListener(&quot;click&quot;,e=&gt;{if(e.target.id===&quot;warningPopup&quot;)document.getElementById(&quot;warningPopup&quot;).classList.remove(&quot;show&quot;);});
+document.getElementById(&quot;journalTopBtn&quot;).onclick=()=&gt;{document.querySelector(&quot;.section&quot;).scrollIntoView({behavior:&quot;smooth&quot;,block:&quot;start&quot;});};
+document.getElementById(&quot;unlockTradeBtn&quot;).onclick=()=&gt;{
  const status=computeStatus(computeScore());
- if(status.badge==="READY") document.querySelector(".section").scrollIntoView({behavior:"smooth",block:"start"});
- else document.getElementById("rulesBtn").click();
+ if(status.badge===&quot;READY&quot;) document.querySelector(&quot;.section&quot;).scrollIntoView({behavior:&quot;smooth&quot;,block:&quot;start&quot;});
+ else document.getElementById(&quot;rulesBtn&quot;).click();
 };
-document.getElementById("saveTradeBtn").onclick=()=>{
- const entry={strategy:"Supply & Demand",score:document.getElementById("scoreField").value,status:document.getElementById("statusField").value,session:document.getElementById("sessionField").value,entry:document.getElementById("entryField").value,sl:document.getElementById("slField").value,tp:document.getElementById("tpField").value,result:document.getElementById("resultField").value,note:document.getElementById("noteField").value,image:previewData,date:new Date().toLocaleDateString()};
+document.getElementById(&quot;saveTradeBtn&quot;).onclick=()=&gt;{
+ const entry={strategy:&quot;Supply &amp; Demand&quot;,score:document.getElementById(&quot;scoreField&quot;).value,status:document.getElementById(&quot;statusField&quot;).value,session:document.getElementById(&quot;sessionField&quot;).value,entry:document.getElementById(&quot;entryField&quot;).value,sl:document.getElementById(&quot;slField&quot;).value,tp:document.getElementById(&quot;tpField&quot;).value,result:document.getElementById(&quot;resultField&quot;).value,note:document.getElementById(&quot;noteField&quot;).value,image:previewData,date:new Date().toLocaleDateString()};
  journalEntries.push(entry); saveJournalStorage(); renderJournalList();
 };
 updateUI(); renderJournalList();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="view" id="eval"><div class="section"><h2 class="sectionTitle">Eval Tracker</h2><input type="hidden" id="evalId"><div class="grid2"><div><div class="fieldLabel">Firm</div><select class="field" id="evalFirm"><option value="">Select firm</option><option>Topstep</option><option>Tradeify</option><option>Lucid</option><option>Apex</option></select></div><div><div class="fieldLabel">Account Size</div><select class="field" id="evalSize" onchange="applyAccountDefaults('eval')"><option value="">Select size</option><option value="25000">25K</option><option value="50000">50K</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Profit Goal</div><input class="field" id="evalGoal" type="number"></div><div><div class="fieldLabel">Drawdown</div><input class="field" id="evalDrawdown" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Days Passed</div><input class="field" id="evalDays" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="evalStatus"><option value="active">Active</option><option value="passed">Passed</option><option value="failed">Failed</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="evalNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('eval')">Save Eval</button><button class="btn" onclick="clearAccountForm('eval')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Evals</h2><div id="evalList" class="accountList"></div></div></section>
+
+  <section class="view" id="funded"><div class="section"><h2 class="sectionTitle">Funded Tracker</h2><input type="hidden" id="fundedId"><div class="grid2"><div><div class="fieldLabel">Firm</div><select class="field" id="fundedFirm"><option value="">Select firm</option><option>Topstep</option><option>Tradeify</option><option>Lucid</option><option>Apex</option></select></div><div><div class="fieldLabel">Account Size</div><select class="field" id="fundedSize" onchange="applyAccountDefaults('funded')"><option value="">Select size</option><option value="25000">25K</option><option value="50000">50K</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Payout Goal</div><input class="field" id="fundedPayoutGoal" type="number"></div><div><div class="fieldLabel">Drawdown</div><input class="field" id="fundedDrawdown" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Payout Taken</div><input class="field" id="fundedPayoutTaken" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="fundedStatus"><option value="active">Active</option><option value="risk">Drawdown Risk</option><option value="blown">Blown</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="fundedNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('funded')">Save Funded</button><button class="btn" onclick="clearAccountForm('funded')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Funded</h2><div id="fundedList" class="accountList"></div></div></section>
+
+  <section class="view" id="live"><div class="section"><h2 class="sectionTitle">Live Account</h2><input type="hidden" id="liveId"><div class="grid2"><div><div class="fieldLabel">Broker</div><input class="field" id="liveBroker"></div><div><div class="fieldLabel">Account Label</div><input class="field" id="liveLabel"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Starting Balance</div><input class="field" id="liveBalance" type="number"></div><div><div class="fieldLabel">Risk Limit</div><input class="field" id="liveRiskLimit" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Daily Goal</div><input class="field" id="liveGoal" type="number"></div><div><div class="fieldLabel">Status</div><select class="field" id="liveStatus"><option value="active">Active</option><option value="paused">Paused</option><option value="archived">Archived</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="liveNotes"></textarea></div><div class="btnrow"><button class="btn primary" onclick="saveAccount('live')">Save Live</button><button class="btn" onclick="clearAccountForm('live')">Clear</button></div></div><div class="section"><h2 class="sectionTitle">Saved Live Accounts</h2><div id="liveList" class="accountList"></div></div></section>
+
+  <section class="view" id="journal"><div class="section"><h2 class="sectionTitle">Journal</h2><input type="hidden" id="journalId"><div class="grid2"><div><div class="fieldLabel">Date</div><input class="field" id="journalDate" type="date"></div><div><div class="fieldLabel">Account Type</div><select class="field" id="journalAccountType" onchange="refreshJournalAccounts()"><option value="eval">Eval</option><option value="funded">Funded</option><option value="live">Live</option></select></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Linked Account</div><select class="field" id="journalAccountId"></select></div><div><div class="fieldLabel">PnL</div><input class="field" id="journalPnl" type="number" step="0.01"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Setup / Strategy</div><select class="field" id="journalSetup"><option value="">Select strategy</option><option>Supply & Demand</option><option>ORB</option><option>EMA/TEMA</option><option>ICC</option></select></div><div><div class="fieldLabel">Result Tag</div><select class="field" id="journalTag"><option value="valid">Valid</option><option value="failed">Failed</option><option value="no trade">No Trade</option><option value="no trade day">No Trade Day</option></select></div></div><div style="margin-top:10px"><div class="fieldLabel">Notes</div><textarea class="field" id="journalNotes"></textarea></div><div style="margin-top:10px"><div class="fieldLabel">Trade Screenshot</div><input class="field" id="journalScreenshot" type="file" accept="image/*" onchange="previewJournalImage(event)"><img id="journalPreview" class="previewImg"></div><button class="cta" onclick="saveJournal()">Save Journal Entry</button></div><div class="section"><h2 class="sectionTitle">Journal History</h2><div id="journalList" class="journalList"></div></div></section>
+
+  <section class="view" id="stats"><div class="section"><h2 class="sectionTitle">Stats</h2><div class="statsGrid"><div class="kpi"><div class="label">Total Entries</div><div class="num" id="statEntries">0</div></div><div class="kpi"><div class="label">Win Rate</div><div class="num" id="statWinRate">0%</div></div><div class="kpi"><div class="label">Goal Hit Days</div><div class="num" id="statGoalHit">0</div></div><div class="kpi"><div class="label">Max Loss Days</div><div class="num" id="statLossHit">0</div></div></div></div><div class="section"><h2 class="sectionTitle">Strategy Performance</h2><div id="strategyStats" class="accountList"></div></div></section>
+
+  <section class="view" id="lock"><div class="section"><h2 class="sectionTitle">Lock</h2><div class="muted">This section reads from your max loss and daily goal. Use it as your discipline stop.</div><div class="btnrow"><button class="btn warn">Lock Trading</button><button class="btn">Unlock</button></div></div></section>
+
+  <section class="view" id="pnl"><div class="section"><h2 class="sectionTitle">PnL</h2><div class="statsGrid"><div class="kpi"><div class="label">Daily</div><div class="num" id="pnlDaily">$0</div></div><div class="kpi"><div class="label">Weekly</div><div class="num" id="pnlWeekly">$0</div></div><div class="kpi"><div class="label">Monthly</div><div class="num" id="pnlMonthly">$0</div></div><div class="kpi"><div class="label">Goal Progress</div><div class="num" id="pnlProgress">0%</div></div></div></div></section>
+
+  <section class="view" id="sizer"><div class="section"><h2 class="sectionTitle">Sizer</h2><div class="grid2"><div><div class="fieldLabel">Risk ($)</div><input class="field" id="riskDollar" type="number"></div><div><div class="fieldLabel">Stop (points)</div><input class="field" id="stopPoints" type="number"></div></div><div class="grid2" style="margin-top:10px"><div><div class="fieldLabel">Instrument</div><select class="field" id="instrument"><option value="mnq">MNQ</option><option value="mes">MES</option><option value="mgc">MGC</option><option value="mym">MYM</option></select></div><div><div class="fieldLabel">Suggested Size</div><input class="field" id="suggestedSize" readonly></div></div><button class="cta" onclick="calculateSizer()">Calculate Size</button></div></section>
+
+  <section class="view" id="timer"><div class="section timer"><h2 class="sectionTitle">Timer</h2><div class="clock" id="clock">02:00:00</div><div class="muted">Start, pause, resume, and end session early.</div><div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn primary" onclick="startTimer()">Start</button><button class="btn" onclick="pauseTimer()">Pause</button><button class="btn" onclick="resumeTimer()">Resume</button><button class="btn warn" onclick="endTimerEarly()">End Early</button></div></div></section>
+</div>
+
+<script>
+const STORAGE_KEY='facelessTraderMergedICC_v1';
+const defaultState={theme:{palette:'amethyst',modeIndex:0},goals:{eval:{daily:0,loss:0},funded:{daily:0,loss:0},live:{daily:0,loss:0}},plan:{bias:'',setup:'Supply & Demand',session:'New York'},evals:[],funded:[],live:[],journal:[],timer:{remaining:7200,running:false,ended:false,interval:null},iccChecks:{}};
+['b1','b2','b3','b4','i1','i2','i3','i4','c1','c2','c3','c4','e1','e2','e3','e4'].forEach(k=>defaultState.iccChecks[k]=false);
+let state=JSON.parse(localStorage.getItem(STORAGE_KEY)||JSON.stringify(defaultState));
+if(!state.theme) state.theme=defaultState.theme; if(!state.goals) state.goals=defaultState.goals; if(!state.iccChecks) state.iccChecks=defaultState.iccChecks;
+const money=n=>Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2});
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const todayISO=()=>new Date().toISOString().slice(0,10);
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify({...state,timer:{...state.timer,interval:null}}))}
+function applyTheme(){document.body.dataset.palette=state.theme.palette;document.getElementById('themeBadge').textContent=state.theme.palette==='amethyst'?'Soft Amethyst':'Soft Quantum'}
+document.getElementById('styleCycleBtn').onclick=()=>{state.theme.palette=state.theme.palette==='amethyst'?'quantum':'amethyst';applyTheme();saveState();}
+function switchView(viewId){document.querySelectorAll('#mainTabs .pill').forEach(tab=>tab.classList.toggle('active',tab.dataset.view===viewId));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===viewId));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('#mainTabs .pill').forEach(tab=>tab.addEventListener('click',()=>switchView(tab.dataset.view)));
+document.querySelectorAll('[data-strategy-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-strategy-tab]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.iccPhase').forEach(v=>v.classList.remove('active'));document.getElementById('strategy-'+btn.dataset.strategyTab).classList.add('active')}));
+function applyGoalPreset(goal,loss){goalDaily.value=goal;goalLoss.value=loss}
+function saveGoal(){const type=goalType.value;state.goals[type]={daily:Number(goalDaily.value||0),loss:Number(goalLoss.value||0)};saveState();renderAll()}
+function renderGoals(){goalSummary.innerHTML=['eval','funded','live'].map(type=>{const g=state.goals[type]||{};return `<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${type[0].toUpperCase()+type.slice(1)} Goal</div><div class="muted">${money(g.daily)} target · ${money(g.loss)} max loss</div></div><span class="chip">${type}</span></div></div>`}).join('')}
+function savePlan(){state.plan={bias:planBias.value,setup:planSetup.value,session:planSession.value};saveState()}
+function iccCount(prefix){return Object.entries(state.iccChecks).filter(([k,v])=>k.startsWith(prefix)&&v).length}
+function renderICC(){const counts={b:iccCount('b'),i:iccCount('i'),c:iccCount('c'),e:iccCount('e')};iccScore.innerText=Math.max(0,Math.round((Object.values(state.iccChecks).filter(Boolean).length/16)*100)-(state.iccChecks.i4?0:10)-(state.iccChecks.e3?0:10))+'%';iccProgress.style.width=iccScore.innerText;iccHint.innerText=Number(iccScore.innerText.replace('%',''))>=90?'A SETUP':Number(iccScore.innerText.replace('%',''))>=75?'B SETUP':'WAIT';iccStatus.innerText=iccHint.innerText==='A SETUP'?'Execute Trade':iccHint.innerText==='B SETUP'?'Almost There':'Not Clean Yet';iccStatusSub.innerText=iccHint.innerText==='WAIT'?'More confirmation needed.':'Clean enough to review.';document.getElementById('icc-bias-count').innerText=`${counts.b} / 4`;document.getElementById('icc-indication-count').innerText=`${counts.i} / 4`;document.getElementById('icc-correction-count').innerText=`${counts.c} / 4`;document.getElementById('icc-entry-count').innerText=`${counts.e} / 4`;document.querySelectorAll('.icc-check').forEach(el=>el.checked=!!state.iccChecks[el.dataset.key])}
+document.querySelectorAll('.icc-check').forEach(el=>el.addEventListener('change',()=>{state.iccChecks[el.dataset.key]=el.checked;saveState();renderICC()}));
+function resetICC(){Object.keys(state.iccChecks).forEach(k=>state.iccChecks[k]=false);saveState();renderICC()}
+function getCollection(type){return type==='eval'?state.evals:type==='funded'?state.funded:state.live}
+function applyAccountDefaults(type){const size=Number(document.getElementById(type+'Size').value||0);if(type==='eval'){evalGoal.value=size===50000?3000:size===25000?1250:'';evalDrawdown.value=size===50000?2000:size===25000?1000:''}else if(type==='funded'){fundedPayoutGoal.value=size===50000?3000:size===25000?1250:'';fundedDrawdown.value=size===50000?2000:size===25000?1000:''}}
+function assignNumbers(){['eval','funded','live'].forEach(type=>getCollection(type).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).forEach((a,i)=>a.number=i+1))}
+function hydrateNames(){state.evals.forEach(a=>a.firmOrName=a.firm);state.funded.forEach(a=>a.firmOrName=a.firm);state.live.forEach(a=>a.firmOrName=a.label||a.broker)}
+function recalcAccounts(){['eval','funded','live'].forEach(type=>getCollection(type).forEach(a=>{const linked=state.journal.filter(j=>j.accountType===type&&j.accountId===a.id);const pnl=linked.reduce((s,j)=>s+Number(j.pnl||0),0);a.totalPnl=pnl;a.currentBalance=Number(a.startingBalance||0)+pnl;if(type==='eval'){a.remainingToGoal=Math.max(0,Number(a.goal||0)-pnl);a.buffer=a.currentBalance-(Number(a.startingBalance||0)-Number(a.maxDrawdown||0));if(!['failed','archived'].includes(a.status))a.status=pnl>=Number(a.goal||Infinity)?'passed':'active'}if(type==='funded'){a.remainingToPayoutGoal=Math.max(0,Number(a.payoutGoal||0)-Math.max(0,pnl));a.buffer=a.currentBalance-(Number(a.startingBalance||0)-Number(a.maxDrawdown||0));if(!['blown','archived'].includes(a.status))a.status=a.buffer<=Number(a.maxDrawdown||0)*0.2?'risk':'active'}if(type==='live'){a.remainingToGoal=Math.max(0,Number(a.dailyGoal||0)-Math.max(0,pnl));a.riskBuffer=Number(a.riskLimit||0)+pnl}}))}
+function clearAccountForm(type){const ids={eval:['evalId','evalFirm','evalSize','evalGoal','evalDrawdown','evalDays','evalNotes'],funded:['fundedId','fundedFirm','fundedSize','fundedPayoutGoal','fundedDrawdown','fundedPayoutTaken','fundedNotes'],live:['liveId','liveBroker','liveLabel','liveBalance','liveRiskLimit','liveGoal','liveNotes']}[type];ids.forEach(id=>document.getElementById(id).value='');if(type==='eval')evalStatus.value='active';if(type==='funded')fundedStatus.value='active';if(type==='live')liveStatus.value='active'}
+function saveAccount(type){const list=getCollection(type);const id=document.getElementById(type+'Id').value||uid();let payload;if(type==='eval'){payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),firm:evalFirm.value,startingBalance:Number(evalSize.value||0),goal:Number(evalGoal.value||0),maxDrawdown:Number(evalDrawdown.value||0),daysPassed:Number(evalDays.value||0),status:evalStatus.value,notes:evalNotes.value};if(!payload.firm||!payload.startingBalance)return}else if(type==='funded'){payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),firm:fundedFirm.value,startingBalance:Number(fundedSize.value||0),payoutGoal:Number(fundedPayoutGoal.value||0),maxDrawdown:Number(fundedDrawdown.value||0),payoutTaken:Number(fundedPayoutTaken.value||0),status:fundedStatus.value,notes:fundedNotes.value};if(!payload.firm||!payload.startingBalance)return}else{payload={id,createdAt:list.find(a=>a.id===id)?.createdAt||new Date().toISOString(),broker:liveBroker.value,label:liveLabel.value,startingBalance:Number(liveBalance.value||0),riskLimit:Number(liveRiskLimit.value||0),dailyGoal:Number(liveGoal.value||0),status:liveStatus.value,notes:liveNotes.value};if(!payload.broker)return}const idx=list.findIndex(a=>a.id===id);if(idx>=0)list[idx]={...list[idx],...payload};else list.push(payload);postDataChange();clearAccountForm(type)}
+function editAccount(type,id){const a=getCollection(type).find(x=>x.id===id);if(!a)return;switchView(type);if(type==='eval'){evalId.value=a.id;evalFirm.value=a.firm;evalSize.value=a.startingBalance;evalGoal.value=a.goal;evalDrawdown.value=a.maxDrawdown;evalDays.value=a.daysPassed||0;evalStatus.value=a.status;evalNotes.value=a.notes||''}else if(type==='funded'){fundedId.value=a.id;fundedFirm.value=a.firm;fundedSize.value=a.startingBalance;fundedPayoutGoal.value=a.payoutGoal||0;fundedDrawdown.value=a.maxDrawdown;fundedPayoutTaken.value=a.payoutTaken||0;fundedStatus.value=a.status;fundedNotes.value=a.notes||''}else{liveId.value=a.id;liveBroker.value=a.broker;liveLabel.value=a.label||'';liveBalance.value=a.startingBalance;liveRiskLimit.value=a.riskLimit;liveGoal.value=a.dailyGoal||0;liveStatus.value=a.status;liveNotes.value=a.notes||''}}
+function deleteAccount(type,id){const list=getCollection(type);const idx=list.findIndex(a=>a.id===id);if(idx>=0)list.splice(idx,1);state.journal=state.journal.filter(j=>!(j.accountType===type&&j.accountId===id));postDataChange()}
+function renderAccountList(type,containerId){const items=[...getCollection(type)].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));const el=document.getElementById(containerId);if(!items.length){el.innerHTML='<div class="empty">Nothing saved yet.</div>';return}el.innerHTML=items.map(a=>{const pnlClass=Number(a.totalPnl||0)>=0?'positive':'negative';const extra=type==='eval'?`<div class="kv"><div class="k">Left to Pass</div><div class="v">${money(a.remainingToGoal||0)}</div></div>`:type==='funded'?`<div class="kv"><div class="k">Payout Progress</div><div class="v">${money((a.payoutGoal||0)-(a.remainingToPayoutGoal||0))} / ${money(a.payoutGoal||0)}</div></div>`:`<div class="kv"><div class="k">Left to Goal</div><div class="v">${money(a.remainingToGoal||0)}</div></div>`;return `<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${type[0].toUpperCase()+type.slice(1)} ${a.number} — ${a.firmOrName}</div><div class="muted">${a.createdAt.slice(0,10)}</div></div><span class="status">${a.status}</span></div><div class="kvGrid"><div class="kv"><div class="k">Current Balance</div><div class="v">${money(a.currentBalance||a.startingBalance)}</div></div><div class="kv"><div class="k">Total PnL</div><div class="v ${pnlClass}">${money(a.totalPnl||0)}</div></div><div class="kv"><div class="k">Buffer</div><div class="v">${money(a.buffer??a.riskBuffer??0)}</div></div>${extra}</div><div class="btnrow"><button class="btn" onclick="editAccount('${type}','${a.id}')">Edit</button><button class="btn warn" onclick="deleteAccount('${type}','${a.id}')">Delete</button></div></div>`}).join('')}
+function refreshJournalAccounts(){const type=journalAccountType.value;const items=getCollection(type);if(!items.length){journalAccountId.innerHTML='<option value="">No accounts yet</option>';return}journalAccountId.innerHTML=[...items].sort((a,b)=>a.number-b.number).map(a=>`<option value="${a.id}">${type[0].toUpperCase()+type.slice(1)} ${a.number} — ${a.firmOrName}</option>`).join('')}
+let pendingJournalImage='';
+function previewJournalImage(e){const file=e.target.files&&e.target.files[0];if(!file){journalPreview.style.display='none';pendingJournalImage='';return}const reader=new FileReader();reader.onload=function(){pendingJournalImage=reader.result;journalPreview.src=pendingJournalImage;journalPreview.style.display='block'};reader.readAsDataURL(file)}
+function clearJournalForm(){journalId.value='';journalDate.value=todayISO();journalAccountType.value='eval';journalPnl.value='';journalSetup.value='';journalTag.value='valid';journalNotes.value='';journalScreenshot.value='';pendingJournalImage='';journalPreview.src='';journalPreview.style.display='none';refreshJournalAccounts()}
+function saveJournal(){const id=journalId.value||uid();const old=state.journal.find(j=>j.id===id);const payload={id,date:journalDate.value,accountType:journalAccountType.value,accountId:journalAccountId.value,pnl:Number(journalPnl.value||0),setup:journalSetup.value,tag:journalTag.value,notes:journalNotes.value,screenshot:pendingJournalImage||old?.screenshot||''};const idx=state.journal.findIndex(j=>j.id===id);if(idx>=0)state.journal[idx]=payload;else state.journal.push(payload);postDataChange();clearJournalForm()}
+function editJournal(id){const j=state.journal.find(x=>x.id===id);if(!j)return;switchView('journal');journalId.value=j.id;journalDate.value=j.date;journalAccountType.value=j.accountType;refreshJournalAccounts();journalAccountId.value=j.accountId;journalPnl.value=j.pnl;journalSetup.value=j.setup||'';journalTag.value=j.tag;journalNotes.value=j.notes||'';pendingJournalImage=j.screenshot||'';if(pendingJournalImage){journalPreview.src=pendingJournalImage;journalPreview.style.display='block'}else journalPreview.style.display='none'}
+function deleteJournal(id){const idx=state.journal.findIndex(j=>j.id===id);if(idx>=0)state.journal.splice(idx,1);postDataChange()}
+function renderJournal(){const el=journalList;const recentEl=recentJournal;const items=[...state.journal].sort((a,b)=>new Date(b.date)-new Date(a.date));if(!items.length){el.innerHTML='<div class="empty">No journal entries yet.</div>';recentEl.innerHTML='<div class="empty">No journal entries yet.</div>';return}const one=j=>{const account=getCollection(j.accountType).find(a=>a.id===j.accountId);return `<div class="listItem"><div class="journalTop"><div><div class="accountTitle">${j.setup||'Trade Entry'}</div><div class="muted">${j.date} • ${j.accountType} ${account?.number||''} ${account?'— '+account.firmOrName:''}</div></div><span class="${Number(j.pnl)>=0?'positive':'negative'}"><strong>${money(j.pnl)}</strong></span></div><div class="row"><span class="chip">${j.tag}</span></div>${j.notes?`<div class="muted" style="margin-top:8px">${j.notes}</div>`:''}${j.screenshot?`<img class="previewImg" style="display:block" src="${j.screenshot}">`:''}<div class="btnrow"><button class="btn" onclick="editJournal('${j.id}')">Edit</button><button class="btn warn" onclick="deleteJournal('${j.id}')">Delete</button></div></div>`};el.innerHTML=items.map(one).join('');recentEl.innerHTML=items.slice(0,3).map(one).join('')}
+function renderHomeAndStats(){const today=todayISO();const todayPnl=state.journal.filter(j=>j.date===today).reduce((s,j)=>s+Number(j.pnl||0),0);todayPnlEl.textContent=money(todayPnl)}
+const todayPnlEl=document.getElementById('todayPnl');
+function renderHomeStats(){const today=todayISO();const todayPnl=state.journal.filter(j=>j.date===today).reduce((s,j)=>s+Number(j.pnl||0),0);todayPnlEl.textContent=money(todayPnl);const activeType=['live','funded','eval'].find(t=>Number(state.goals[t]?.daily||0))||'eval';const g=state.goals[activeType]||{daily:0,loss:0};homeGoal.textContent=g.daily?money(g.daily):'$—';homeLoss.textContent=g.loss?money(g.loss):'$—';homeGoalType.textContent=g.daily?`${activeType} goal active`:'No goal set';todayBadge.textContent=g.daily?`Goal ${money(g.daily)} · Loss ${money(g.loss)}`:'No goal active';accountCount.textContent=state.evals.length+state.funded.length+state.live.length;const trades=state.journal.filter(x=>x.tag==='valid'||x.tag==='failed');const wins=trades.filter(x=>Number(x.pnl)>0).length;const losses=trades.filter(x=>Number(x.pnl)<0).length;statEntries.textContent=state.journal.length;statWinRate.textContent=(wins+losses)?`${Math.round((wins/(wins+losses))*100)}%`:'0%';const byDate={};state.journal.forEach(j=>byDate[j.date]=(byDate[j.date]||0)+Number(j.pnl||0));let goalHit=0,lossHit=0;Object.entries(byDate).forEach(([date,pnl])=>{const any=state.journal.find(x=>x.date===date);const gg=state.goals[any?.accountType||'eval']||{};if(Number(gg.daily||0)&&pnl>=Number(gg.daily))goalHit++;if(Number(gg.loss||0)&&pnl<=-Math.abs(Number(gg.loss)))lossHit++});statGoalHit.textContent=goalHit;statLossHit.textContent=lossHit;const names=['Supply & Demand','ORB','EMA/TEMA','ICC'];const strat=names.map(name=>{const arr=state.journal.filter(x=>x.setup===name);const w=arr.filter(x=>Number(x.pnl)>0).length;const l=arr.filter(x=>Number(x.pnl)<0).length;const wr=(w+l)?Math.round((w/(w+l))*100):0;const pnl=arr.reduce((s,x)=>s+Number(x.pnl||0),0);return {name,trades:arr.length,w,l,wr,pnl}});const best=[...strat].sort((a,b)=>(b.wr-a.wr)||(b.pnl-a.pnl))[0];bestStrategy.textContent=best&&best.trades?best.name:'—';bestStrategyMeta.textContent=best&&best.trades?`${best.wr}% win rate · ${money(best.pnl)}`:'Waiting for trades';strategyStats.innerHTML=strat.map(s=>`<div class="listItem"><div class="accountTop"><div><div class="accountTitle">${s.name}</div><div class="muted">${s.trades} trades</div></div><span class="chip">${s.w} / ${s.l}</span></div><div class="kvGrid"><div class="kv"><div class="k">Win %</div><div class="v">${s.wr}%</div></div><div class="kv"><div class="k">PnL</div><div class="v">${money(s.pnl)}</div></div></div></div>`).join('');const now=new Date();const sameWeek=d=>{const dd=new Date(d);const start=new Date(now);start.setDate(now.getDate()-6);return dd>=start&&dd<=now};const sameMonth=d=>new Date(d).getMonth()===now.getMonth()&&new Date(d).getFullYear()===now.getFullYear();const weekly=state.journal.filter(j=>sameWeek(j.date)).reduce((s,j)=>s+Number(j.pnl||0),0);const monthly=state.journal.filter(j=>sameMonth(j.date)).reduce((s,j)=>s+Number(j.pnl||0),0);pnlDaily.textContent=money(todayPnl);pnlWeekly.textContent=money(weekly);pnlMonthly.textContent=money(monthly);pnlProgress.textContent=g.daily?`${Math.min(100,Math.max(0,Math.round((Math.max(0,todayPnl)/g.daily)*100)))}%`:'0%'}
+function calculateSizer(){const risk=Number(riskDollar.value||0),stop=Number(stopPoints.value||0),instrument=instrumentEl.value,pointValue={mnq:2,mes:5,mgc:10,mym:0.5}[instrument];if(!risk||!stop||!pointValue){suggestedSize.value='';return}suggestedSize.value=Math.max(1,Math.floor(risk/(stop*pointValue)))}
+const instrumentEl=document.getElementById('instrument');
+function updateTimerDisplay(){const t=state.timer.remaining;const h=String(Math.floor(t/3600)).padStart(2,'0'),m=String(Math.floor((t%3600)/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');clock.textContent=`${h}:${m}:${s}`;sessionStatus.textContent=state.timer.running?'Running':state.timer.ended?'Ended':state.timer.remaining<7200?'Paused':'Waiting'}
+function startTimer(){if(state.timer.running||state.timer.ended)return;state.timer.running=true;state.timer.interval=setInterval(()=>{state.timer.remaining=Math.max(0,state.timer.remaining-1);if(state.timer.remaining===0){clearInterval(state.timer.interval);state.timer.running=false;state.timer.ended=true;state.timer.interval=null}updateTimerDisplay();saveState()},1000);updateTimerDisplay()}
+function pauseTimer(){if(!state.timer.running)return;clearInterval(state.timer.interval);state.timer.interval=null;state.timer.running=false;updateTimerDisplay();saveState()}
+function resumeTimer(){if(state.timer.running||state.timer.ended||state.timer.remaining<=0)return;startTimer()}
+function endTimerEarly(){clearInterval(state.timer.interval);state.timer.interval=null;state.timer.running=false;state.timer.ended=true;state.timer.remaining=0;updateTimerDisplay();saveState()}
+function postDataChange(){assignNumbers();hydrateNames();recalcAccounts();saveState();renderAll()}
+function renderAll(){applyTheme();renderGoals();renderICC();renderAccountList('eval','evalList');renderAccountList('funded','fundedList');renderAccountList('live','liveList');refreshJournalAccounts();renderJournal();renderHomeStats();updateTimerDisplay()}
+journalDate.value=todayISO();renderAll();
+</script>
+
+<script>
+document.querySelectorAll('[data-merged-strategy]').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('[data-merged-strategy]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mergedStrategyPane').forEach(p => p.style.display = 'none');
+    this.classList.add('active');
+    const target = document.getElementById('merged-' + this.dataset.mergedStrategy);
+    if (target) target.style.display = 'block';
+  });
+});
 </script>
 </body>
+
 </html>
