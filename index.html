@@ -1002,6 +1002,33 @@ textarea.field{min-height:88px;resize:vertical;}
   position:relative;
 }
 
+
+/* final style + sync fix */
+.style-wrap{
+  position:absolute !important;
+  right:14px !important;
+  bottom:14px !important;
+  z-index:10050 !important;
+}
+#styleToggle{
+  position:relative !important;
+  z-index:10051 !important;
+  pointer-events:auto !important;
+}
+#dropdown{
+  position:absolute !important;
+  right:0 !important;
+  top:56px !important;
+  z-index:10052 !important;
+  pointer-events:auto !important;
+}
+#dropdown.open{
+  display:flex !important;
+}
+.ghost-cycle{
+  display:none !important;
+}
+
 </style>
 </head>
 <body class="theme-soft-purple">
@@ -3583,57 +3610,7 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const styleBtn = document.getElementById('styleCycleBtn');
-  const panel = document.getElementById('themePanel');
-  const body = document.body;
-  const badge = document.getElementById('themeBadge');
 
-  function setTheme(themeClass){
-    body.classList.remove('theme-soft-purple','theme-bright-purple','theme-soft-bluegreen','theme-bright-bluegreen');
-    body.classList.add(themeClass);
-    try{ localStorage.setItem('faceless_theme_choice', themeClass); }catch(e){}
-    if(badge){
-      const labels = {
-        'theme-soft-purple': 'Soft Purple',
-        'theme-bright-purple': 'Bright Purple',
-        'theme-soft-bluegreen': 'Soft Blue-Green',
-        'theme-bright-bluegreen': 'Bright Blue-Green'
-      };
-      badge.textContent = labels[themeClass] || 'Theme';
-    }
-  }
-
-  try{
-    const saved = localStorage.getItem('faceless_theme_choice');
-    if(saved){ setTheme(saved); }
-  }catch(e){}
-
-  if(styleBtn && panel){
-    styleBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      panel.classList.toggle('open');
-    });
-
-    panel.querySelectorAll('[data-theme]').forEach(btn => {
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        setTheme(this.getAttribute('data-theme'));
-        panel.classList.remove('open');
-      });
-    });
-
-    document.addEventListener('click', function(e){
-      if(!panel.contains(e.target) && e.target !== styleBtn){
-        panel.classList.remove('open');
-      }
-    });
-  }
-});
-</script>
 
 
 <script>
@@ -3968,6 +3945,149 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 })();
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const styleBtn = document.getElementById('styleToggle');
+  const dropdown = document.getElementById('dropdown');
+  const badge = document.getElementById('themeBadge');
+  const body = document.body;
+
+  function setTheme(themeClass){
+    body.classList.remove('theme-soft-purple','theme-bright-purple','theme-soft-bluegreen','theme-bright-bluegreen');
+    body.classList.add(themeClass);
+
+    const labels = {
+      'theme-soft-purple': 'Soft Purple',
+      'theme-bright-purple': 'Bright Purple',
+      'theme-soft-bluegreen': 'Soft Blue-Green',
+      'theme-bright-bluegreen': 'Bright Blue-Green'
+    };
+
+    if(badge) badge.textContent = labels[themeClass] || 'Theme';
+
+    document.querySelectorAll('#dropdown .option[data-theme]').forEach(opt => {
+      opt.classList.toggle('active', opt.getAttribute('data-theme') === themeClass);
+    });
+
+    try{ localStorage.setItem('faceless_theme_choice', themeClass); }catch(e){}
+  }
+
+  try{
+    const savedTheme = localStorage.getItem('faceless_theme_choice');
+    if(savedTheme) setTheme(savedTheme);
+  }catch(e){}
+
+  if(styleBtn && dropdown){
+    styleBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+      this.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+    });
+
+    dropdown.querySelectorAll('.option[data-theme]').forEach(opt => {
+      opt.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        const theme = this.getAttribute('data-theme');
+        setTheme(theme);
+        dropdown.classList.remove('open');
+        if(styleBtn) styleBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', function(e){
+      if(!dropdown.contains(e.target) && e.target !== styleBtn && !styleBtn.contains(e.target)){
+        dropdown.classList.remove('open');
+        styleBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  function getConnectedState(){
+    try{
+      return JSON.parse(localStorage.getItem('faceless_connected_state_v1') || '{}');
+    }catch(e){
+      return {};
+    }
+  }
+
+  function syncSystemUI(){
+    const psychScoreEl = document.getElementById('psychScore');
+    const stateEl = document.getElementById('lockStateText');
+    const reasonEl = document.getElementById('lockReasonText');
+    const tradeCountEl = document.getElementById('lockTradeCount');
+    const lockTabs = document.querySelectorAll('#mainTabs .pill[data-view="strategy"], #mainTabs .pill[data-view="live"]');
+
+    const psychScore = psychScoreEl ? (parseInt((psychScoreEl.textContent || '0').replace(/[^0-9]/g,''),10) || 0) : 0;
+    const c = getConnectedState();
+
+    const totalEntries = Number(c.totalEntries || 0);
+    const fundedPnL = Number(c.fundedPnL || 0);
+    const livePnL = Number(c.livePnL || 0);
+    const forceLocked = !!c.forceLocked;
+    const forceUnlocked = !!c.forceUnlocked;
+
+    let locked = false;
+    let reason = 'Ready to trade.';
+
+    if(forceLocked){
+      locked = true;
+      reason = 'Manual lock is on.';
+    } else if(!forceUnlocked && psychScore < 80){
+      locked = true;
+      reason = 'Complete Psychology checklist to 80% first.';
+    } else if(totalEntries >= 5){
+      locked = true;
+      reason = 'Daily trade cap hit.';
+    } else if(fundedPnL <= -300){
+      locked = true;
+      reason = 'Funded loss floor hit.';
+    } else if(livePnL <= -300){
+      locked = true;
+      reason = 'Live loss floor hit.';
+    }
+
+    window.__facelessTradeLocked = locked;
+
+    if(stateEl) stateEl.textContent = locked ? 'LOCKED' : 'UNLOCKED';
+    if(reasonEl) reasonEl.textContent = reason;
+    if(tradeCountEl) tradeCountEl.textContent = String(totalEntries);
+
+    lockTabs.forEach(tab => tab.classList.toggle('locked', locked));
+  }
+
+  // Keep sync responsive when psych or connected data changes
+  document.querySelectorAll('#psych .psych-rule').forEach(rule => {
+    rule.addEventListener('click', function(){
+      setTimeout(syncSystemUI, 40);
+    });
+  });
+
+  const journalBtn = document.querySelector('.cta[onclick="saveJournal()"], .cta');
+  if(journalBtn){
+    journalBtn.addEventListener('click', function(){
+      setTimeout(syncSystemUI, 80);
+    });
+  }
+
+  document.querySelectorAll('#mainTabs .pill[data-view]').forEach(tab => {
+    tab.addEventListener('click', function(e){
+      const viewId = this.getAttribute('data-view');
+      if(window.__facelessTradeLocked && (viewId === 'strategy' || viewId === 'live')){
+        e.preventDefault();
+        e.stopPropagation();
+        alert('🔒 Trading is locked right now.');
+      }
+    }, true);
+  });
+
+  syncSystemUI();
+  setInterval(syncSystemUI, 1200);
+});
 </script>
 
 </body>
